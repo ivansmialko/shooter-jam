@@ -1,0 +1,3 @@
+[submodule "Plugins/ue5-multiplayer-sessions-plugin"]
+	path = Plugins/ue5-multiplayer-sessions-plugin
+	url = https://github.com/ivansmialko/ue5-multiplayer-sessions-plugin.git
