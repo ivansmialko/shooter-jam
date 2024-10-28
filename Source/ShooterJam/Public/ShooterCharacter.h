@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "InputActionValue.h"
 #include "ShooterCharacter.generated.h"
 
 UCLASS()
@@ -19,6 +20,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* MoveAction;
+
+	void OnMove(const FInputActionValue& Value);
+	void OnLook(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
