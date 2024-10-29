@@ -31,7 +31,7 @@ void AShooterCharacter::BeginPlay()
 		return;
 
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-	if(!Subsystem)
+	if(!Subsystem) 
 		return;
 
 	Subsystem->AddMappingContext(InputMappingContext, 0);
@@ -39,12 +39,31 @@ void AShooterCharacter::BeginPlay()
 
 void AShooterCharacter::OnMove(const FInputActionValue& Value)
 {
-	FVector2D MoveValue = Value.Get<FVector2D>();
+	if (!GetController())
+		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("OnMove triggered"));
+	FVector2D InputVector{ Value.Get<FVector2D>() };
+	const FRotator Rotation{ GetController()->GetControlRotation() };
+	const FRotator YawRotation(0, Rotation.Yaw, 0);
+
+	const FVector ForwardDirection{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X) };
+	const FVector RightDirection{ FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y) };
+
+	AddMovementInput(ForwardDirection, InputVector.Y);
+	AddMovementInput(RightDirection, InputVector.X);
 }
 
 void AShooterCharacter::OnLook(const FInputActionValue& Value)
+{
+	if(!GetController())
+		return;
+
+	FVector2D LookVector = Value.Get<FVector2D>();
+	AddControllerYawInput(LookVector.X);
+	AddControllerPitchInput(LookVector.Y);
+}
+
+void AShooterCharacter::OnJump(const FInputActionValue& Value)
 {
 
 }
@@ -64,5 +83,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 		return;
 
 	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnMove);
+	EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnLook);
+	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnJump);
 }
 
