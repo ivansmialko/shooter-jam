@@ -3,6 +3,7 @@
 
 #include "ShooterCharacter.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
@@ -20,6 +21,14 @@ AShooterCharacter::AShooterCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+
+	bUseControllerRotationYaw = false;
+
+	UCharacterMovementComponent* MovementComponent { GetCharacterMovement() };
+	if(!CharacterMovement)
+		return;
+
+	CharacterMovement->bOrientRotationToMovement = true;
 }
 
 void AShooterCharacter::BeginPlay()
