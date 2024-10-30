@@ -25,10 +25,10 @@ AShooterCharacter::AShooterCharacter()
 	bUseControllerRotationYaw = false;
 
 	UCharacterMovementComponent* MovementComponent { GetCharacterMovement() };
-	if(!CharacterMovement)
+	if(!MovementComponent)
 		return;
 
-	CharacterMovement->bOrientRotationToMovement = true;
+	MovementComponent->bOrientRotationToMovement = true;
 }
 
 void AShooterCharacter::BeginPlay()
