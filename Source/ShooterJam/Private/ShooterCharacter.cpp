@@ -8,6 +8,7 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "Components/WidgetComponent.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -29,6 +30,9 @@ AShooterCharacter::AShooterCharacter()
 		return;
 
 	MovementComponent->bOrientRotationToMovement = true;
+
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	OverheadWidget->SetupAttachment(RootComponent);
 }
 
 void AShooterCharacter::BeginPlay()
