@@ -1,5 +1,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Components/SphereComponent.h"
+#include "Components/WidgetComponent.h"
+#include "ShooterCharacter.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -7,7 +9,6 @@ AWeaponBase::AWeaponBase()
 	bReplicates = true;
 
 	WeaponMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("WeaponMesh"));
-	WeaponMesh->SetupAttachment(RootComponent);
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -17,6 +18,9 @@ AWeaponBase::AWeaponBase()
 	AreaSphere->SetupAttachment(RootComponent);
 	AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
+	PickUpWidget->SetupAttachment(RootComponent);
 }
 
 void AWeaponBase::BeginPlay()
@@ -27,7 +31,25 @@ void AWeaponBase::BeginPlay()
 	{
 		AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		AreaSphere->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+		AreaSphere->OnComponentBeginOverlap.AddDynamic(this, &AWeaponBase::OnAreaSphereOverlap);
 	}
+
+	if (PickUpWidget)
+	{
+		PickUpWidget->SetVisibility(false);
+	}
+}
+
+void AWeaponBase::OnAreaSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (!PickUpWidget)
+		return;
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
+	if (!ShooterCharacter)
+		return;
+
+	PickUpWidget->SetVisibility(true);
 }
 
 void AWeaponBase::Tick(float DeltaTime)
