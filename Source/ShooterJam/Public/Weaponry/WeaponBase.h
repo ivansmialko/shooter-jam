@@ -23,6 +23,8 @@ public:
 	AWeaponBase();
 	virtual void Tick(float DeltaTime) override;
 
+	void ShowPickUpWidget(bool bShowWidget);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;

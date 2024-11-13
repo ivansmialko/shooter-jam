@@ -9,6 +9,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "Weaponry/WeaponBase.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -81,10 +83,30 @@ void AShooterCharacter::OnJump(const FInputActionValue& Value)
 
 }
 
+void AShooterCharacter::OnRep_OverlappingWeapon()
+{
+	if (!OverlappingWeapon)
+		return;
+
+	OverlappingWeapon->ShowPickUpWidget(true);
+}
+
+void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
+{
+	//Replicates to client
+	OverlappingWeapon = Weapon;
+
+	//Call method manually, because variable does not replicate to server
+	//And this code will ONLY run on the server, becase sphere overlapping works only on the server, as mentioned in AWeaponBase::BeginPlay
+	if (IsLocallyControlled())
+	{
+		OnRep_OverlappingWeapon();
+	}
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -98,5 +120,12 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnMove);
 	EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnLook);
 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnJump);
+}
+
+void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly)
 }
 

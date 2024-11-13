@@ -42,19 +42,24 @@ void AWeaponBase::BeginPlay()
 
 void AWeaponBase::OnAreaSphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!PickUpWidget)
-		return;
-
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(OtherActor);
 	if (!ShooterCharacter)
 		return;
 
-	PickUpWidget->SetVisibility(true);
+	ShooterCharacter->SetOverlappingWeapon(this);
+	 
 }
 
 void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
+{
+	if (!PickUpWidget)
+		return;
+
+	PickUpWidget->SetVisibility(bShowWidget);
 }
 
