@@ -51,7 +51,7 @@ private:
 	class AWeaponBase* OverlappingWeapon;
 
 	UFUNCTION()
-	void OnRep_OverlappingWeapon();
+	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 
 public:
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
