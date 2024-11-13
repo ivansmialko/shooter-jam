@@ -83,16 +83,25 @@ void AShooterCharacter::OnJump(const FInputActionValue& Value)
 
 }
 
-void AShooterCharacter::OnRep_OverlappingWeapon()
+void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
-	if (!OverlappingWeapon)
-		return;
+	if (OverlappingWeapon)
+	{
+		OverlappingWeapon->ShowPickUpWidget(true);
+	}
 
-	OverlappingWeapon->ShowPickUpWidget(true);
+	if (LastOverlappedWeapon && !OverlappingWeapon)
+	{
+		LastOverlappedWeapon->ShowPickUpWidget(false);
+	}
+
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 {
+	//Save the last overlapped weapon, to call local function with this value
+	AWeaponBase* LastWeaponOverlapped{ OverlappingWeapon };
+
 	//Replicates to client
 	OverlappingWeapon = Weapon;
 
@@ -100,7 +109,7 @@ void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 	//And this code will ONLY run on the server, becase sphere overlapping works only on the server, as mentioned in AWeaponBase::BeginPlay
 	if (IsLocallyControlled())
 	{
-		OnRep_OverlappingWeapon();
+		OnRep_OverlappingWeapon(LastWeaponOverlapped);
 	}
 }
 
