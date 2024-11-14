@@ -57,4 +57,6 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
+public:
+	FORCEINLINE void SetWeaponState(EWeaponState InState) { WeaponState = InState; }
 };

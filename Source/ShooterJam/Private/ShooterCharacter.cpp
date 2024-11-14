@@ -11,6 +11,7 @@
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Weaponry/WeaponBase.h"
+#include "Components/CombatComponent.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -35,6 +36,9 @@ AShooterCharacter::AShooterCharacter()
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
+
+	CombatComponent = CreateEditorOnlyDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	CombatComponent->SetIsReplicated(true);
 }
 
 void AShooterCharacter::BeginPlay()
@@ -83,6 +87,23 @@ void AShooterCharacter::OnJump(const FInputActionValue& Value)
 
 }
 
+void AShooterCharacter::OnEquip(const FInputActionValue& Value)
+{
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Pressed e"));
+
+	if (!CombatComponent)
+		return;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Has combat component"));
+
+	if (!HasAuthority())
+		return;
+
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Has authority"));
+
+	CombatComponent->EquipWeapon(OverlappingWeapon);
+}
+
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
 	if (OverlappingWeapon)
@@ -129,6 +150,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnMove);
 	EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnLook);
 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnJump);
+	EnhancedInput->BindAction(EquipAction, ETriggerEvent::Started, this, &AShooterCharacter::OnEquip);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -136,5 +158,14 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly)
+}
+
+void AShooterCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->Character = this;
 }
 
