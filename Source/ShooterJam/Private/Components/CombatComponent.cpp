@@ -1,7 +1,7 @@
 // Made by smialko
 
-#include "ShooterCharacter.h"
 #include "Components/CombatComponent.h"
+#include "ShooterCharacter.h"
 #include "Weaponry/WeaponBase.h"
 #include "Engine/SkeletalMeshSocket.h"
 
