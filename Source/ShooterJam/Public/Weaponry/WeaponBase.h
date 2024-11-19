@@ -25,6 +25,7 @@ public:
 
 	void ShowPickUpWidget(bool bShowWidget);
 
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
