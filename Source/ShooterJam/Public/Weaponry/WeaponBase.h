@@ -22,9 +22,11 @@ class SHOOTERJAM_API AWeaponBase : public AActor
 public:	
 	AWeaponBase();
 	virtual void Tick(float DeltaTime) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void ShowPickUpWidget(bool bShowWidget);
-
+	void ChangeWeaponState(EWeaponState InState);
+	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -33,11 +35,14 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class USphereComponent* AreaSphere;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
 	EWeaponState WeaponState;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickUpWidget;
+
+	UFUNCTION()
+	void OnRep_WeaponState();
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,6 +63,4 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
-public:
-	FORCEINLINE void SetWeaponState(EWeaponState InState) { WeaponState = InState; }
 };

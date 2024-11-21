@@ -61,6 +61,9 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 
+	UFUNCTION(Server, Reliable)
+	void Server_EquipButtonPressed();
+
 public:
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 };
