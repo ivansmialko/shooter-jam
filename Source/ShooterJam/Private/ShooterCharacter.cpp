@@ -39,6 +39,8 @@ AShooterCharacter::AShooterCharacter()
 
 	CombatComponent = CreateEditorOnlyDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
 	CombatComponent->SetIsReplicated(true);
+
+	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 }
 
 void AShooterCharacter::BeginPlay()
@@ -102,18 +104,24 @@ void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 	}
 }
 
+void AShooterCharacter::OnCrouch(const FInputActionValue& Value)
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Crouch();
+	}
+}
+
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Something overlaps"));
 
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickUpWidget(true);
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Showing widget"));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("No overlapping weapon"));
 	}
 
 	if (LastOverlappedWeapon && !OverlappingWeapon)
@@ -169,6 +177,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(LookAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnLook);
 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnJump);
 	EnhancedInput->BindAction(EquipAction, ETriggerEvent::Started, this, &AShooterCharacter::OnEquip);
+	EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnCrouch);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

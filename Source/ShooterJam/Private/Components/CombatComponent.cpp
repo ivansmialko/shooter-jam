@@ -36,7 +36,6 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	if (!Character)
 		return;
 
-
 	if (!InWeaponToEquip)
 		return;
 
