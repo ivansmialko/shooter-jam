@@ -147,6 +147,11 @@ void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 	}
 }
 
+bool AShooterCharacter::GetIsWeaponEquipped()
+{
+	return (CombatComponent && CombatComponent->GetIsWeaponEquipped());
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
