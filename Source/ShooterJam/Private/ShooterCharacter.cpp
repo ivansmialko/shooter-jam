@@ -89,26 +89,31 @@ void AShooterCharacter::OnJump(const FInputActionValue& Value)
 
 void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Pressed e"));
-
 	if (!CombatComponent)
 		return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Has combat component"));
-
-	if (!HasAuthority())
-		return;
-
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString("Has authority"));
-
-	CombatComponent->EquipWeapon(OverlappingWeapon);
+	if (HasAuthority())
+	{
+		CombatComponent->EquipWeapon(OverlappingWeapon);
+	}
+	else
+	{
+		Server_EquipButtonPressed();
+	}
 }
 
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Something overlaps"));
+
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickUpWidget(true);
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Showing widget"));
+	}
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("No overlapping weapon"));
 	}
 
 	if (LastOverlappedWeapon && !OverlappingWeapon)
@@ -116,6 +121,14 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 		LastOverlappedWeapon->ShowPickUpWidget(false);
 	}
 
+}
+
+void AShooterCharacter::Server_EquipButtonPressed_Implementation()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->EquipWeapon(OverlappingWeapon);
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)

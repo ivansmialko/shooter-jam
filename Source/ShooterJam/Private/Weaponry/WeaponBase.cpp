@@ -1,6 +1,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "Net/UnrealNetwork.h"
 #include "ShooterCharacter.h"
 
 AWeaponBase::AWeaponBase()
@@ -21,6 +22,25 @@ AWeaponBase::AWeaponBase()
 
 	PickUpWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("PickUpWidget"));
 	PickUpWidget->SetupAttachment(RootComponent);
+}
+
+void AWeaponBase::OnRep_WeaponState()
+{
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Initial:
+		break;
+	case EWeaponState::EWS_Equipped:
+	{
+		ShowPickUpWidget(false);
+	} break;
+	case EWeaponState::EWS_Dropper:
+		break;
+	case EWeaponState::EWS_MAX:
+		break;
+	default:
+		break;
+	}
 }
 
 void AWeaponBase::BeginPlay()
@@ -47,6 +67,7 @@ void AWeaponBase::OnAreaSphereOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	if (!ShooterCharacter)
 		return;
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Setting overlapping widget"));
 	ShooterCharacter->SetOverlappingWeapon(this);
 }
 
@@ -64,11 +85,43 @@ void AWeaponBase::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeaponBase, WeaponState);
+}
+
 void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
 {
 	if (!PickUpWidget)
 		return;
 
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Hiding widget"));
 	PickUpWidget->SetVisibility(bShowWidget);
 }
+
+void AWeaponBase::ChangeWeaponState(EWeaponState InState)
+{
+	WeaponState = InState;
+
+	switch (WeaponState)
+	{
+	case EWeaponState::EWS_Initial:
+		break;
+	case EWeaponState::EWS_Equipped:
+	{
+		ShowPickUpWidget(false);
+		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	} break;
+	case EWeaponState::EWS_Dropper:
+		break;
+	case EWeaponState::EWS_MAX:
+		break;
+	default:
+		break;
+	}
+
+}
+
 
