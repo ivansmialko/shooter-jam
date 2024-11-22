@@ -91,18 +91,16 @@ void AShooterCharacter::OnJump(const FInputActionValue& Value)
 
 void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 {
-	if (!CombatComponent)
-		return;
-
 	if (HasAuthority())
 	{
-		CombatComponent->EquipWeapon(OverlappingWeapon);
+		ActionEquip();
 	}
 	else
 	{
-		Server_EquipButtonPressed();
+		Server_OnEquip();
 	}
 }
+
 
 void AShooterCharacter::OnCrouch(const FInputActionValue& Value)
 {
@@ -113,6 +111,26 @@ void AShooterCharacter::OnCrouch(const FInputActionValue& Value)
 	else
 	{
 		Crouch();
+	}
+}
+
+void AShooterCharacter::OnAimStart(const FInputActionValue& Value)
+{
+	ActionAimStart();
+
+	if (!HasAuthority())
+	{
+		Server_OnAimStart();
+	}
+}
+
+void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
+{
+	ActionAimEnd();
+
+	if (!HasAuthority())
+	{
+		Server_OnAimEnd();
 	}
 }
 
@@ -131,12 +149,43 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 
 }
 
-void AShooterCharacter::Server_EquipButtonPressed_Implementation()
+void AShooterCharacter::Server_OnEquip_Implementation()
+{
+	ActionEquip();
+}
+
+void AShooterCharacter::Server_OnAimStart_Implementation()
+{
+	ActionAimStart();
+}
+
+void AShooterCharacter::Server_OnAimEnd_Implementation()
+{
+	ActionAimEnd();
+}
+
+void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
 		return;
 
 	CombatComponent->EquipWeapon(OverlappingWeapon);
+}
+
+void AShooterCharacter::ActionAimStart()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsAiming(true);
+}
+
+void AShooterCharacter::ActionAimEnd()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsAiming(false);
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
@@ -160,6 +209,16 @@ bool AShooterCharacter::GetIsWeaponEquipped()
 	return (CombatComponent && CombatComponent->GetIsWeaponEquipped());
 }
 
+bool AShooterCharacter::GetIsCrouched()
+{
+	return bIsCrouched;
+}
+
+bool AShooterCharacter::GetIsAiming()
+{
+	return (CombatComponent && CombatComponent->GetIsAiming());
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -178,6 +237,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(JumpAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnJump);
 	EnhancedInput->BindAction(EquipAction, ETriggerEvent::Started, this, &AShooterCharacter::OnEquip);
 	EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnCrouch);
+	EnhancedInput->BindAction(AimAction, ETriggerEvent::Started, this, &AShooterCharacter::OnAimStart);
+	EnhancedInput->BindAction(AimAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnAimEnd);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

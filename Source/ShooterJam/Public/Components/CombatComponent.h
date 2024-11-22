@@ -22,11 +22,16 @@ public:
 	void EquipWeapon(class AWeaponBase* InWeaponToEquip);
 
 	bool GetIsWeaponEquipped();
+	bool GetIsAiming();
+
+	void SetIsAiming(bool bInIsAiming);
 
 private:
+	class AShooterCharacter* Character;
 	UPROPERTY(Replicated)
 	AWeaponBase* EquippedWeapon;
-	class AShooterCharacter* Character;
+	UPROPERTY(Replicated)
+	bool bIsAiming;
 
 protected:
 	virtual void BeginPlay() override;

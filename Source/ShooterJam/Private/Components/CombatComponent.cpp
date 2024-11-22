@@ -29,6 +29,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, bIsAiming);
 }
 
 void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
@@ -53,5 +54,15 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 bool UCombatComponent::GetIsWeaponEquipped()
 {
 	return (EquippedWeapon != nullptr);
+}
+
+bool UCombatComponent::GetIsAiming()
+{
+	return bIsAiming;
+}
+
+void UCombatComponent::SetIsAiming(bool bInIsAiming)
+{
+	bIsAiming = bInIsAiming;
 }
 

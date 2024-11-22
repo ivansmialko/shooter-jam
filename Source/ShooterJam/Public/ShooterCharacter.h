@@ -21,6 +21,8 @@ public:
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 	bool GetIsWeaponEquipped();
+	bool GetIsCrouched();
+	bool GetIsAiming();
 
 protected:
 	virtual void BeginPlay() override;
@@ -43,11 +45,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* CrouchAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	class UInputAction* AimAction;
+
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);
 	void OnJump(const FInputActionValue& Value);
 	void OnEquip(const FInputActionValue& Value);
 	void OnCrouch(const FInputActionValue& Value);
+	void OnAimStart(const FInputActionValue& Value);
+	void OnAimEnd(const FInputActionValue& Value);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -69,5 +76,13 @@ private:
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 
 	UFUNCTION(Server, Reliable)
-	void Server_EquipButtonPressed();
+	void Server_OnEquip();
+	UFUNCTION(Server, Reliable)
+	void Server_OnAimStart();
+	UFUNCTION(Server, Reliable)
+	void Server_OnAimEnd();
+
+	void ActionEquip();
+	void ActionAimStart();
+	void ActionAimEnd();
 };
