@@ -26,9 +26,12 @@ public:
 
 	void SetIsAiming(bool bInIsAiming);
 
+	UFUNCTION()
+	void OnRep_EquippedWeapon();
+
 private:
 	class AShooterCharacter* Character;
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponBase* EquippedWeapon;
 	UPROPERTY(Replicated)
 	bool bIsAiming;
