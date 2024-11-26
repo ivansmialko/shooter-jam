@@ -4,6 +4,7 @@
 #include "ShooterCharacterAnimInstance.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void UShooterCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -38,4 +39,21 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bWeaponEquipped = ShooterCharacter->GetIsWeaponEquipped();
 	bIsCrouched = ShooterCharacter->GetIsCrouched();
 	bIsAiming = ShooterCharacter->GetIsAiming();
+	
+	//Offset yaw for strafing
+	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 
+	FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(ShooterCharacter->GetVelocity());
+	//This is to make smooth transition from -180 to 180
+	FRotator DeltaRotationForFrame = UKismetMathLibrary::NormalizedDeltaRotator(MovementRotation, AimRotation);
+	DeltaRotation = FMath::RInterpTo(DeltaRotation, DeltaRotationForFrame, DeltaSeconds, 6.f);
+	YawOffset = DeltaRotation.Yaw;
+
+	//Calculate current camera rotation, to know how much character should "lean" while rotating
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = ShooterCharacter->GetActorRotation();
+
+	const FRotator RotationDelta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+	const float Target = RotationDelta.Yaw / DeltaSeconds;
+	const float Interp = FMath::FInterpTo(Lean, Target, DeltaSeconds, 6.f); //Make this leaning smooth, frame by frame
+	Lean = FMath::Clamp(Interp, -90.f, 90.f);
 }

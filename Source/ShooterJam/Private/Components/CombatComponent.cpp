@@ -6,6 +6,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "ShooterCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -49,6 +50,8 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 	EquippedWeapon->SetOwner(Character);
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 }
 
 bool UCombatComponent::GetIsWeaponEquipped()
@@ -64,5 +67,23 @@ bool UCombatComponent::GetIsAiming()
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;
+}
+
+void UCombatComponent::OnRep_EquippedWeapon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Received replication"));
+
+	if (!EquippedWeapon)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Weapon is ok"));
+
+	if (!Character)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Character is ok"));
+
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
 }
 
