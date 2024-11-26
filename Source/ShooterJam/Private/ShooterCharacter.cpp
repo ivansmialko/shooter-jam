@@ -86,7 +86,7 @@ void AShooterCharacter::OnLook(const FInputActionValue& Value)
 
 void AShooterCharacter::OnJump(const FInputActionValue& Value)
 {
-
+	Jump();
 }
 
 void AShooterCharacter::OnEquip(const FInputActionValue& Value)
