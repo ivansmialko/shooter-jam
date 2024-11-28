@@ -41,6 +41,8 @@ AShooterCharacter::AShooterCharacter()
 	CombatComponent->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 void AShooterCharacter::BeginPlay()
@@ -178,6 +180,7 @@ void AShooterCharacter::ActionAimStart()
 		return;
 
 	CombatComponent->SetIsAiming(true);
+	GetCharacterMovement()->MaxWalkSpeed = AimWalkSpeed;
 }
 
 void AShooterCharacter::ActionAimEnd()
@@ -186,6 +189,7 @@ void AShooterCharacter::ActionAimEnd()
 		return;
 
 	CombatComponent->SetIsAiming(false);
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)

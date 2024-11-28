@@ -48,6 +48,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	class UInputAction* AimAction;
 
+	UPROPERTY(EditAnywhere, Category = Movement)
+	float BaseWalkSpeed{ 600.f };
+	UPROPERTY(EditAnywhere, Category = Movement)
+	float AimWalkSpeed{ 450.f };
+
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);
 	void OnJump(const FInputActionValue& Value);
@@ -59,16 +64,12 @@ protected:
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
-
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class UCameraComponent* FollowCamera;
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	class UWidgetComponent* OverheadWidget;
-
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeaponBase* OverlappingWeapon;
-
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;
 
