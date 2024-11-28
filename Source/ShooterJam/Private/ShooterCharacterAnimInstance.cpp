@@ -56,4 +56,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const float Target = RotationDelta.Yaw / DeltaSeconds;
 	const float Interp = FMath::FInterpTo(Lean, Target, DeltaSeconds, 6.f); //Make this leaning smooth, frame by frame
 	Lean = FMath::Clamp(Interp, -90.f, 90.f);
+
+	AO_Yaw = ShooterCharacter->GetAoYaw();
+	AO_Pitch = ShooterCharacter->GetAoPitch();
 }

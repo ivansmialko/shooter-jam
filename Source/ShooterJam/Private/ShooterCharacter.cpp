@@ -12,6 +12,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Weaponry/WeaponBase.h"
 #include "Components/CombatComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -136,6 +137,36 @@ void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 	}
 }
 
+void AShooterCharacter::CalculateAimOffset(float DeltaTime)
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetIsWeaponEquipped())
+		return;
+
+	FVector CharacterVelocity{ GetVelocity() };
+	CharacterVelocity.Z = 0.f;
+	float Speed{ static_cast<float>(CharacterVelocity.Size()) };
+	bool bIsInAir{ GetCharacterMovement()->IsFalling() };
+
+	if (Speed == 0.f && !bIsInAir) //Standing still and not jumping
+	{
+		FRotator CurrentAimRotation{ FRotator(0.f, GetBaseAimRotation().Yaw, 0.f) };
+		FRotator DeltaAimRotation{ UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation) };
+		AO_Yaw = DeltaAimRotation.Yaw;
+		bUseControllerRotationYaw = false;
+	}
+	if (Speed > 0.f || bIsInAir) //Running or jumping
+	{
+		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		AO_Yaw = 0.f;
+		bUseControllerRotationYaw = true;
+	}
+
+	AO_Pitch = GetBaseAimRotation().Pitch;
+}
+
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
 
@@ -223,9 +254,20 @@ bool AShooterCharacter::GetIsAiming()
 	return (CombatComponent && CombatComponent->GetIsAiming());
 }
 
+float AShooterCharacter::GetAoYaw()
+{
+	return AO_Yaw;
+}
+
+float AShooterCharacter::GetAoPitch()
+{
+	return AO_Pitch;
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	CalculateAimOffset(DeltaTime);
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
