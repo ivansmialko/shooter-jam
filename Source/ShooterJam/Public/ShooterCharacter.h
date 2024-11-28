@@ -23,6 +23,8 @@ public:
 	bool GetIsWeaponEquipped();
 	bool GetIsCrouched();
 	bool GetIsAiming();
+	float GetAoYaw();
+	float GetAoPitch();
 
 protected:
 	virtual void BeginPlay() override;
@@ -61,6 +63,8 @@ protected:
 	void OnAimStart(const FInputActionValue& Value);
 	void OnAimEnd(const FInputActionValue& Value);
 
+	void CalculateAimOffset(float DeltaTime);
+
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	class USpringArmComponent* CameraBoom;
@@ -72,6 +76,10 @@ private:
 	class AWeaponBase* OverlappingWeapon;
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;
+
+	float AO_Yaw;
+	float AO_Pitch;
+	FRotator StartingAimRotation;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
