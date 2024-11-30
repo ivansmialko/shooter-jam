@@ -64,6 +64,11 @@ bool UCombatComponent::GetIsAiming()
 	return bIsAiming;
 }
 
+AWeaponBase* UCombatComponent::GetEquippedWeapon() const
+{
+	return EquippedWeapon;
+}
+
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;

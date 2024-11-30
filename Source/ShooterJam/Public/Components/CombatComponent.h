@@ -23,6 +23,7 @@ public:
 
 	bool GetIsWeaponEquipped();
 	bool GetIsAiming();
+	AWeaponBase* GetEquippedWeapon() const;
 
 	void SetIsAiming(bool bInIsAiming);
 

@@ -25,6 +25,7 @@ public:
 	bool GetIsAiming();
 	float GetAoYaw();
 	float GetAoPitch();
+	AWeaponBase* GetEquippedWeapon() const;
 
 protected:
 	virtual void BeginPlay() override;
