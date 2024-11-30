@@ -164,6 +164,11 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		bUseControllerRotationYaw = true;
 	}
 
+	if (!IsLocallyControlled())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), AO_Yaw);
+	}
+
 	AO_Pitch = GetBaseAimRotation().Pitch;
 	if (AO_Pitch > 90.f && !IsLocallyControlled())
 	{
