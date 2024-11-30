@@ -27,6 +27,7 @@ public:
 	void ShowPickUpWidget(bool bShowWidget);
 	void ChangeWeaponState(EWeaponState InState);
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")

@@ -276,6 +276,14 @@ float AShooterCharacter::GetAoPitch()
 	return AO_Pitch;
 }
 
+AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
+{
+	if (!CombatComponent)
+		return nullptr;
+
+	return CombatComponent->GetEquippedWeapon();
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

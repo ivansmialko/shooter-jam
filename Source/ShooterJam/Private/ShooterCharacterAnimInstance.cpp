@@ -5,6 +5,7 @@
 #include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Weaponry/WeaponBase.h"
 
 void UShooterCharacterAnimInstance::NativeInitializeAnimation()
 {
@@ -39,6 +40,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bWeaponEquipped = ShooterCharacter->GetIsWeaponEquipped();
 	bIsCrouched = ShooterCharacter->GetIsCrouched();
 	bIsAiming = ShooterCharacter->GetIsAiming();
+	EquippedWeapon = ShooterCharacter->GetEquippedWeapon();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 
@@ -59,4 +61,14 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	AO_Yaw = ShooterCharacter->GetAoYaw();
 	AO_Pitch = ShooterCharacter->GetAoPitch();
+
+	if (bWeaponEquipped && EquippedWeapon && EquippedWeapon->GetWeaponMesh() && ShooterCharacter->GetMesh())
+	{
+		LeftHandTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("LeftHandSocket", ERelativeTransformSpace::RTS_World));
+		FVector OutPosition;
+		FRotator OutRotation;
+		ShooterCharacter->GetMesh()->TransformToBoneSpace(FName("hand_r"), LeftHandTransform.GetLocation(), FRotator::ZeroRotator, OutPosition, OutRotation);
+		LeftHandTransform.SetLocation(OutPosition);
+		LeftHandTransform.SetRotation(FQuat(OutRotation));
+	}
 }
