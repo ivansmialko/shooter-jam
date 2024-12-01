@@ -44,6 +44,8 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+
+	TurningInPlace = ETurningInPlace::TIP_NotTurning;
 }
 
 void AShooterCharacter::BeginPlay()
@@ -156,12 +158,16 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		FRotator DeltaAimRotation{ UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation) };
 		AO_Yaw = DeltaAimRotation.Yaw;
 		bUseControllerRotationYaw = false;
+
+		CalculateTurningInPlace(DeltaTime);
 	}
 	if (Speed > 0.f || bIsInAir) //Running or jumping
 	{
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
 		bUseControllerRotationYaw = true;
+
+		TurningInPlace = ETurningInPlace::TIP_NotTurning;
 	}
 
 	if (!IsLocallyControlled())
@@ -177,6 +183,20 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		FVector2D OutRange(-90.f, 0.f);
 		AO_Pitch = FMath::GetMappedRangeValueClamped(InRange, OutRange, AO_Pitch);
 	}
+}
+
+void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
+{
+	UE_LOG(LogTemp, Warning, TEXT("AO_YAW: %f"), AO_Yaw);
+	if (AO_Yaw > 90.f)
+	{
+		TurningInPlace = ETurningInPlace::TIP_Right;
+	}
+	else if (AO_Yaw < -90.f)
+	{
+		TurningInPlace = ETurningInPlace::TIP_Left;
+	}
+
 }
 
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
@@ -274,6 +294,11 @@ float AShooterCharacter::GetAoYaw()
 float AShooterCharacter::GetAoPitch()
 {
 	return AO_Pitch;
+}
+
+ETurningInPlace AShooterCharacter::GetTurningInPlace() const
+{
+	return TurningInPlace;
 }
 
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
