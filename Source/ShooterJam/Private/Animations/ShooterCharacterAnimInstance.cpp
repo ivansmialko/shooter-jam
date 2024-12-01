@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ShooterCharacterAnimInstance.h"
+#include "Animations/ShooterCharacterAnimInstance.h"
 #include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -41,6 +41,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsCrouched = ShooterCharacter->GetIsCrouched();
 	bIsAiming = ShooterCharacter->GetIsAiming();
 	EquippedWeapon = ShooterCharacter->GetEquippedWeapon();
+	TurningInPlace = ShooterCharacter->GetTurningInPlace();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 

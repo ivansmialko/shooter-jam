@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
+#include "Animations/TurningInPlace.h"
+
 #include "ShooterCharacter.generated.h"
 
 UCLASS()
@@ -25,6 +27,7 @@ public:
 	bool GetIsAiming();
 	float GetAoYaw();
 	float GetAoPitch();
+	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
 
 protected:
@@ -65,6 +68,7 @@ protected:
 	void OnAimEnd(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
+	void CalculateTurningInPlace(float DeltaTime);
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
@@ -81,6 +85,7 @@ private:
 	float AO_Yaw;
 	float AO_Pitch;
 	FRotator StartingAimRotation;
+	ETurningInPlace TurningInPlace;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
