@@ -84,6 +84,7 @@ private:
 
 	float AO_Yaw;
 	float AO_Pitch;
+	float Root_AO_Yaw;
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 
