@@ -157,7 +157,7 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		FRotator CurrentAimRotation{ FRotator(0.f, GetBaseAimRotation().Yaw, 0.f) };
 		FRotator DeltaAimRotation{ UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation) };
 		AO_Yaw = DeltaAimRotation.Yaw;
-		bUseControllerRotationYaw = false;
+		bUseControllerRotationYaw = true;
 
 		CalculateTurningInPlace(DeltaTime);
 	}
@@ -187,7 +187,13 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 
 void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 {
+	if (TurningInPlace == ETurningInPlace::TIP_NotTurning)
+	{
+		Root_AO_Yaw = AO_Yaw;
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("AO_YAW: %f"), AO_Yaw);
+	UE_LOG(LogTemp, Warning, TEXT("Root AO_YAW: %f"), AO_Yaw);
 	if (AO_Yaw > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::TIP_Right;
@@ -197,11 +203,21 @@ void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 		TurningInPlace = ETurningInPlace::TIP_Left;
 	}
 
+	if (TurningInPlace != ETurningInPlace::TIP_NotTurning)
+	{
+		Root_AO_Yaw = FMath::FInterpTo(Root_AO_Yaw, 0, DeltaTime, 4.f);
+		AO_Yaw = Root_AO_Yaw;
+
+		if (FMath::Abs(AO_Yaw) < 15.f)
+		{
+			TurningInPlace = ETurningInPlace::TIP_NotTurning;
+			StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
+		}
+	}
 }
 
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
-
 	if (OverlappingWeapon)
 	{
 		OverlappingWeapon->ShowPickUpWidget(true);
@@ -211,7 +227,6 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 	{
 		LastOverlappedWeapon->ShowPickUpWidget(false);
 	}
-
 }
 
 void AShooterCharacter::Server_OnEquip_Implementation()
