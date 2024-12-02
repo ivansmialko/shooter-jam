@@ -49,6 +49,7 @@ AShooterCharacter::AShooterCharacter()
 
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
 }
 
 void AShooterCharacter::BeginPlay()
@@ -364,5 +365,17 @@ void AShooterCharacter::PostInitializeComponents()
 		return;
 
 	CombatComponent->Character = this;
+}
+
+void AShooterCharacter::Jump()
+{
+	if (bIsCrouched)
+	{
+		UnCrouch();
+	}
+	else
+	{
+		Super::Jump();
+	}
 }
 
