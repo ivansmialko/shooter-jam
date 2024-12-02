@@ -20,6 +20,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
+	virtual void Jump() override;
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 	bool GetIsWeaponEquipped();
