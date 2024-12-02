@@ -46,6 +46,9 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 
 	TurningInPlace = ETurningInPlace::TIP_NotTurning;
+
+	NetUpdateFrequency = 66.f;
+	MinNetUpdateFrequency = 33.f;
 }
 
 void AShooterCharacter::BeginPlay()
