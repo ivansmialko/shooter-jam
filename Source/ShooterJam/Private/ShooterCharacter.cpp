@@ -38,8 +38,11 @@ AShooterCharacter::AShooterCharacter()
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
 
-	CombatComponent = CreateEditorOnlyDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	CombatComponent->SetIsReplicated(true);
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	if (CombatComponent)
+	{
+		CombatComponent->SetIsReplicated(true);
+	}
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
