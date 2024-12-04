@@ -31,6 +31,8 @@ public:
 	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
 
+	void PlayFireMontage(bool bInIsAiming);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -41,19 +43,23 @@ protected:
 	class UInputAction* MoveAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* LookAction;
+	UInputAction* LookAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* JumpAction;
+	UInputAction* JumpAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* EquipAction;
+	UInputAction* EquipAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* CrouchAction;
+	UInputAction* CrouchAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	class UInputAction* AimAction;
+	UInputAction* AimAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* FireAction;
+
 
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float BaseWalkSpeed{ 600.f };
@@ -67,6 +73,8 @@ protected:
 	void OnCrouch(const FInputActionValue& Value);
 	void OnAimStart(const FInputActionValue& Value);
 	void OnAimEnd(const FInputActionValue& Value);
+	void OnFireStart(const FInputActionValue& Value);
+	void OnFireEnd(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateTurningInPlace(float DeltaTime);
@@ -81,7 +89,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
 	class AWeaponBase* OverlappingWeapon;
 	UPROPERTY(VisibleAnywhere)
-	class UCombatComponent* CombatComponent;
+	class UCombatComponent* CombatComponent;	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
 
 	float AO_Yaw;
 	float AO_Pitch;
@@ -102,4 +112,6 @@ private:
 	void ActionEquip();
 	void ActionAimStart();
 	void ActionAimEnd();
+	void ActionFireStart();
+	void ActionFireEnd();
 };
