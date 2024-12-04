@@ -26,6 +26,7 @@ public:
 	AWeaponBase* GetEquippedWeapon() const;
 
 	void SetIsAiming(bool bInIsAiming);
+	void SetIsFiring(bool bInIsFiring);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
@@ -36,6 +37,8 @@ private:
 	AWeaponBase* EquippedWeapon;
 	UPROPERTY(Replicated)
 	bool bIsAiming;
+	UPROPERTY(Replicated)
+	bool bIsFiring;
 
 protected:
 	virtual void BeginPlay() override;

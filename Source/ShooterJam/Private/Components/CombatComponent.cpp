@@ -74,6 +74,19 @@ void UCombatComponent::SetIsAiming(bool bInIsAiming)
 	bIsAiming = bInIsAiming;
 }
 
+void UCombatComponent::SetIsFiring(bool bInIsFiring)
+{
+	bIsFiring = bInIsFiring;
+
+	if (!bInIsFiring)
+		return;
+
+	if (!Character)
+		return;
+
+	Character->PlayFireMontage(bIsAiming);
+}
+
 void UCombatComponent::OnRep_EquippedWeapon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Received replication"));

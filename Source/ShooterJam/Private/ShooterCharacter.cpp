@@ -13,6 +13,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Animations/ShooterCharacterAnimInstance.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -146,6 +147,16 @@ void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 	}
 }
 
+void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
+{
+	ActionFireStart();
+}
+
+void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
+{
+	ActionFireEnd();
+}
+
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 {
 	if (!CombatComponent)
@@ -277,6 +288,22 @@ void AShooterCharacter::ActionAimEnd()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
+void AShooterCharacter::ActionFireStart()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsFiring(true);
+}
+
+void AShooterCharacter::ActionFireEnd()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsFiring(false);
+}
+
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 {
 	//Save the last overlapped weapon, to call local function with this value
@@ -331,6 +358,30 @@ AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
 	return CombatComponent->GetEquippedWeapon();
 }
 
+void AShooterCharacter::PlayFireMontage(bool bInIsAiming)
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+		return;
+
+	if (!GetMesh())
+		return;
+
+	if (!FireWeaponMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(FireWeaponMontage);
+	
+	FName SectionName{ (bInIsAiming ? FName("RifleAim") : FName("RifleHip")) };
+	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -352,6 +403,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(CrouchAction, ETriggerEvent::Started, this, &AShooterCharacter::OnCrouch);
 	EnhancedInput->BindAction(AimAction, ETriggerEvent::Started, this, &AShooterCharacter::OnAimStart);
 	EnhancedInput->BindAction(AimAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnAimEnd);
+	EnhancedInput->BindAction(FireAction, ETriggerEvent::Started, this, &AShooterCharacter::OnFireStart);
+	EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnFireEnd);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
