@@ -108,6 +108,15 @@ private:
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
+	UFUNCTION(Server, Reliable)
+	void Server_OnFireStart();
+	UFUNCTION(Server, Reliable)
+	void Server_OnFireEnd();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnFireStart();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnFireEnd();
 
 	void ActionEquip();
 	void ActionAimStart();

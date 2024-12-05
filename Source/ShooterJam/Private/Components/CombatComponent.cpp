@@ -85,6 +85,11 @@ void UCombatComponent::SetIsFiring(bool bInIsFiring)
 		return;
 
 	Character->PlayFireMontage(bIsAiming);
+
+	if (!EquippedWeapon)
+		return;
+
+	EquippedWeapon->Fire();
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()

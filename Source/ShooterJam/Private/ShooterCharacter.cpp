@@ -149,12 +149,12 @@ void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 
 void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
 {
-	ActionFireStart();
+	Server_OnFireStart();
 }
 
 void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 {
-	ActionFireEnd();
+	Server_OnFireEnd();
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -262,6 +262,26 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
+void AShooterCharacter::Server_OnFireStart_Implementation()
+{
+	Multicast_OnFireStart();
+}
+
+void AShooterCharacter::Server_OnFireEnd_Implementation()
+{
+	Multicast_OnFireEnd();
+}
+
+void AShooterCharacter::Multicast_OnFireStart_Implementation()
+{
+	ActionFireStart();
+}
+
+void AShooterCharacter::Multicast_OnFireEnd_Implementation()
+{
+	ActionFireEnd();
+}
+
 void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
@@ -290,6 +310,8 @@ void AShooterCharacter::ActionAimEnd()
 
 void AShooterCharacter::ActionFireStart()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Action fire start"));
+
 	if (!CombatComponent)
 		return;
 
@@ -298,6 +320,8 @@ void AShooterCharacter::ActionFireStart()
 
 void AShooterCharacter::ActionFireEnd()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Action fire end"));
+
 	if (!CombatComponent)
 		return;
 

@@ -2,6 +2,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "ShooterCharacter.h"
 
 AWeaponBase::AWeaponBase()
@@ -124,4 +125,14 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 
 }
 
+void AWeaponBase::Fire()
+{
+	if (!FireAnimation)
+		return;
+
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->PlayAnimation(FireAnimation, false);
+}
 
