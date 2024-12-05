@@ -445,6 +445,7 @@ void AShooterCharacter::PostInitializeComponents()
 		return;
 
 	CombatComponent->Character = this;
+	CombatComponent->PrimaryComponentTick.bCanEverTick = true;
 }
 
 void AShooterCharacter::Jump()

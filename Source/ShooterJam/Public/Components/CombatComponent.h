@@ -31,6 +31,8 @@ public:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+
 private:
 	class AShooterCharacter* Character;
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
