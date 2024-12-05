@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Animation/AnimationAsset.h"
 #include "WeaponBase.generated.h"
 
 UENUM()
@@ -26,6 +27,8 @@ public:
 
 	void ShowPickUpWidget(bool bShowWidget);
 	void ChangeWeaponState(EWeaponState InState);
+	void Fire();
+
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 
@@ -44,6 +47,9 @@ private:
 
 	UFUNCTION()
 	void OnRep_WeaponState();
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	class UAnimationAsset* FireAnimation;
 
 protected:
 	virtual void BeginPlay() override;
