@@ -5,12 +5,12 @@
 #include "Weaponry/WeaponBase.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
-#include "ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 UCombatComponent::UCombatComponent()
 {
-	PrimaryComponentTick.bCanEverTick = false;
 }
 
 
@@ -23,6 +23,9 @@ void UCombatComponent::BeginPlay()
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FHitResult HitResult;
+	TraceUnderCrosshairs(HitResult);
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -108,5 +111,55 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
+{
+	if (!GEngine)
+		return;
+
+	if (!GEngine->GameViewport)
+		return;
+
+	FVector2D ViewportSize;
+	GEngine->GameViewport->GetViewportSize(ViewportSize);
+
+	APlayerController* CurrentPlayerController{ UGameplayStatics::GetPlayerController(this, 0) };
+	if (!CurrentPlayerController)
+		return;
+
+	FVector CrosshairsWorldPosition;
+	FVector CrosshairsWorldDirection;
+	FVector2D CrosshairsLocation{ ViewportSize.X * 0.5f, ViewportSize.Y * 0.5f };
+
+	//Find world coordinates of screen-space coordinate
+	bool bIsSuccessfull = UGameplayStatics::DeprojectScreenToWorld(CurrentPlayerController, CrosshairsLocation, CrosshairsWorldPosition, CrosshairsWorldDirection);
+	if (!bIsSuccessfull)
+		return;
+
+	const float LinetraceLength{ 80000.f };
+	FVector LinetraceStart{ CrosshairsWorldPosition };
+	FVector LinetraceEnd{ LinetraceStart + CrosshairsWorldDirection * LinetraceLength };
+
+	GetWorld()->LineTraceSingleByChannel(
+		TraceHitResult,
+		LinetraceStart,
+		LinetraceEnd,
+		ECollisionChannel::ECC_Visibility);
+
+	//If nothing is hit - set position to linetrace end
+	if (!TraceHitResult.bBlockingHit)
+	{
+		TraceHitResult.ImpactPoint = LinetraceEnd;
+	}
+	else
+	{
+		DrawDebugSphere(
+			GetWorld(),
+			TraceHitResult.ImpactPoint,
+			12.f,
+			12,
+			FColor::Red);
+	}
 }
 
