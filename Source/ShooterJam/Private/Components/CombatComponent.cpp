@@ -92,7 +92,7 @@ void UCombatComponent::SetIsFiring(bool bInIsFiring)
 	if (!EquippedWeapon)
 		return;
 
-	EquippedWeapon->Fire();
+	EquippedWeapon->Fire(HitTarget);
 }
 
 void UCombatComponent::OnRep_EquippedWeapon()
@@ -161,5 +161,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 			12,
 			FColor::Red);
 	}
+
+	HitTarget = TraceHitResult.ImpactPoint;
 }
 

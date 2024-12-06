@@ -42,6 +42,8 @@ private:
 	UPROPERTY(Replicated)
 	bool bIsFiring;
 
+	FVector HitTarget;
+
 protected:
 	virtual void BeginPlay() override;
 
