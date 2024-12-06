@@ -125,7 +125,7 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 
 }
 
-void AWeaponBase::Fire()
+void AWeaponBase::Fire(const FVector& HitTarget)
 {
 	if (!FireAnimation)
 		return;
