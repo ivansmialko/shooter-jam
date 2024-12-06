@@ -4,6 +4,9 @@
 #include "Weaponry/Projectile.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystem.h"
+#include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -21,6 +24,19 @@ AProjectile::AProjectile()
 
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->bRotationFollowsVelocity = true;
+
+	if (TracerParticles)
+	{
+		TracerComponent = UGameplayStatics::SpawnEmitterAttached(
+			TracerParticles,
+			CollisionBox,
+			FName(),
+			GetActorLocation(),
+			GetActorRotation(),
+			EAttachLocation::KeepWorldPosition);
+	}
+
+	bReplicates = true;
 }
 
 // Called when the game starts or when spawned
