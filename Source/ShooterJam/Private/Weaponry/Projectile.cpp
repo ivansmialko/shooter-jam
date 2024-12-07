@@ -36,7 +36,7 @@ AProjectile::AProjectile()
 			EAttachLocation::KeepWorldPosition);
 	}
 
-	bReplicates = true;
+	bReplicates = true; 
 }
 
 // Called when the game starts or when spawned
