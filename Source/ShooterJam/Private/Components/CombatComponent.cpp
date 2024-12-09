@@ -24,8 +24,8 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FHitResult HitResult;
-	TraceUnderCrosshairs(HitResult);
+	//FHitResult HitResult;
+	//TraceUnderCrosshairs(HitResult);
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -95,6 +95,11 @@ void UCombatComponent::SetIsFiring(bool bInIsFiring)
 	EquippedWeapon->Fire(HitTarget);
 }
 
+void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
+{
+	HitTarget = TraceHitTarget;
+}
+
 void UCombatComponent::OnRep_EquippedWeapon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Received replication"));
@@ -147,21 +152,23 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		LinetraceEnd,
 		ECollisionChannel::ECC_Visibility);
 
-	//If nothing is hit - set position to linetrace end
-	if (!TraceHitResult.bBlockingHit)
-	{
-		TraceHitResult.ImpactPoint = LinetraceEnd;
-	}
-	else
-	{
-		DrawDebugSphere(
-			GetWorld(),
-			TraceHitResult.ImpactPoint,
-			12.f,
-			12,
-			FColor::Red);
-	}
+	TraceHitResult.ImpactPoint = LinetraceEnd;
 
-	HitTarget = TraceHitResult.ImpactPoint;
+	////If nothing is hit - set position to linetrace end
+	//if (!TraceHitResult.bBlockingHit)
+	//{
+	//	TraceHitResult.ImpactPoint = LinetraceEnd;
+	//}
+	//else
+	//{
+	//	DrawDebugSphere(
+	//		GetWorld(),
+	//		TraceHitResult.ImpactPoint,
+	//		12.f,
+	//		12,
+	//		FColor::Red);
+	//}
+
+	//HitTarget = TraceHitResult.ImpactPoint;
 }
 
