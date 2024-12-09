@@ -149,7 +149,14 @@ void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 
 void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
 {
-	Server_OnFireStart();
+	if (!CombatComponent)
+		return;
+
+	FHitResult LocalHitTarget;
+	CombatComponent->TraceUnderCrosshairs(LocalHitTarget);
+
+	//Send fire event from client to server
+	Server_OnFireStart(LocalHitTarget.ImpactPoint);
 }
 
 void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
@@ -262,9 +269,11 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
-void AShooterCharacter::Server_OnFireStart_Implementation()
+void AShooterCharacter::Server_OnFireStart_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	Multicast_OnFireStart();
+	//Send fire event from server to all clients (including itself)
+	// Client --> Server --> Clients+Server
+	Multicast_OnFireStart(TraceHitTarget);
 }
 
 void AShooterCharacter::Server_OnFireEnd_Implementation()
@@ -272,9 +281,9 @@ void AShooterCharacter::Server_OnFireEnd_Implementation()
 	Multicast_OnFireEnd();
 }
 
-void AShooterCharacter::Multicast_OnFireStart_Implementation()
+void AShooterCharacter::Multicast_OnFireStart_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	ActionFireStart();
+	ActionFireStart(TraceHitTarget);
 }
 
 void AShooterCharacter::Multicast_OnFireEnd_Implementation()
@@ -308,13 +317,14 @@ void AShooterCharacter::ActionAimEnd()
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 }
 
-void AShooterCharacter::ActionFireStart()
+void AShooterCharacter::ActionFireStart(const FVector_NetQuantize& TraceHitTarget)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Action fire start"));
 
 	if (!CombatComponent)
 		return;
 
+	CombatComponent->SetHitTarget(TraceHitTarget);
 	CombatComponent->SetIsFiring(true);
 }
 

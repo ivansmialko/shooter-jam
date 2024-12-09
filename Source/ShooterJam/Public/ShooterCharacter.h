@@ -109,18 +109,18 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
 	UFUNCTION(Server, Reliable)
-	void Server_OnFireStart();
+	void Server_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION(Server, Reliable)
 	void Server_OnFireEnd();
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnFireStart();
+	void Multicast_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnFireEnd();
 
 	void ActionEquip();
 	void ActionAimStart();
 	void ActionAimEnd();
-	void ActionFireStart();
+	void ActionFireStart(const FVector_NetQuantize& TraceHitTarget);
 	void ActionFireEnd();
 };

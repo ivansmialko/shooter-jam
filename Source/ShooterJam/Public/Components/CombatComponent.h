@@ -27,6 +27,7 @@ public:
 
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
+	void SetHitTarget(const FVector& TraceHitTarget);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
