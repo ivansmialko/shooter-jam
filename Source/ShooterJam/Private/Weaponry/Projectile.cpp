@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -25,6 +26,14 @@ AProjectile::AProjectile()
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 	ProjectileMovement->bRotationFollowsVelocity = true;
 
+	bReplicates = true; 
+}
+
+// Called when the game starts or when spawned
+void AProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
 	if (TracerParticles)
 	{
 		TracerComponent = UGameplayStatics::SpawnEmitterAttached(
@@ -36,14 +45,36 @@ AProjectile::AProjectile()
 			EAttachLocation::KeepWorldPosition);
 	}
 
-	bReplicates = true; 
+	if (!HasAuthority())
+		return;
+
+	CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+
 }
 
-// Called when the game starts or when spawned
-void AProjectile::BeginPlay()
+void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	Super::BeginPlay();
-	
+	PlayHitFx();
+	Destroy();
+}
+
+void AProjectile::PlayHitFx()
+{
+	if (!ImpactParticles)
+		return;
+
+	UGameplayStatics::SpawnEmitterAtLocation(
+		GetWorld(),
+		ImpactParticles,
+		GetActorTransform());
+
+	if (!ImpactSound)
+		return;
+
+	UGameplayStatics::PlaySoundAtLocation(
+		this,
+		ImpactSound,
+		GetActorLocation());
 }
 
 // Called every frame
@@ -51,5 +82,11 @@ void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AProjectile::Destroyed()
+{
+	PlayHitFx();
+	Super::Destroyed();
 }
 
