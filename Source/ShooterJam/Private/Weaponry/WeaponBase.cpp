@@ -1,9 +1,12 @@
 #include "Weaponry/WeaponBase.h"
+#include "Weaponry/BulletShell.h"
+#include "ShooterCharacter.h"
+
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "Net/UnrealNetwork.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "ShooterCharacter.h"
+#include "Net/UnrealNetwork.h"
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -42,6 +45,28 @@ void AWeaponBase::OnRep_WeaponState()
 	default:
 		break;
 	}
+}
+
+void AWeaponBase::SpawnBulletShell()
+{
+	if (!BulletShellClass)
+		return;
+
+	USkeletalMeshComponent* Mesh{ GetWeaponMesh() };
+	if (!Mesh)
+		return;
+
+	const USkeletalMeshSocket* AmmoEjectSocket{ Mesh->GetSocketByName(FName("AmmoEject")) };
+	if (!AmmoEjectSocket)
+		return;
+
+	UWorld* World{ GetWorld() };
+	if (!World)
+		return;
+
+	FTransform EjectTransform{ AmmoEjectSocket->GetSocketTransform(Mesh) };
+
+	World->SpawnActor<ABulletShell>(BulletShellClass, EjectTransform.GetLocation(), EjectTransform.GetRotation().Rotator());
 }
 
 void AWeaponBase::BeginPlay()
@@ -134,5 +159,7 @@ void AWeaponBase::Fire(const FVector& HitTarget)
 		return;
 
 	WeaponMesh->PlayAnimation(FireAnimation, false);
+
+	SpawnBulletShell();
 }
 
