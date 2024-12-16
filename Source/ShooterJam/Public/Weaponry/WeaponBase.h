@@ -45,11 +45,16 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	class UWidgetComponent* PickUpWidget;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	class UAnimationAsset* FireAnimation;
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABulletShell> BulletShellClass;
+
 	UFUNCTION()
 	void OnRep_WeaponState();
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	class UAnimationAsset* FireAnimation;
+	void SpawnBulletShell();
 
 protected:
 	virtual void BeginPlay() override;
