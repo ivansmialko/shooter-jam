@@ -17,7 +17,19 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void LaunchShell();	
+	virtual void AddOnHit();
+
+	UFUNCTION()
+	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	UStaticMeshComponent* BulletShellMesh;
+
+	UPROPERTY(EditAnywhere)
+	float ShellEjectionImpulse;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* ShellSound;
 };
