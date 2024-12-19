@@ -20,33 +20,36 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void EquipWeapon(class AWeaponBase* InWeaponToEquip);
-
-	bool GetIsWeaponEquipped();
-	bool GetIsAiming();
-	AWeaponBase* GetEquippedWeapon() const;
-
-	void SetIsAiming(bool bInIsAiming);
-	void SetIsFiring(bool bInIsFiring);
-	void SetHitTarget(const FVector& TraceHitTarget);
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
-
 private:
 	class AShooterCharacter* Character;
+	class AShooterCharacterController* CharacterController;
+	class AShooterHUD* ShooterHUD;
+	FVector HitTarget;
+
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponBase* EquippedWeapon;
+
 	UPROPERTY(Replicated)
 	bool bIsAiming;
+
 	UPROPERTY(Replicated)
 	bool bIsFiring;
-
-	FVector HitTarget;
 
 protected:
 	virtual void BeginPlay() override;
 
+	void SetHUDCrosshairs(float DeltaTime);
+
 public:
+	bool GetIsWeaponEquipped();
+	bool GetIsAiming();
+	void SetIsAiming(bool bInIsAiming);
+	void SetIsFiring(bool bInIsFiring);
+	void SetHitTarget(const FVector& TraceHitTarget);
+	AWeaponBase* GetEquippedWeapon() const;
 };

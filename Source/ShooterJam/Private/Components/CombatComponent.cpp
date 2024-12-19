@@ -1,8 +1,12 @@
 // Made by smialko
 
 #include "Components/CombatComponent.h"
-#include "ShooterCharacter.h"
+
 #include "Weaponry/WeaponBase.h"
+#include "PlayerControllers/ShooterCharacterController.h"
+#include "ShooterCharacter.h"
+#include "HUD/ShooterHUD.h"
+
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -20,12 +24,55 @@ void UCombatComponent::BeginPlay()
 }
 
 
+void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
+{
+	if (!Character)
+		return;
+
+	if (!Character->GetController())
+		return;
+
+	if (!CharacterController)
+	{
+		CharacterController = Cast<AShooterCharacterController>(Character->GetController());
+	}
+
+	if (!CharacterController)
+		return;
+
+	if (CharacterController->GetHUD())
+		return;
+
+	if (!ShooterHUD)
+	{
+		ShooterHUD = Cast<AShooterHUD>(CharacterController->GetHUD());
+	}
+
+	if (!ShooterHUD)
+		return;
+
+	if (!EquippedWeapon)
+	{
+		FHUDPackage EmptyHudPackage;
+		ShooterHUD->SetHUDPackage(EmptyHudPackage);
+		return;
+	}
+
+	FHUDPackage HudPackage;
+	HudPackage.CrosshairsCenter = EquippedWeapon->GetCrosshairsCenter();
+	HudPackage.CrosshairsLeft = EquippedWeapon->GetCrosshairsLeft();
+	HudPackage.CrosshairsRight = EquippedWeapon->GetCrosshairsRight();
+	HudPackage.CrosshairsBottom = EquippedWeapon->GetCrosshairsBottom();
+	HudPackage.CrosshairsTop = EquippedWeapon->GetCrosshairsTop();
+
+	ShooterHUD->SetHUDPackage(HudPackage);
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	//FHitResult HitResult;
-	//TraceUnderCrosshairs(HitResult);
+	SetHUDCrosshairs(DeltaTime);
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
