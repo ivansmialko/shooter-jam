@@ -7,3 +7,8 @@ void AShooterHUD::DrawHUD()
 {
 	Super::DrawHUD();
 }
+
+void AShooterHUD::SetHUDPackage(FHUDPackage& InHUDPackage)
+{
+	HUDPackage = InHUDPackage;
+}

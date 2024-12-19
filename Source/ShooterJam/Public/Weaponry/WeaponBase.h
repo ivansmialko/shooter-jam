@@ -29,9 +29,6 @@ public:
 	void ChangeWeaponState(EWeaponState InState);
 	virtual void Fire(const FVector& HitTarget);
 
-	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
-	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
-
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -90,4 +87,12 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
+public:
+	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
+	FORCEINLINE UTexture2D* GetCrosshairsCenter() const { return CrosshairsCenter; }
+	FORCEINLINE UTexture2D* GetCrosshairsLeft() const { return CrosshairsLeft; }
+	FORCEINLINE UTexture2D* GetCrosshairsRight() const { return CrosshairsRight; }
+	FORCEINLINE UTexture2D* GetCrosshairsTop() const { return CrosshairsTop; }
+	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
 };
