@@ -40,6 +40,9 @@ private:
 	UPROPERTY(Replicated)
 	bool bIsFiring;
 
+	float CrosshairVelocityFactor;
+	float CrosshairInAirFactor;
+
 protected:
 	virtual void BeginPlay() override;
 

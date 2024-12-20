@@ -15,34 +15,48 @@ void AShooterHUD::DrawHUD()
 
 	const FVector2D VieportCenter{ ViewportSize.X * 0.5f, ViewportSize.Y * 0.5f };
 
+	const float CurrSpreadScaled{ CrosshairSpreadMax * HUDPackage.CrosshairSpread };
+
+	FVector2D CurrSpread{ 0.f, 0.f };
 	if (HUDPackage.CrosshairsCenter)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Drawing center"));
-		DrawCrosshair(HUDPackage.CrosshairsCenter, VieportCenter);
+		DrawCrosshair(HUDPackage.CrosshairsCenter, VieportCenter, CurrSpread);
 	}
 
 	if (HUDPackage.CrosshairsLeft)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsLeft, VieportCenter);
+		CurrSpread.X = CurrSpreadScaled * -1.f;
+		CurrSpread.Y = 0.f;
+
+		DrawCrosshair(HUDPackage.CrosshairsLeft, VieportCenter, CurrSpread);
 	}
 
 	if (HUDPackage.CrosshairsRight)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsRight, VieportCenter);
+		CurrSpread.X = CurrSpreadScaled;
+		CurrSpread.Y = 0.f;
+
+		DrawCrosshair(HUDPackage.CrosshairsRight, VieportCenter, CurrSpread);
 	}
 
 	if (HUDPackage.CrosshairsTop)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsTop, VieportCenter);
+		CurrSpread.X = 0.f;
+		CurrSpread.Y = CurrSpreadScaled * -1.f;
+
+		DrawCrosshair(HUDPackage.CrosshairsTop, VieportCenter, CurrSpread);
 	}
 
 	if (HUDPackage.CrosshairsBottom)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsBottom, VieportCenter);
+		CurrSpread.X = 0.f;
+		CurrSpread.Y = CurrSpreadScaled;
+
+		DrawCrosshair(HUDPackage.CrosshairsBottom, VieportCenter, CurrSpread);
 	}
 }
 
-void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter)
+void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread)
 {
 	if (!InCrosshair)
 		return;
@@ -50,7 +64,11 @@ void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewp
 	const float TextureW{ static_cast<float>(InCrosshair->GetSizeX()) };
 	const float TextureH{ static_cast<float>(InCrosshair->GetSizeY()) };
 
-	const FVector2D TextureDrawPoint{ InViewportCenter.X - (TextureW * 0.5f), InViewportCenter.Y - (TextureH * 0.5f) };
+	const FVector2D TextureDrawPoint
+	{
+		InViewportCenter.X - (TextureW * 0.5f) + Spread.X,
+		InViewportCenter.Y - (TextureH * 0.5f) + Spread.Y
+	};
 
 	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, FLinearColor::White);
 }
