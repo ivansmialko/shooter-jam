@@ -40,7 +40,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	if (!CharacterController)
 		return;
 
-	if (CharacterController->GetHUD())
+	if (!CharacterController->GetHUD())
 		return;
 
 	if (!ShooterHUD)
