@@ -55,4 +55,5 @@ public:
 	void SetIsFiring(bool bInIsFiring);
 	void SetHitTarget(const FVector& TraceHitTarget);
 	AWeaponBase* GetEquippedWeapon() const;
+	FVector GetHitTarget() const;
 };

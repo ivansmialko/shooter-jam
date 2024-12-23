@@ -392,6 +392,17 @@ AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
 	return CombatComponent->GetEquippedWeapon();
 }
 
+FVector AShooterCharacter::GetHitTarget() const
+{
+	FVector HitTarget;
+	if (CombatComponent)
+	{
+		HitTarget = CombatComponent->GetHitTarget();
+	}
+
+	return HitTarget;
+}
+
 void AShooterCharacter::PlayFireMontage(bool bInIsAiming)
 {
 	if (!CombatComponent)

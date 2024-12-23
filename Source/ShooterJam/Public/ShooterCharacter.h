@@ -30,6 +30,7 @@ public:
 	float GetAoPitch();
 	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
+	FVector GetHitTarget() const;
 
 	void PlayFireMontage(bool bInIsAiming);
 

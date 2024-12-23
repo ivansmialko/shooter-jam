@@ -94,6 +94,13 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	SetHUDCrosshairs(DeltaTime);
+
+	if (Character && Character->IsLocallyControlled())
+	{
+		FHitResult HitResult;
+		TraceUnderCrosshairs(HitResult);
+		HitTarget = HitResult.ImpactPoint;
+	}
 }
 
 void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -138,6 +145,11 @@ bool UCombatComponent::GetIsAiming()
 AWeaponBase* UCombatComponent::GetEquippedWeapon() const
 {
 	return EquippedWeapon;
+}
+
+FVector UCombatComponent::GetHitTarget() const
+{
+	return HitTarget;
 }
 
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
@@ -220,7 +232,10 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 		LinetraceEnd,
 		ECollisionChannel::ECC_Visibility);
 
-	TraceHitResult.ImpactPoint = LinetraceEnd;
+	if (!TraceHitResult.bBlockingHit)
+	{
+		TraceHitResult.ImpactPoint = LinetraceEnd;
+	}
 
 	////If nothing is hit - set position to linetrace end
 	//if (!TraceHitResult.bBlockingHit)
