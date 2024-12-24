@@ -43,10 +43,20 @@ private:
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
 
+	float FovCurrent;
+	float FovDefault;
+
+	UPROPERTY(EditAnywhere, Category = Zoom)
+	float FovZoomed{ 30.f };
+
+	UPROPERTY(EditAnywhere, Category = Zoom)
+	float ZoomInterpSpeed{ 20.f };
+
 protected:
 	virtual void BeginPlay() override;
 
 	void SetHUDCrosshairs(float DeltaTime);
+	void InterpFov(float DeltaTime);
 
 public:
 	bool GetIsWeaponEquipped();

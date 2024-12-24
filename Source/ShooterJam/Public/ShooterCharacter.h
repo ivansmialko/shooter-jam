@@ -13,26 +13,50 @@ UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter
 {
 	GENERATED_BODY()
+private:
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class USpringArmComponent* CameraBoom;
+	UPROPERTY(VisibleAnywhere, Category = Camera)
+	class UCameraComponent* FollowCamera;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UWidgetComponent* OverheadWidget;
+	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
+	class AWeaponBase* OverlappingWeapon;
+	UPROPERTY(VisibleAnywhere)
+	class UCombatComponent* CombatComponent;	
+	UPROPERTY(EditAnywhere, Category = Combat)
+	class UAnimMontage* FireWeaponMontage;
 
-public:
-	AShooterCharacter();
-	virtual void Tick(float DeltaTime) override;
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	virtual void PostInitializeComponents() override;
-	virtual void Jump() override;
+	float AO_Yaw;
+	float AO_Pitch;
+	float Root_AO_Yaw;
+	FRotator StartingAimRotation;
+	ETurningInPlace TurningInPlace;
 
-	void SetOverlappingWeapon(AWeaponBase* Weapon);
-	bool GetIsWeaponEquipped();
-	bool GetIsCrouched();
-	bool GetIsAiming();
-	float GetAoYaw();
-	float GetAoPitch();
-	ETurningInPlace GetTurningInPlace() const;
-	AWeaponBase* GetEquippedWeapon() const;
-	FVector GetHitTarget() const;
+	UFUNCTION()
+	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 
-	void PlayFireMontage(bool bInIsAiming);
+	UFUNCTION(Server, Reliable)
+	void Server_OnEquip();
+	UFUNCTION(Server, Reliable)
+	void Server_OnAimStart();
+	UFUNCTION(Server, Reliable)
+	void Server_OnAimEnd();
+	UFUNCTION(Server, Reliable)
+	void Server_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
+	UFUNCTION(Server, Reliable)
+	void Server_OnFireEnd();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnFireEnd();
+
+	void ActionEquip();
+	void ActionAimStart();
+	void ActionAimEnd();
+	void ActionFireStart(const FVector_NetQuantize& TraceHitTarget);
+	void ActionFireEnd();
 
 protected:
 	virtual void BeginPlay() override;
@@ -80,48 +104,24 @@ protected:
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateTurningInPlace(float DeltaTime);
 
-private:
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
-	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCameraComponent* FollowCamera;
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UWidgetComponent* OverheadWidget;
-	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
-	class AWeaponBase* OverlappingWeapon;
-	UPROPERTY(VisibleAnywhere)
-	class UCombatComponent* CombatComponent;	
-	UPROPERTY(EditAnywhere, Category = Combat)
-	class UAnimMontage* FireWeaponMontage;
+public:
+	AShooterCharacter();
+	virtual void Tick(float DeltaTime) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	virtual void PostInitializeComponents() override;
+	virtual void Jump() override;
 
-	float AO_Yaw;
-	float AO_Pitch;
-	float Root_AO_Yaw;
-	FRotator StartingAimRotation;
-	ETurningInPlace TurningInPlace;
+	void SetOverlappingWeapon(AWeaponBase* Weapon);
+	bool GetIsWeaponEquipped();
+	bool GetIsCrouched();
+	bool GetIsAiming();
+	float GetAoYaw();
+	float GetAoPitch();
+	ETurningInPlace GetTurningInPlace() const;
+	AWeaponBase* GetEquippedWeapon() const;
+	FVector GetHitTarget() const;
+	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 
-	UFUNCTION()
-	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
-
-	UFUNCTION(Server, Reliable)
-	void Server_OnEquip();
-	UFUNCTION(Server, Reliable)
-	void Server_OnAimStart();
-	UFUNCTION(Server, Reliable)
-	void Server_OnAimEnd();
-	UFUNCTION(Server, Reliable)
-	void Server_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
-	UFUNCTION(Server, Reliable)
-	void Server_OnFireEnd();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnFireEnd();
-
-	void ActionEquip();
-	void ActionAimStart();
-	void ActionAimEnd();
-	void ActionFireStart(const FVector_NetQuantize& TraceHitTarget);
-	void ActionFireEnd();
+	void PlayFireMontage(bool bInIsAiming);
 };

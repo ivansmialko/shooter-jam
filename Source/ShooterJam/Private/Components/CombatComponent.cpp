@@ -12,6 +12,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
+#include "Camera/CameraComponent.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -21,6 +22,15 @@ UCombatComponent::UCombatComponent()
 void UCombatComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!Character)
+		return;
+
+	if (Character->GetFollowCamera())
+	{
+		FovDefault = Character->GetFollowCamera()->FieldOfView;
+		FovCurrent = FovDefault;
+	}
 }
 
 
@@ -89,17 +99,46 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	ShooterHUD->SetHUDPackage(HudPackage);
 }
 
+void UCombatComponent::InterpFov(float DeltaTime)
+{
+	if (!EquippedWeapon)
+		return;
+
+	if (!Character)
+		return;
+
+	UCameraComponent* FollowCamera = Character->GetFollowCamera();
+	if (!FollowCamera)
+		return;
+
+	if (bIsAiming)
+	{
+		FovCurrent = FMath::FInterpTo(FovCurrent, EquippedWeapon->GetFovZoomed(), DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+	}
+	else
+	{
+		FovCurrent = FMath::FInterpTo(FovCurrent, FovDefault, DeltaTime, EquippedWeapon->GetZoomInterpSpeed());
+	}
+
+
+	FollowCamera->SetFieldOfView(FovCurrent);
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	SetHUDCrosshairs(DeltaTime);
 
 	if (Character && Character->IsLocallyControlled())
 	{
+		SetHUDCrosshairs(DeltaTime);
+
+
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
 		HitTarget = HitResult.ImpactPoint;
+
+		InterpFov(DeltaTime);
 	}
 }
 
