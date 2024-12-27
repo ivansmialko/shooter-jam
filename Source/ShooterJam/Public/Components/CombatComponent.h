@@ -42,6 +42,8 @@ private:
 
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
+	float CrosshairAimFactor;
+	float CrosshairShootingFactor;
 
 	float FovCurrent;
 	float FovDefault;
