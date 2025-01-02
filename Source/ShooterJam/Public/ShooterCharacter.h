@@ -91,6 +91,8 @@ protected:
 	float BaseWalkSpeed{ 600.f };
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float AimWalkSpeed{ 450.f };
+	UPROPERTY(EditAnywhere)
+	double CameraDistanceTreshold{ 200.0 };
 
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);
@@ -104,6 +106,8 @@ protected:
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateTurningInPlace(float DeltaTime);
+
+	void CheckHidePlayerIfCameraClose();
 
 public:
 	AShooterCharacter();

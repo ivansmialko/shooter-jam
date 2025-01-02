@@ -258,6 +258,9 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	if (!GEngine->GameViewport)
 		return;
 
+	if (!Character)
+		return;
+
 	FVector2D ViewportSize;
 	GEngine->GameViewport->GetViewportSize(ViewportSize);
 
@@ -277,6 +280,11 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	const float LinetraceLength{ 80000.f };
 	FVector LinetraceStart{ CrosshairsWorldPosition };
 	FVector LinetraceEnd{ LinetraceStart + CrosshairsWorldDirection * LinetraceLength };
+
+	const double DistanceToCharacter{ (Character->GetActorLocation() - LinetraceStart).Size() };
+	LinetraceStart += CrosshairsWorldDirection * (DistanceToCharacter + 50.0);
+
+	DrawDebugSphere(GetWorld(), LinetraceStart, 16.f, 12, FColor::Red, false);
 
 	GetWorld()->LineTraceSingleByChannel(
 		TraceHitResult,

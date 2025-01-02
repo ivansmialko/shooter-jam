@@ -247,6 +247,27 @@ void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 	}
 }
 
+void AShooterCharacter::CheckHidePlayerIfCameraClose()
+{
+	if (!IsLocallyControlled())
+		return;
+
+	if (!FollowCamera)
+		return;
+
+	if (!GetMesh())
+		return;
+
+	double DistanceFromCameraToCharacter{ (FollowCamera->GetComponentLocation() - GetActorLocation()).Size() };
+
+	GetMesh()->SetVisibility(DistanceFromCameraToCharacter > CameraDistanceTreshold);
+
+	if (!CombatComponent || !CombatComponent->GetEquippedWeapon())
+		return;
+
+	CombatComponent->GetEquippedWeapon()->GetWeaponMesh()->bOwnerNoSee = (DistanceFromCameraToCharacter < CameraDistanceTreshold);
+}
+
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
 {
 	if (OverlappingWeapon)
@@ -437,6 +458,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	CalculateAimOffset(DeltaTime);
+	CheckHidePlayerIfCameraClose();
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
