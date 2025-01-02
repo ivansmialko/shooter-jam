@@ -6,11 +6,12 @@
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
 #include "Animations/TurningInPlace.h"
+#include "Interfaces/CrosshairsInteractable.h"
 
 #include "ShooterCharacter.generated.h"
 
 UCLASS()
-class SHOOTERJAM_API AShooterCharacter : public ACharacter
+class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
 {
 	GENERATED_BODY()
 private:

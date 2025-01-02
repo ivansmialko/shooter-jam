@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+
+#include "HUD/ShooterHUD.h"
+
 #include "CombatComponent.generated.h"
 
 
@@ -28,7 +31,8 @@ public:
 private:
 	class AShooterCharacter* Character;
 	class AShooterCharacterController* CharacterController;
-	class AShooterHUD* ShooterHUD;
+	class AShooterHUD* ShooterHud;
+	FHUDPackage HudPackage;
 	FVector HitTarget;
 
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)

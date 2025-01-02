@@ -5,7 +5,6 @@
 #include "Weaponry/WeaponBase.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "ShooterCharacter.h"
-#include "HUD/ShooterHUD.h"
 
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
@@ -53,22 +52,21 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	if (!CharacterController->GetHUD())
 		return;
 
-	if (!ShooterHUD)
+	if (!ShooterHud)
 	{
-		ShooterHUD = Cast<AShooterHUD>(CharacterController->GetHUD());
+		ShooterHud = Cast<AShooterHUD>(CharacterController->GetHUD());
 	}
 
-	if (!ShooterHUD)
+	if (!ShooterHud)
 		return;
 
 	if (!EquippedWeapon)
 	{
 		FHUDPackage EmptyHudPackage;
-		ShooterHUD->SetHUDPackage(EmptyHudPackage);
+		ShooterHud->SetHUDPackage(EmptyHudPackage);
 		return;
 	}
 
-	FHUDPackage HudPackage;
 	HudPackage.CrosshairsCenter = EquippedWeapon->GetCrosshairsCenter();
 	HudPackage.CrosshairsLeft = EquippedWeapon->GetCrosshairsLeft();
 	HudPackage.CrosshairsRight = EquippedWeapon->GetCrosshairsRight();
@@ -110,7 +108,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	HudPackage.CrosshairSpread -= CrosshairAimFactor;
 	HudPackage.CrosshairSpread += CrosshairShootingFactor;
 
-	ShooterHUD->SetHUDPackage(HudPackage);
+	ShooterHud->SetHUDPackage(HudPackage);
 }
 
 void UCombatComponent::InterpFov(float DeltaTime)
@@ -146,7 +144,6 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	if (Character && Character->IsLocallyControlled())
 	{
 		SetHUDCrosshairs(DeltaTime);
-
 
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
@@ -290,6 +287,17 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	if (!TraceHitResult.bBlockingHit)
 	{
 		TraceHitResult.ImpactPoint = LinetraceEnd;
+		return;
+	}
+
+	if (TraceHitResult.GetActor()
+		&& TraceHitResult.GetActor()->Implements<UCrosshairsInteractable>())
+	{
+		HudPackage.CrosshairsColor = FLinearColor::Red;
+	}
+	else
+	{
+		HudPackage.CrosshairsColor = FLinearColor::White;
 	}
 
 	////If nothing is hit - set position to linetrace end
