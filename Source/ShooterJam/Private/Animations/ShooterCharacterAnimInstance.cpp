@@ -77,7 +77,9 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		if (ShooterCharacter->IsLocallyControlled())
 		{
 			FTransform RightHandTransform = ShooterCharacter->GetMesh()->GetSocketTransform(FName("hand_r", ERelativeTransformSpace::RTS_World));
-			RightHandRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - ShooterCharacter->GetHitTarget()));
+			FRotator LookAtRotation = UKismetMathLibrary::FindLookAtRotation(RightHandTransform.GetLocation(), RightHandTransform.GetLocation() + (RightHandTransform.GetLocation() - ShooterCharacter->GetHitTarget()));
+			RightHandRotation = FMath::RInterpTo(RightHandRotation, LookAtRotation, DeltaSeconds, 100.f);
+
 
 			FTransform MuzzleTipTransform = EquippedWeapon->GetWeaponMesh()->GetSocketTransform(FName("MuzzleFlash", ERelativeTransformSpace::RTS_World));
 			FVector MuzzleDirection = FRotationMatrix(MuzzleTipTransform.Rotator()).GetUnitAxis(EAxis::X);

@@ -2,18 +2,20 @@
 
 
 #include "ShooterCharacter.h"
+#include "Weaponry/WeaponBase.h"
+#include "Animations/ShooterCharacterAnimInstance.h"
+#include "Components/CombatComponent.h"
+
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
-#include "Components/WidgetComponent.h"
 #include "Net/UnrealNetwork.h"
-#include "Weaponry/WeaponBase.h"
-#include "Components/CombatComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Animations/ShooterCharacterAnimInstance.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -46,6 +48,10 @@ AShooterCharacter::AShooterCharacter()
 	}
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 

@@ -20,7 +20,7 @@ void AShooterHUD::DrawHUD()
 	FVector2D CurrSpread{ 0.f, 0.f };
 	if (HUDPackage.CrosshairsCenter)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsCenter, VieportCenter, CurrSpread);
+		DrawCrosshair(HUDPackage.CrosshairsCenter, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
 	}
 
 	if (HUDPackage.CrosshairsLeft)
@@ -28,7 +28,7 @@ void AShooterHUD::DrawHUD()
 		CurrSpread.X = CurrSpreadScaled * -1.f;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsLeft, VieportCenter, CurrSpread);
+		DrawCrosshair(HUDPackage.CrosshairsLeft, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
 	}
 
 	if (HUDPackage.CrosshairsRight)
@@ -36,7 +36,7 @@ void AShooterHUD::DrawHUD()
 		CurrSpread.X = CurrSpreadScaled;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsRight, VieportCenter, CurrSpread);
+		DrawCrosshair(HUDPackage.CrosshairsRight, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
 	}
 
 	if (HUDPackage.CrosshairsTop)
@@ -44,7 +44,7 @@ void AShooterHUD::DrawHUD()
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled * -1.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsTop, VieportCenter, CurrSpread);
+		DrawCrosshair(HUDPackage.CrosshairsTop, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
 	}
 
 	if (HUDPackage.CrosshairsBottom)
@@ -52,11 +52,11 @@ void AShooterHUD::DrawHUD()
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled;
 
-		DrawCrosshair(HUDPackage.CrosshairsBottom, VieportCenter, CurrSpread);
+		DrawCrosshair(HUDPackage.CrosshairsBottom, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
 	}
 }
 
-void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread)
+void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread, const FLinearColor& CrosshairsColor)
 {
 	if (!InCrosshair)
 		return;
@@ -70,7 +70,7 @@ void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewp
 		InViewportCenter.Y - (TextureH * 0.5f) + Spread.Y
 	};
 
-	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, FLinearColor::White);
+	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, CrosshairsColor);
 }
 
 void AShooterHUD::SetHUDPackage(FHUDPackage& InHUDPackage)
