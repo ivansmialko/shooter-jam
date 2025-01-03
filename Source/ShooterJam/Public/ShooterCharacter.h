@@ -25,8 +25,10 @@ private:
 	class AWeaponBase* OverlappingWeapon;
 	UPROPERTY(VisibleAnywhere)
 	class UCombatComponent* CombatComponent;	
-	UPROPERTY(EditAnywhere, Category = Combat)
+	UPROPERTY(EditAnywhere, Category = Animation)
 	class UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* HitReactMontage;
 
 	float AO_Yaw;
 	float AO_Pitch;
@@ -52,6 +54,8 @@ private:
 	void Multicast_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnFireEnd();
+	UFUNCTION(NetMulticast, Unreliable)
+	void Multicast_OnHit();
 
 	void ActionEquip();
 	void ActionAimStart();
@@ -108,7 +112,7 @@ protected:
 	void CalculateTurningInPlace(float DeltaTime);
 
 	void CheckHidePlayerIfCameraClose();
-
+	void PlayHitReactMontage();
 public:
 	AShooterCharacter();
 	virtual void Tick(float DeltaTime) override;
@@ -129,4 +133,5 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 
 	void PlayFireMontage(bool bInIsAiming);
+	void OnHit();
 };

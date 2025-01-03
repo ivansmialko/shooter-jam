@@ -5,6 +5,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
+#include "ShooterJam/ShooterJam.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -50,6 +51,7 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
@@ -318,6 +320,11 @@ void AShooterCharacter::Multicast_OnFireEnd_Implementation()
 	ActionFireEnd();
 }
 
+void AShooterCharacter::Multicast_OnHit_Implementation()
+{
+	PlayHitReactMontage();
+}
+
 void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
@@ -451,6 +458,35 @@ void AShooterCharacter::PlayFireMontage(bool bInIsAiming)
 	AnimInstance->Montage_Play(FireWeaponMontage);
 	
 	FName SectionName{ (bInIsAiming ? FName("RifleAim") : FName("RifleHip")) };
+	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
+void AShooterCharacter::OnHit()
+{
+	Multicast_OnHit();
+}
+
+void AShooterCharacter::PlayHitReactMontage()
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+		return;
+
+	if (!GetMesh())
+		return;
+
+	if (!FireWeaponMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(HitReactMontage);
+
+	FName SectionName{ "FromFront" };
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
