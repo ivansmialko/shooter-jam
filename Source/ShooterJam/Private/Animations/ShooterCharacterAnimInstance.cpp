@@ -43,6 +43,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsLocallyController = ShooterCharacter->IsLocallyControlled();
 	EquippedWeapon = ShooterCharacter->GetEquippedWeapon();
 	TurningInPlace = ShooterCharacter->GetTurningInPlace();
+	bRotateRootBone = ShooterCharacter->GetRotateRootBone();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 
