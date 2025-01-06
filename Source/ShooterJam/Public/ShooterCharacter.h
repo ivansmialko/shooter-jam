@@ -36,8 +36,17 @@ private:
 	FRotator StartingAimRotation;
 	ETurningInPlace TurningInPlace;
 
+	bool bRotateRootBone;
+	float ProxyTurnTreshold{ 0.5f };
+	float ProxyYaw;
+	float TimeSinceLastMovementRep{ 0.f };
+	FRotator ProxyRotation;
+	FRotator ProxyRotationLastFrame;
+
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
+	
+	virtual void OnRep_ReplicatedMovement() override;
 
 	UFUNCTION(Server, Reliable)
 	void Server_OnEquip();
@@ -109,7 +118,10 @@ protected:
 	void OnFireEnd(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
+	void CalculateAimOffset_SimProxies();
+	void CalculateAimPitch();
 	void CalculateTurningInPlace(float DeltaTime);
+	float CalculateSpeed() const;
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
@@ -127,6 +139,7 @@ public:
 	bool GetIsAiming();
 	float GetAoYaw();
 	float GetAoPitch();
+	bool GetRotateRootBone() const;
 	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
 	FVector GetHitTarget() const;

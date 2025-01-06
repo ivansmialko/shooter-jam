@@ -180,9 +180,7 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 	if (!CombatComponent->GetIsWeaponEquipped())
 		return;
 
-	FVector CharacterVelocity{ GetVelocity() };
-	CharacterVelocity.Z = 0.f;
-	float Speed{ static_cast<float>(CharacterVelocity.Size()) };
+	float Speed{ CalculateSpeed() };
 	bool bIsInAir{ GetCharacterMovement()->IsFalling() };
 
 	if (Speed == 0.f && !bIsInAir) //Standing still and not jumping
@@ -191,6 +189,7 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		FRotator DeltaAimRotation{ UKismetMathLibrary::NormalizedDeltaRotator(CurrentAimRotation, StartingAimRotation) };
 		AO_Yaw = DeltaAimRotation.Yaw;
 		bUseControllerRotationYaw = true;
+		bRotateRootBone = true;
 
 		CalculateTurningInPlace(DeltaTime);
 	}
@@ -199,7 +198,8 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		StartingAimRotation = FRotator(0.f, GetBaseAimRotation().Yaw, 0.f);
 		AO_Yaw = 0.f;
 		bUseControllerRotationYaw = true;
-
+		bRotateRootBone = false;
+ 
 		TurningInPlace = ETurningInPlace::TIP_NotTurning;
 	}
 
@@ -207,7 +207,10 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), AO_Yaw);
 	}
+}
 
+void AShooterCharacter::CalculateAimPitch()
+{
 	AO_Pitch = GetBaseAimRotation().Pitch;
 	if (AO_Pitch > 90.f && !IsLocallyControlled())
 	{
@@ -249,6 +252,57 @@ void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 	}
 }
 
+float AShooterCharacter::CalculateSpeed() const
+{
+	FVector CharacterVelocity{ GetVelocity() };
+	CharacterVelocity.Z = 0.f;
+	return static_cast<float>(CharacterVelocity.Size());
+}
+
+void AShooterCharacter::CalculateAimOffset_SimProxies()
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+		return;
+	
+	bRotateRootBone = false;
+
+	float Speed{ CalculateSpeed() };
+	if (Speed > 0.f)
+	{
+		TurningInPlace = ETurningInPlace::TIP_NotTurning;
+		return;
+	}
+
+	ProxyRotationLastFrame = ProxyRotation;
+	ProxyRotation = GetActorRotation();
+	ProxyYaw = UKismetMathLibrary::NormalizedDeltaRotator(ProxyRotation, ProxyRotationLastFrame).Yaw;
+
+	UE_LOG(LogTemp, Warning, TEXT("ProxyYaw: %f"), ProxyYaw);
+
+	if (FMath::Abs(ProxyYaw) > ProxyTurnTreshold)
+	{
+		if (ProxyYaw > ProxyTurnTreshold)
+		{
+			TurningInPlace = ETurningInPlace::TIP_Right;
+		}
+		else if (ProxyYaw < -ProxyTurnTreshold)
+		{
+			TurningInPlace = ETurningInPlace::TIP_Right;
+		}
+		else
+		{
+			TurningInPlace = ETurningInPlace::TIP_NotTurning;
+		}
+
+		return;
+	}
+
+	TurningInPlace = ETurningInPlace::TIP_NotTurning;
+}
+
 void AShooterCharacter::CheckHidePlayerIfCameraClose()
 {
 	if (!IsLocallyControlled())
@@ -281,6 +335,15 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 	{
 		LastOverlappedWeapon->ShowPickUpWidget(false);
 	}
+}
+
+void AShooterCharacter::OnRep_ReplicatedMovement()
+{
+	Super::OnRep_ReplicatedMovement();
+
+	CalculateAimOffset_SimProxies();
+
+	TimeSinceLastMovementRep = 0.f;
 }
 
 void AShooterCharacter::Server_OnEquip_Implementation()
@@ -413,6 +476,11 @@ float AShooterCharacter::GetAoPitch()
 	return AO_Pitch;
 }
 
+bool AShooterCharacter::GetRotateRootBone() const
+{
+	return bRotateRootBone;
+}
+
 ETurningInPlace AShooterCharacter::GetTurningInPlace() const
 {
 	return TurningInPlace;
@@ -493,7 +561,21 @@ void AShooterCharacter::PlayHitReactMontage()
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	CalculateAimOffset(DeltaTime);
+
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	{
+		CalculateAimOffset(DeltaTime);
+	}
+	else
+	{
+		TimeSinceLastMovementRep += DeltaTime;
+		if (TimeSinceLastMovementRep > 0.25)
+		{
+			OnRep_ReplicatedMovement();
+		}
+		CalculateAimPitch();
+	}
+
 	CheckHidePlayerIfCameraClose();
 }
 
