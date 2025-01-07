@@ -45,6 +45,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	class UAnimationAsset* FireAnimation;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bIsAutomatic{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	int32 FireRate{ 30 };
+
+	//Calculated at beginplay, based on FireRate (bullets per minute)
+	float FireDelay{ 0 };
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABulletShell> BulletShellClass;
 
@@ -101,6 +110,8 @@ public:
 	FORCEINLINE UTexture2D* GetCrosshairsRight() const { return CrosshairsRight; }
 	FORCEINLINE UTexture2D* GetCrosshairsTop() const { return CrosshairsTop; }
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
-	FORCEINLINE float GetFovZoomed() const { return FovZoomed; };
-	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; };
+	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
+	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
+	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
+	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 };

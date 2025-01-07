@@ -54,23 +54,12 @@ private:
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
-	UFUNCTION(Server, Reliable)
-	void Server_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
-	UFUNCTION(Server, Reliable)
-	void Server_OnFireEnd();
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnFireStart(const FVector_NetQuantize& TraceHitTarget);
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnFireEnd();
 	UFUNCTION(NetMulticast, Unreliable)
 	void Multicast_OnHit();
 
 	void ActionEquip();
 	void ActionAimStart();
 	void ActionAimEnd();
-	void ActionFireStart(const FVector_NetQuantize& TraceHitTarget);
-	void ActionFireEnd();
 
 protected:
 	virtual void BeginPlay() override;
