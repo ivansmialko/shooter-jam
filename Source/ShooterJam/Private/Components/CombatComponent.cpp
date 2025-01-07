@@ -12,6 +12,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
+#include "TimerManager.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -136,6 +137,51 @@ void UCombatComponent::InterpFov(float DeltaTime)
 	FollowCamera->SetFieldOfView(FovCurrent);
 }
 
+void UCombatComponent::StartFireTimer()
+{
+	if (!EquippedWeapon)
+		return;
+
+	if (!Character)
+		return;
+
+	FTimerManager& WorldTimerManager{ Character->GetWorldTimerManager() };
+	WorldTimerManager.SetTimer(FireTimerHandler, this, &UCombatComponent::OnFireTimerFinished, EquippedWeapon->GetFireDelay());
+}
+
+void UCombatComponent::OnFireTimerFinished()
+{
+	if (!EquippedWeapon)
+		return;
+
+	bIsCanFire = true;
+
+	if (!bIsFiring)
+		return;
+
+	if (!EquippedWeapon->GetIsAutomatic())
+		return;
+
+	//If firing button is still pressed, and weapon is automatic - shoot again automatically
+	FireWeapon();
+}
+
+void UCombatComponent::FireWeapon()
+{
+	if (!bIsCanFire)
+		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("FireWeapon: Received firing"));
+
+	bIsCanFire = false;
+	CrosshairShootingFactor = .75f;
+
+	//Send fire event from client to server
+	Server_FireWeapon(HitTarget);
+
+	StartFireTimer();
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -209,22 +255,17 @@ void UCombatComponent::SetIsAiming(bool bInIsAiming)
 
 void UCombatComponent::SetIsFiring(bool bInIsFiring)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Component: Received firing"));
+
 	bIsFiring = bInIsFiring;
 
 	if (!bInIsFiring)
 		return;
 
-	if (!Character)
-		return;
-
-	Character->PlayFireMontage(bIsAiming);
-
 	if (!EquippedWeapon)
 		return;
 
-	EquippedWeapon->Fire(HitTarget);
-
-	CrosshairShootingFactor = 0.75f;
+	FireWeapon();
 }
 
 void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
@@ -234,20 +275,35 @@ void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
 
 void UCombatComponent::OnRep_EquippedWeapon()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Received replication"));
-
 	if (!EquippedWeapon)
 		return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Weapon is ok"));
 
 	if (!Character)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("Character is ok"));
-
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Server: Received firing"));
+	Multicast_FireWeapon(TraceHitTarget);
+}
+
+void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Multicast client: Received firing"));
+
+	if (!EquippedWeapon)
+		return;
+
+	EquippedWeapon->Fire(TraceHitTarget);
+
+	if (!Character)
+		return;
+
+	Character->PlayFireMontage(bIsAiming);
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)

@@ -160,16 +160,15 @@ void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
 	if (!CombatComponent)
 		return;
 
-	FHitResult LocalHitTarget;
-	CombatComponent->TraceUnderCrosshairs(LocalHitTarget);
-
-	//Send fire event from client to server
-	Server_OnFireStart(LocalHitTarget.ImpactPoint);
+	CombatComponent->SetIsFiring(true);
 }
 
 void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 {
-	Server_OnFireEnd();
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsFiring(false);
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -203,10 +202,10 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
 		TurningInPlace = ETurningInPlace::TIP_NotTurning;
 	}
 
-	if (!IsLocallyControlled())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), AO_Yaw);
-	}
+	//if (!IsLocallyControlled())
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), AO_Yaw);
+	//}
 }
 
 void AShooterCharacter::CalculateAimPitch()
@@ -228,8 +227,8 @@ void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 		Root_AO_Yaw = AO_Yaw;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("AO_YAW: %f"), AO_Yaw);
-	UE_LOG(LogTemp, Warning, TEXT("Root AO_YAW: %f"), AO_Yaw);
+	//UE_LOG(LogTemp, Warning, TEXT("AO_YAW: %f"), AO_Yaw);
+	//UE_LOG(LogTemp, Warning, TEXT("Root AO_YAW: %f"), AO_Yaw);
 	if (AO_Yaw > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::TIP_Right;
@@ -280,7 +279,7 @@ void AShooterCharacter::CalculateAimOffset_SimProxies()
 	ProxyRotation = GetActorRotation();
 	ProxyYaw = UKismetMathLibrary::NormalizedDeltaRotator(ProxyRotation, ProxyRotationLastFrame).Yaw;
 
-	UE_LOG(LogTemp, Warning, TEXT("ProxyYaw: %f"), ProxyYaw);
+	//UE_LOG(LogTemp, Warning, TEXT("ProxyYaw: %f"), ProxyYaw);
 
 	if (FMath::Abs(ProxyYaw) > ProxyTurnTreshold)
 	{
@@ -300,7 +299,7 @@ void AShooterCharacter::CalculateAimOffset_SimProxies()
 		return;
 	}
 
-	TurningInPlace = ETurningInPlace::TIP_NotTurning;
+	TurningInPlace = ETurningInPlace::TIP_NotTurning; 
 }
 
 void AShooterCharacter::CheckHidePlayerIfCameraClose()
@@ -361,28 +360,6 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
-void AShooterCharacter::Server_OnFireStart_Implementation(const FVector_NetQuantize& TraceHitTarget)
-{
-	//Send fire event from server to all clients (including itself)
-	// Client --> Server --> Clients+Server
-	Multicast_OnFireStart(TraceHitTarget);
-}
-
-void AShooterCharacter::Server_OnFireEnd_Implementation()
-{
-	Multicast_OnFireEnd();
-}
-
-void AShooterCharacter::Multicast_OnFireStart_Implementation(const FVector_NetQuantize& TraceHitTarget)
-{
-	ActionFireStart(TraceHitTarget);
-}
-
-void AShooterCharacter::Multicast_OnFireEnd_Implementation()
-{
-	ActionFireEnd();
-}
-
 void AShooterCharacter::Multicast_OnHit_Implementation()
 {
 	PlayHitReactMontage();
@@ -412,27 +389,6 @@ void AShooterCharacter::ActionAimEnd()
 
 	CombatComponent->SetIsAiming(false);
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-}
-
-void AShooterCharacter::ActionFireStart(const FVector_NetQuantize& TraceHitTarget)
-{
-	UE_LOG(LogTemp, Warning, TEXT("Action fire start"));
-
-	if (!CombatComponent)
-		return;
-
-	CombatComponent->SetHitTarget(TraceHitTarget);
-	CombatComponent->SetIsFiring(true);
-}
-
-void AShooterCharacter::ActionFireEnd()
-{
-	UE_LOG(LogTemp, Warning, TEXT("Action fire end"));
-
-	if (!CombatComponent)
-		return;
-
-	CombatComponent->SetIsFiring(false);
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)

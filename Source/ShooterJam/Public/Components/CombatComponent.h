@@ -28,6 +28,12 @@ public:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION(Server, Reliable)
+	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+
 private:
 	class AShooterCharacter* Character;
 	class AShooterCharacterController* CharacterController;
@@ -40,29 +46,36 @@ private:
 
 	UPROPERTY(Replicated)
 	bool bIsAiming;
-
 	UPROPERTY(Replicated)
 	bool bIsFiring;
 
+	//Crosshairs spread
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
 
+	//Aim FOV change
 	float FovCurrent;
 	float FovDefault;
-
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float FovZoomed{ 30.f };
-
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float ZoomInterpSpeed{ 20.f };
+
+	//Automatic fire
+	FTimerHandle FireTimerHandler;
+	bool bIsCanFire{ true };
 
 protected:
 	virtual void BeginPlay() override;
 
 	void SetHUDCrosshairs(float DeltaTime);
 	void InterpFov(float DeltaTime);
+
+	void StartFireTimer();
+	void OnFireTimerFinished();
+	void FireWeapon();
 
 public:
 	bool GetIsWeaponEquipped();

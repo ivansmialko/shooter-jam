@@ -85,6 +85,11 @@ void AWeaponBase::BeginPlay()
 	{
 		PickUpWidget->SetVisibility(false);
 	}
+
+	
+	//Calculate fire delay
+	FireDelay = 60.f / static_cast<float>(FireRate);
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("FireDelay, %f"), FireDelay));
 }
 
 void AWeaponBase::OnAreaSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
