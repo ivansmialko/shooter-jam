@@ -2,6 +2,9 @@
 
 
 #include "HUD/ShooterHUD.h"
+#include "HUD/CharacterOverlay.h"
+
+#include "GameFramework/PlayerController.h"
 
 void AShooterHUD::DrawHUD()
 {
@@ -15,44 +18,44 @@ void AShooterHUD::DrawHUD()
 
 	const FVector2D VieportCenter{ ViewportSize.X * 0.5f, ViewportSize.Y * 0.5f };
 
-	const float CurrSpreadScaled{ CrosshairSpreadMax * HUDPackage.CrosshairSpread };
+	const float CurrSpreadScaled{ CrosshairSpreadMax * HudPackage.CrosshairSpread };
 
 	FVector2D CurrSpread{ 0.f, 0.f };
-	if (HUDPackage.CrosshairsCenter)
+	if (HudPackage.CrosshairsCenter)
 	{
-		DrawCrosshair(HUDPackage.CrosshairsCenter, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
+		DrawCrosshair(HudPackage.CrosshairsCenter, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
 	}
 
-	if (HUDPackage.CrosshairsLeft)
+	if (HudPackage.CrosshairsLeft)
 	{
 		CurrSpread.X = CurrSpreadScaled * -1.f;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsLeft, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
+		DrawCrosshair(HudPackage.CrosshairsLeft, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
 	}
 
-	if (HUDPackage.CrosshairsRight)
+	if (HudPackage.CrosshairsRight)
 	{
 		CurrSpread.X = CurrSpreadScaled;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsRight, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
+		DrawCrosshair(HudPackage.CrosshairsRight, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
 	}
 
-	if (HUDPackage.CrosshairsTop)
+	if (HudPackage.CrosshairsTop)
 	{
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled * -1.f;
 
-		DrawCrosshair(HUDPackage.CrosshairsTop, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
+		DrawCrosshair(HudPackage.CrosshairsTop, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
 	}
 
-	if (HUDPackage.CrosshairsBottom)
+	if (HudPackage.CrosshairsBottom)
 	{
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled;
 
-		DrawCrosshair(HUDPackage.CrosshairsBottom, VieportCenter, CurrSpread, HUDPackage.CrosshairsColor);
+		DrawCrosshair(HudPackage.CrosshairsBottom, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
 	}
 }
 
@@ -73,7 +76,30 @@ void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewp
 	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, CrosshairsColor);
 }
 
-void AShooterHUD::SetHUDPackage(FHUDPackage& InHUDPackage)
+void AShooterHUD::AddCharacterOverlay()
 {
-	HUDPackage = InHUDPackage;
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (!PlayerController)
+		return;
+
+	if (!CharacterOverlayClass)
+		return;
+
+	CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+	if (!CharacterOverlay)
+		return;
+
+	CharacterOverlay->AddToViewport();
+}
+
+void AShooterHUD::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AddCharacterOverlay();
+}
+
+void AShooterHUD::SetHudPackage(FHUDPackage& InHUDPackage)
+{
+	HudPackage = InHUDPackage;
 }

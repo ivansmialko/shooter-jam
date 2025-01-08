@@ -336,6 +336,11 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 	}
 }
 
+void AShooterCharacter::OnRep_Health()
+{
+
+}
+
 void AShooterCharacter::OnRep_ReplicatedMovement()
 {
 	Super::OnRep_ReplicatedMovement();
@@ -558,7 +563,8 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly)
+	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly);
+	DOREPLIFETIME(AShooterCharacter, Health);
 }
 
 void AShooterCharacter::PostInitializeComponents()
