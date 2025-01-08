@@ -45,6 +45,8 @@ private:
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
+	UFUNCTION()
+	void OnRep_Health();
 	
 	virtual void OnRep_ReplicatedMovement() override;
 
@@ -88,13 +90,18 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
 
-
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float BaseWalkSpeed{ 600.f };
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float AimWalkSpeed{ 450.f };
 	UPROPERTY(EditAnywhere)
 	double CameraDistanceTreshold{ 200.0 };
+
+	//Player health fields
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxHealth{ 100.f };
+	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
+	float Health{ MaxHealth };
 
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);
