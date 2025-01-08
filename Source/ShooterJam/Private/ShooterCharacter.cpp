@@ -2,10 +2,12 @@
 
 
 #include "ShooterCharacter.h"
+
 #include "Weaponry/WeaponBase.h"
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
 #include "ShooterJam/ShooterJam.h"
+#include "PlayerControllers/ShooterCharacterController.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -77,6 +79,12 @@ void AShooterCharacter::BeginPlay()
 		return;
 
 	Subsystem->AddMappingContext(InputMappingContext, 0);
+
+	CharacterController = Cast<AShooterCharacterController>(GetController());
+	if (CharacterController)
+	{
+		CharacterController->SetHudHealth(Health, MaxHealth);
+	}
 }
 
 void AShooterCharacter::OnMove(const FInputActionValue& Value)
