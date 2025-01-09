@@ -58,12 +58,11 @@ private:
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
-	UFUNCTION(NetMulticast, Unreliable)
-	void Multicast_OnHit();
 
 	void ActionEquip();
 	void ActionAimStart();
 	void ActionAimEnd();
+	void ActionReceiveDamage();
 
 protected:
 	//User input
@@ -109,6 +108,9 @@ protected:
 	void OnFireStart(const FInputActionValue& Value);
 	void OnFireEnd(const FInputActionValue& Value);
 
+	UFUNCTION()
+	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
+
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
 	void CalculateAimPitch();
@@ -117,6 +119,8 @@ protected:
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
+
+	void HudUpdateHealth();
 public:
 	AShooterCharacter();
 	virtual void Tick(float DeltaTime) override;
@@ -138,5 +142,4 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 
 	void PlayFireMontage(bool bInIsAiming);
-	void OnHit();
 };

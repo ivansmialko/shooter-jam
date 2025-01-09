@@ -70,6 +70,13 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	HudUpdateHealth();
+
+	if (HasAuthority())
+	{
+		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
+	}
+
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if(!PlayerController)
 		return;
@@ -79,12 +86,6 @@ void AShooterCharacter::BeginPlay()
 		return;
 
 	Subsystem->AddMappingContext(InputMappingContext, 0);
-
-	CharacterController = Cast<AShooterCharacterController>(GetController());
-	if (CharacterController)
-	{
-		CharacterController->SetHudHealth(Health, MaxHealth);
-	}
 }
 
 void AShooterCharacter::OnMove(const FInputActionValue& Value)
@@ -177,6 +178,19 @@ void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 		return;
 
 	CombatComponent->SetIsFiring(false);
+}
+
+void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Damage received"))
+
+	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+
+	//That for server to play player-server effects
+	if (HasAuthority())
+	{
+		ActionReceiveDamage();
+	}
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -346,7 +360,8 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 
 void AShooterCharacter::OnRep_Health()
 {
-
+	UE_LOG(LogTemp, Warning, TEXT("Replication works"));
+	ActionReceiveDamage();
 }
 
 void AShooterCharacter::OnRep_ReplicatedMovement()
@@ -373,11 +388,6 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
-void AShooterCharacter::Multicast_OnHit_Implementation()
-{
-	PlayHitReactMontage();
-}
-
 void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
@@ -402,6 +412,12 @@ void AShooterCharacter::ActionAimEnd()
 
 	CombatComponent->SetIsAiming(false);
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+}
+
+void AShooterCharacter::ActionReceiveDamage()
+{
+	PlayHitReactMontage();
+	HudUpdateHealth();
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
@@ -498,11 +514,6 @@ void AShooterCharacter::PlayFireMontage(bool bInIsAiming)
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
-void AShooterCharacter::OnHit()
-{
-	Multicast_OnHit();
-}
-
 void AShooterCharacter::PlayHitReactMontage()
 {
 	if (!CombatComponent)
@@ -525,6 +536,19 @@ void AShooterCharacter::PlayHitReactMontage()
 
 	FName SectionName{ "FromFront" };
 	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
+void AShooterCharacter::HudUpdateHealth()
+{
+	if (!CharacterController)
+	{
+		CharacterController = Cast<AShooterCharacterController>(GetController());
+	}
+
+	if (!CharacterController)
+		return;
+
+	CharacterController->SetHudHealth(Health, MaxHealth);
 }
 
 void AShooterCharacter::Tick(float DeltaTime)

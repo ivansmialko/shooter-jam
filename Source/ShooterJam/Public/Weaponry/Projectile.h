@@ -19,29 +19,25 @@ public:
 	virtual void Destroyed() override;
 
 protected:
+	UPROPERTY(EditAnywhere)
+	float Damage{ 1.f };
+
 	virtual void BeginPlay() override;
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-
 private:
-
-	void PlayHitFx();
-
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* CollisionBox;
-
 	UPROPERTY(VisibleAnywhere)
 	class UProjectileMovementComponent* ProjectileMovement;
-
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* TracerParticles;
-
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* ImpactParticles;
-
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ImpactSound;
-
 	class UParticleSystemComponent* TracerComponent;
+
+	void PlayHitFx();
 };
