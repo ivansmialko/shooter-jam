@@ -340,7 +340,7 @@ void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 	const double DistanceToCharacter{ (Character->GetActorLocation() - LinetraceStart).Size() };
 	LinetraceStart += CrosshairsWorldDirection * (DistanceToCharacter + 50.0);
 
-	DrawDebugSphere(GetWorld(), LinetraceStart, 16.f, 12, FColor::Red, false);
+	//DrawDebugSphere(GetWorld(), LinetraceStart, 16.f, 12, FColor::Red, false);
 
 	GetWorld()->LineTraceSingleByChannel(
 		TraceHitResult,
