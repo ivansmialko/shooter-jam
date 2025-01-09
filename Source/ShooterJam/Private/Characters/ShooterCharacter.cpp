@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "ShooterCharacter.h"
+#include "Characters/ShooterCharacter.h"
 
 #include "Weaponry/WeaponBase.h"
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
-#include "ShooterJam/ShooterJam.h"
+#include "Game/ShooterJam.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 
 #include "GameFramework/SpringArmComponent.h"

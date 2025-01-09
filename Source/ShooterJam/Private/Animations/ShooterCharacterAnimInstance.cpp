@@ -2,7 +2,7 @@
 
 
 #include "Animations/ShooterCharacterAnimInstance.h"
-#include "ShooterCharacter.h"
+#include "Characters/ShooterCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Weaponry/WeaponBase.h"

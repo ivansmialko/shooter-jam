@@ -3,8 +3,8 @@
 
 #include "Weaponry/Projectile.h"
 
-#include "ShooterCharacter.h"
-#include "ShooterJam/ShooterJam.h"
+#include "Characters/ShooterCharacter.h"
+#include "Game/ShooterJam.h"
 
 #include "Components/BoxComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
