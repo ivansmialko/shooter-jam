@@ -1,6 +1,6 @@
 #include "Weaponry/WeaponBase.h"
 #include "Weaponry/BulletShell.h"
-#include "ShooterCharacter.h"
+#include "Characters/ShooterCharacter.h"
 
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"

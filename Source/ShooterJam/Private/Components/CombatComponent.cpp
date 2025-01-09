@@ -4,7 +4,7 @@
 
 #include "Weaponry/WeaponBase.h"
 #include "PlayerControllers/ShooterCharacterController.h"
-#include "ShooterCharacter.h"
+#include "Characters/ShooterCharacter.h"
 
 #include "Engine/SkeletalMeshSocket.h"
 #include "Net/UnrealNetwork.h"
