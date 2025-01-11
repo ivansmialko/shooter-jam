@@ -180,6 +180,7 @@ void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 	CombatComponent->SetIsFiring(false);
 }
 
+//Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Damage received"))
