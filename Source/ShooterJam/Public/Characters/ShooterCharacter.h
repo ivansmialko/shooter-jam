@@ -60,6 +60,8 @@ private:
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_OnEliminated();
 
 	void ActionEquip();
 	void ActionAimStart();
@@ -97,6 +99,8 @@ protected:
 	float MaxHealth{ 100.f };
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health{ MaxHealth };
+
+	bool bIsEliminated{ false };
 
 	virtual void BeginPlay() override;
 
@@ -139,6 +143,7 @@ public:
 	float GetAoYaw();
 	float GetAoPitch();
 	bool GetRotateRootBone() const;
+	bool GetIsEliminated() const;
 	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
 	FVector GetHitTarget() const;
