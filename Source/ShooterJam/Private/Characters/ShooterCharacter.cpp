@@ -403,6 +403,12 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
+void AShooterCharacter::Multicast_OnEliminated_Implementation()
+{
+	bIsEliminated = true;
+	PlayEliminationMontage();
+}
+
 void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
@@ -479,6 +485,11 @@ float AShooterCharacter::GetAoPitch()
 bool AShooterCharacter::GetRotateRootBone() const
 {
 	return bRotateRootBone;
+}
+
+bool AShooterCharacter::GetIsEliminated() const
+{
+	return bIsEliminated;
 }
 
 ETurningInPlace AShooterCharacter::GetTurningInPlace() const
@@ -653,6 +664,6 @@ void AShooterCharacter::Jump()
 
 void AShooterCharacter::OnEliminated()
 {
-	PlayEliminationMontage();
+	Multicast_OnEliminated();
 }
 
