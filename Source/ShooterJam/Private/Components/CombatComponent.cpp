@@ -171,7 +171,7 @@ void UCombatComponent::FireWeapon()
 	if (!bIsCanFire)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("FireWeapon: Received firing"));
+	//UE_LOG(LogTemp, Warning, TEXT("FireWeapon: Received firing"));
 
 	bIsCanFire = false;
 	CrosshairShootingFactor = .75f;
@@ -255,7 +255,7 @@ void UCombatComponent::SetIsAiming(bool bInIsAiming)
 
 void UCombatComponent::SetIsFiring(bool bInIsFiring)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Component: Received firing"));
+	//UE_LOG(LogTemp, Warning, TEXT("Component: Received firing"));
 
 	bIsFiring = bInIsFiring;
 
@@ -287,13 +287,13 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Server: Received firing"));
+	//UE_LOG(LogTemp, Warning, TEXT("Server: Received firing"));
 	Multicast_FireWeapon(TraceHitTarget);
 }
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Multicast client: Received firing"));
+	//UE_LOG(LogTemp, Warning, TEXT("Multicast client: Received firing"));
 
 	if (!EquippedWeapon)
 		return;
