@@ -8,5 +8,8 @@
 
 void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
 {
+	if (!InElimCharacter)
+		return;
 
+	InElimCharacter->OnEliminated();
 }

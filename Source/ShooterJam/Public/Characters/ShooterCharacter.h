@@ -29,6 +29,8 @@ private:
 	class UAnimMontage* FireWeaponMontage;
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* HitReactMontage;
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* EliminationMontage;
 
 	float AO_Yaw;
 	float AO_Pitch;
@@ -143,4 +145,5 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 
 	void PlayFireMontage(bool bInIsAiming);
+	void PlayEliminationMontage();
 };

@@ -529,6 +529,21 @@ void AShooterCharacter::PlayFireMontage(bool bInIsAiming)
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+void AShooterCharacter::PlayEliminationMontage()
+{
+	if (!GetMesh())
+		return;
+
+	if (!EliminationMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(EliminationMontage);
+}
+
 void AShooterCharacter::PlayHitReactMontage()
 {
 	if (!CombatComponent)
@@ -638,6 +653,6 @@ void AShooterCharacter::Jump()
 
 void AShooterCharacter::OnEliminated()
 {
-
+	PlayEliminationMontage();
 }
 
