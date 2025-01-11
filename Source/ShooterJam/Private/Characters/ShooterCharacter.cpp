@@ -7,6 +7,7 @@
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
 #include "Game/ShooterJam.h"
+#include "GameModes/ShooterGameMode.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 
 #include "GameFramework/SpringArmComponent.h"
@@ -192,6 +193,19 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	{
 		ActionReceiveDamage();
 	}
+
+	if (Health > 0.f)
+		return;
+
+	AShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	if (!GameMode)
+		return;
+
+	AShooterCharacterController* AttackerController = Cast<AShooterCharacterController>(InstigatorController);
+	if (!AttackerController)
+		return;
+
+	GameMode->OnPlayerEliminated(this, CharacterController, AttackerController);
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -620,5 +634,10 @@ void AShooterCharacter::Jump()
 	{
 		Super::Jump();
 	}
+}
+
+void AShooterCharacter::OnEliminated()
+{
+
 }
 
