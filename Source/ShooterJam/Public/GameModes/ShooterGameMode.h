@@ -13,5 +13,8 @@ UCLASS()
 class SHOOTERJAM_API AShooterGameMode : public AGameMode
 {
 	GENERATED_BODY()
+
+public:
+	virtual void OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
 	
 };

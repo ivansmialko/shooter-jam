@@ -128,6 +128,7 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	virtual void Jump() override;
+	virtual void OnEliminated();
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 	bool GetIsWeaponEquipped();
