@@ -45,13 +45,16 @@ private:
 	FRotator ProxyRotation;
 	FRotator ProxyRotationLastFrame;
 
+	FTimerHandle EliminatedTimer;
+	UPROPERTY(EditDefaultsOnly)
+	float EliminationDelay{ 3.f };
+
 	class AShooterCharacterController* CharacterController;
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 	UFUNCTION()
 	void OnRep_Health();
-	
 	virtual void OnRep_ReplicatedMovement() override;
 
 	UFUNCTION(Server, Reliable)
@@ -117,6 +120,8 @@ protected:
 	UFUNCTION()
 	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
 
+	void OnEliminatedTimerFinished();
+
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
 	void CalculateAimPitch();
@@ -127,6 +132,8 @@ protected:
 	void PlayHitReactMontage();
 
 	void HudUpdateHealth();
+
+	class AShooterGameMode* GetShooterGameMode() const;
 public:
 	AShooterCharacter();
 	virtual void Tick(float DeltaTime) override;

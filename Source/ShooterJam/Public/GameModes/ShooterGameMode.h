@@ -17,4 +17,5 @@ class SHOOTERJAM_API AShooterGameMode : public AGameMode
 public:
 	virtual void OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
 	
+	virtual void RequestRespawn(ACharacter* InCharacter, AController* InController);
 };

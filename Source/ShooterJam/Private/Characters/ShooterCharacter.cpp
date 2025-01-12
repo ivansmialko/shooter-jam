@@ -20,6 +20,7 @@
 #include "EnhancedInputComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "TimerManager.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -197,7 +198,7 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	if (Health > 0.f)
 		return;
 
-	AShooterGameMode* GameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	AShooterGameMode* GameMode = GetShooterGameMode();
 	if (!GameMode)
 		return;
 
@@ -206,6 +207,15 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 		return;
 
 	GameMode->OnPlayerEliminated(this, CharacterController, AttackerController);
+}
+
+void AShooterCharacter::OnEliminatedTimerFinished()
+{
+	AShooterGameMode* GameMode = GetShooterGameMode();
+	if (!GameMode)
+		return;
+
+	GameMode->RequestRespawn(this, GetController());
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -592,6 +602,11 @@ void AShooterCharacter::HudUpdateHealth()
 	CharacterController->SetHudHealth(Health, MaxHealth);
 }
 
+AShooterGameMode* AShooterCharacter::GetShooterGameMode() const
+{
+	return GetWorld()->GetAuthGameMode<AShooterGameMode>();
+}
+
 void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -665,5 +680,7 @@ void AShooterCharacter::Jump()
 void AShooterCharacter::OnEliminated()
 {
 	Multicast_OnEliminated();
+
+	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 }
 
