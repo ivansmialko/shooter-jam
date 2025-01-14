@@ -80,6 +80,9 @@ private:
 	void ActionAimEnd();
 	void ActionReceiveDamage();
 
+	void DisableCharacter();
+	void DropWeapon();
+
 protected:
 	//User input
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
@@ -144,7 +147,7 @@ protected:
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
-	void StartDissolvingEffect();
+	void PlayDissolvingEffect();
 
 	void HudUpdateHealth();
 

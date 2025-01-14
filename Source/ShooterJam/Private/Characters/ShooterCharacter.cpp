@@ -420,19 +420,9 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 	bIsEliminated = true;
 	PlayEliminationMontage();
 
-	if (!DissolveMaterialInstance)
-		return;
+	PlayDissolvingEffect();
 
-	DissolveMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
-
-	if (!DissolveMaterialInstanceDynamic)
-		return;
-
-	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
-	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Glow"), 200.f);
-	GetMesh()->SetMaterial(0, DissolveMaterialInstanceDynamic);
-
-	StartDissolvingEffect();
+	DisableCharacter();
 }
 
 void AShooterCharacter::ActionEquip()
@@ -465,6 +455,32 @@ void AShooterCharacter::ActionReceiveDamage()
 {
 	PlayHitReactMontage();
 	HudUpdateHealth();
+}
+
+void AShooterCharacter::DisableCharacter()
+{
+	//Disable movement
+	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->StopMovementImmediately();
+	if (CharacterController)
+	{
+		DisableInput(CharacterController);
+	}
+
+	//Disable collision
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AShooterCharacter::DropWeapon()
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+		return;
+
+	CombatComponent->GetEquippedWeapon()->OnDropped();
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
@@ -605,13 +621,22 @@ void AShooterCharacter::PlayHitReactMontage()
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
-void AShooterCharacter::StartDissolvingEffect()
+void AShooterCharacter::PlayDissolvingEffect()
 {
 	if (!DissolveCurve)
 		return;
 
 	if (!DissolveTimeline)
 		return;
+
+	DissolveMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+
+	if (!DissolveMaterialInstanceDynamic)
+		return;
+
+	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Glow"), 200.f);
+	GetMesh()->SetMaterial(0, DissolveMaterialInstanceDynamic);
 
 	DissolveTrackDlg.BindDynamic(this, &AShooterCharacter::TimelineUpdateDissolveMaterial);
 
@@ -718,6 +743,7 @@ void AShooterCharacter::Jump()
 void AShooterCharacter::OnEliminated()
 {
 	Multicast_OnEliminated();
+	DropWeapon();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 }

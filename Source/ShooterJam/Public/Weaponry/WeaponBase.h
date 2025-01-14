@@ -10,7 +10,7 @@ enum class EWeaponState : uint8
 {
 	EWS_Initial UMETA(DisplayName = "Initial state"),
 	EWS_Equipped UMETA(DisplayName = "Equipped"),
-	EWS_Dropper UMETA(DisplayName = "Dropped"),
+	EWS_Dropped UMETA(DisplayName = "Dropped"),
 
 	EWS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -28,6 +28,8 @@ public:
 	void ShowPickUpWidget(bool bShowWidget);
 	void ChangeWeaponState(EWeaponState InState);
 	virtual void Fire(const FVector& HitTarget);
+
+	void OnDropped();
 
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
@@ -81,6 +83,9 @@ private:
 	UFUNCTION()
 	void OnRep_WeaponState();
 
+	void OnStateEquipped();
+	void OnStateDropped();
+
 	void SpawnBulletShell();
 
 protected:
@@ -101,6 +106,7 @@ protected:
 		AActor* OtherActor,
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
+
 
 public:
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
