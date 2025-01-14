@@ -8,6 +8,8 @@
 #include "Animations/TurningInPlace.h"
 #include "Interfaces/CrosshairsInteractable.h"
 
+#include "Components/TimelineComponent.h"
+
 #include "ShooterCharacter.generated.h"
 
 UCLASS()
@@ -31,6 +33,13 @@ private:
 	UAnimMontage* HitReactMontage;
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* EliminationMontage;
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UCurveFloat* DissolveCurve;
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* DissolveMaterialInstance;				//Selected in the editor
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UMaterialInstanceDynamic* DissolveMaterialInstanceDynamic;	//Instance of UMaterialInstance that we create in runtime
+
 
 	float AO_Yaw;
 	float AO_Pitch;
@@ -102,8 +111,13 @@ protected:
 	float MaxHealth{ 100.f };
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health{ MaxHealth };
-
+	UPROPERTY(VisibleAnywhere)
 	bool bIsEliminated{ false };
+
+	//Dissolve effect
+	UPROPERTY(VisibleAnywhere)
+	UTimelineComponent* DissolveTimeline;
+	FOnTimelineFloat DissolveTrackDlg;
 
 	virtual void BeginPlay() override;
 
@@ -130,8 +144,12 @@ protected:
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
+	void StartDissolvingEffect();
 
 	void HudUpdateHealth();
+
+	UFUNCTION()
+	void TimelineUpdateDissolveMaterial(float InDissolveValue);
 
 	class AShooterGameMode* GetShooterGameMode() const;
 public:
