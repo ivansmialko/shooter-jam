@@ -66,6 +66,8 @@ AShooterCharacter::AShooterCharacter()
 	NetUpdateFrequency = 66.f;
 	MinNetUpdateFrequency = 33.f;
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
 void AShooterCharacter::BeginPlay()
@@ -417,6 +419,20 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 {
 	bIsEliminated = true;
 	PlayEliminationMontage();
+
+	if (!DissolveMaterialInstance)
+		return;
+
+	DissolveMaterialInstanceDynamic = UMaterialInstanceDynamic::Create(DissolveMaterialInstance, this);
+
+	if (!DissolveMaterialInstanceDynamic)
+		return;
+
+	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), 0.55f);
+	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Glow"), 200.f);
+	GetMesh()->SetMaterial(0, DissolveMaterialInstanceDynamic);
+
+	StartDissolvingEffect();
 }
 
 void AShooterCharacter::ActionEquip()
@@ -589,6 +605,20 @@ void AShooterCharacter::PlayHitReactMontage()
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+void AShooterCharacter::StartDissolvingEffect()
+{
+	if (!DissolveCurve)
+		return;
+
+	if (!DissolveTimeline)
+		return;
+
+	DissolveTrackDlg.BindDynamic(this, &AShooterCharacter::TimelineUpdateDissolveMaterial);
+
+	DissolveTimeline->AddInterpFloat(DissolveCurve, DissolveTrackDlg);
+	DissolveTimeline->Play();
+}
+
 void AShooterCharacter::HudUpdateHealth()
 {
 	if (!CharacterController)
@@ -600,6 +630,14 @@ void AShooterCharacter::HudUpdateHealth()
 		return;
 
 	CharacterController->SetHudHealth(Health, MaxHealth);
+}
+
+void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
+{
+	if (!DissolveMaterialInstanceDynamic)
+		return;
+
+	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), InDissolveValue);
 }
 
 AShooterGameMode* AShooterCharacter::GetShooterGameMode() const
