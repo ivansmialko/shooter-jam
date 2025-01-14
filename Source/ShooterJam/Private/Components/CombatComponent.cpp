@@ -283,6 +283,17 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+
+	//Equipped weapon is replicated, just as attaching an actor in Equip function.
+	//There's no guarantee that EquippedWeapon will replicate earlier than attaching weapon to character.
+	//So we'll also do these thing in this rep notify, just to be sure
+	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
+
+	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("RightHandSocket")) };
+	if (!HandSocket)
+		return;
+
+	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 }
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)

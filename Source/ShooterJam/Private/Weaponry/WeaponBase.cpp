@@ -36,15 +36,45 @@ void AWeaponBase::OnRep_WeaponState()
 		break;
 	case EWeaponState::EWS_Equipped:
 	{
-		ShowPickUpWidget(false);
+		OnStateEquipped();
 	} break;
-	case EWeaponState::EWS_Dropper:
-		break;
+	case EWeaponState::EWS_Dropped:
+	{
+		OnStateDropped();
+	} break;
 	case EWeaponState::EWS_MAX:
 		break;
 	default:
 		break;
 	}
+}
+
+void AWeaponBase::OnStateEquipped()
+{
+	ShowPickUpWidget(false);
+	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AWeaponBase::OnStateDropped()
+{
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->SetSimulatePhysics(true);
+	WeaponMesh->SetEnableGravity(true);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+	if (!HasAuthority())
+		return;
+
+	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 }
 
 void AWeaponBase::SpawnBulletShell()
@@ -111,6 +141,17 @@ void AWeaponBase::OnAreaSphereOverlapEnd(UPrimitiveComponent* OverlappedComponen
 	ShooterCharacter->SetOverlappingWeapon(nullptr);
 }
 
+void AWeaponBase::OnDropped()
+{
+	ChangeWeaponState(EWeaponState::EWS_Dropped);
+
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
+	SetOwner(nullptr);
+}
+
 void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -142,11 +183,12 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 		break;
 	case EWeaponState::EWS_Equipped:
 	{
-		ShowPickUpWidget(false);
-		GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		OnStateEquipped();
 	} break;
-	case EWeaponState::EWS_Dropper:
-		break;
+	case EWeaponState::EWS_Dropped:
+	{
+		OnStateDropped();
+	} break;
 	case EWeaponState::EWS_MAX:
 		break;
 	default:
