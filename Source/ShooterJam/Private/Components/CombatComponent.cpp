@@ -228,12 +228,12 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	Character->bUseControllerRotationYaw = true;
 }
 
-bool UCombatComponent::GetIsWeaponEquipped()
+bool UCombatComponent::GetIsWeaponEquipped() const
 {
 	return (EquippedWeapon != nullptr);
 }
 
-bool UCombatComponent::GetIsAiming()
+bool UCombatComponent::GetIsAiming() const
 {
 	return bIsAiming;
 }

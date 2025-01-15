@@ -78,8 +78,8 @@ protected:
 	void FireWeapon();
 
 public:
-	bool GetIsWeaponEquipped();
-	bool GetIsAiming();
+	bool GetIsWeaponEquipped() const;
+	bool GetIsAiming() const;
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
 	void SetHitTarget(const FVector& TraceHitTarget);
