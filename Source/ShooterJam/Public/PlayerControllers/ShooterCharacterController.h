@@ -18,6 +18,8 @@ class SHOOTERJAM_API AShooterCharacterController : public APlayerController
 public:
 	void SetHudHealth(float InHealth, float InMaxHealth);
 
+	void OnPossess(APawn* InPawn) override;
+
 private:
 	class AShooterHUD* ShooterHud;
 

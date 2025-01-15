@@ -174,13 +174,17 @@ public:
 	virtual void Destroyed() override;
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
-	bool GetIsWeaponEquipped();
-	bool GetIsCrouched();
-	bool GetIsAiming();
-	float GetAoYaw();
-	float GetAoPitch();
+
+	bool GetIsWeaponEquipped() const;
+	bool GetIsCrouched() const;
+	bool GetIsAiming() const;
 	bool GetRotateRootBone() const;
 	bool GetIsEliminated() const;
+	float GetAoYaw() const;
+	float GetAoPitch() const;
+	float GetHealth() const;
+	float GetMaxHealth() const;
+
 	ETurningInPlace GetTurningInPlace() const;
 	AWeaponBase* GetEquippedWeapon() const;
 	FVector GetHitTarget() const;
