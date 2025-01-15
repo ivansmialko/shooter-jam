@@ -21,6 +21,9 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
+#include "Particles/ParticleSystemComponent.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -421,6 +424,7 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 	PlayEliminationMontage();
 
 	PlayDissolvingEffect();
+	PlayElimbotEffect();
 
 	DisableCharacter();
 }
@@ -644,6 +648,20 @@ void AShooterCharacter::PlayDissolvingEffect()
 	DissolveTimeline->Play();
 }
 
+void AShooterCharacter::PlayElimbotEffect()
+{
+	if (!ElimbotEffect)
+		return;
+
+	FVector ElimbotSpawnPoint(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z + 200.f);
+	ElimbotComponent = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ElimbotEffect, FTransform(GetActorRotation(), ElimbotSpawnPoint));
+
+	if (!ElimbotSound)
+		return;
+
+	UGameplayStatics::SpawnSoundAtLocation(this, ElimbotSound, GetActorLocation());
+}
+
 void AShooterCharacter::HudUpdateHealth()
 {
 	if (!CharacterController)
@@ -746,5 +764,15 @@ void AShooterCharacter::OnEliminated()
 	DropWeapon();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
+}
+
+void AShooterCharacter::Destroyed()
+{
+	Super::Destroy();
+
+	if (!ElimbotComponent)
+		return;
+
+	ElimbotComponent->DestroyComponent();
 }
 

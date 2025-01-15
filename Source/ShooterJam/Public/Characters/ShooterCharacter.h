@@ -37,9 +37,10 @@ private:
 	UCurveFloat* DissolveCurve;
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UMaterialInstance* DissolveMaterialInstance;				//Selected in the editor
-	UPROPERTY(VisibleAnywhere, Category = Effects)
-	UMaterialInstanceDynamic* DissolveMaterialInstanceDynamic;	//Instance of UMaterialInstance that we create in runtime
-
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UParticleSystem* ElimbotEffect;
+	UPROPERTY(EditAnywhere, Category = Effects)
+	class USoundCue* ElimbotSound;
 
 	float AO_Yaw;
 	float AO_Pitch;
@@ -121,6 +122,12 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
 	FOnTimelineFloat DissolveTrackDlg;
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UMaterialInstanceDynamic* DissolveMaterialInstanceDynamic;	//Instance of UMaterialInstance that we create in runtime
+	
+	//Elimbot
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UParticleSystemComponent* ElimbotComponent;
 
 	virtual void BeginPlay() override;
 
@@ -148,6 +155,7 @@ protected:
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
 	void PlayDissolvingEffect();
+	void PlayElimbotEffect();
 
 	void HudUpdateHealth();
 
@@ -163,6 +171,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void Jump() override;
 	virtual void OnEliminated();
+	virtual void Destroyed() override;
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 	bool GetIsWeaponEquipped();
