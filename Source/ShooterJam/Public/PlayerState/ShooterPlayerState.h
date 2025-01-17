@@ -23,6 +23,7 @@ private:
 //private functions
 private:
 	void CheckInitMembers();
+	void UpdateScoreHud();
 
 //public functions
 public:

@@ -19,6 +19,15 @@ void AShooterPlayerState::CheckInitMembers()
 	}
 }
 
+void AShooterPlayerState::UpdateScoreHud()
+{
+	CheckInitMembers();
+	if (!Controller)
+		return;
+
+	Controller->SetHudScore(GetScore());
+}
+
 void AShooterPlayerState::OnRep_Score()
 {
 	Super::OnRep_Score();
@@ -27,6 +36,10 @@ void AShooterPlayerState::OnRep_Score()
 void AShooterPlayerState::UpdateScore(float InNewScore)
 {
 	Super::SetScore(InNewScore);
-	CheckInitMembers();
 
+	SetScore(InNewScore);
+	if (Character->HasAuthority())
+	{
+		UpdateScoreHud();
+	}
 }
