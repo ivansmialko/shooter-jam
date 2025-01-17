@@ -2,7 +2,9 @@
 
 
 #include "GameModes/ShooterGameMode.h"
+
 #include "Characters/ShooterCharacter.h"
+#include "PlayerState/ShooterPlayerState.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/ShooterCharacterController.h"
@@ -10,6 +12,17 @@
 
 void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
 {
+	if (!InAttackerController)
+		return;
+
+	AShooterPlayerState* AttackerPlayerState = InAttackerController->GetPlayerState<AShooterPlayerState>();
+	AShooterPlayerState* EliminatedPlayerState = InElimController->GetPlayerState<AShooterPlayerState>();
+	if ((!AttackerPlayerState || !EliminatedPlayerState)
+		|| AttackerPlayerState == EliminatedPlayerState)
+		return;
+
+	AttackerPlayerState->UpdateScore(AttackerPlayerState->GetScore() + 1.f);
+
 	if (!InElimCharacter)
 		return;
 

@@ -6,6 +6,9 @@
 #include "Blueprint/UserWidget.h"
 #include "CharacterOverlay.generated.h"
 
+class UProgressBar;
+class UTextBlock;
+
 /**
  * 
  */
@@ -17,8 +20,9 @@ class SHOOTERJAM_API UCharacterOverlay : public UUserWidget
 public:
 
 	UPROPERTY(meta = (BindWidget))
-	class UProgressBar* HealthBar;
+	UProgressBar* HealthBar;
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* HealthText;
-	
+	UTextBlock* HealthText;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ScoreAmount;
 };

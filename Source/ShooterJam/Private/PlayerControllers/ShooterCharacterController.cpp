@@ -9,6 +9,16 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+void AShooterCharacterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
+	if (!ShooterCharacter)
+		return;
+
+	SetHudHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth());
+}
 
 void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
 {
@@ -34,15 +44,24 @@ void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth
 	ShooterHud->GetCharacterOverlay()->HealthText->SetText(FText::FromString(HealthString));
 }
 
-void AShooterCharacterController::OnPossess(APawn* InPawn)
+void AShooterCharacterController::SetHudScore(float InScore)
 {
-	Super::OnPossess(InPawn);
+	if (!ShooterHud)
+	{
+		ShooterHud = Cast<AShooterHUD>(GetHUD());
+	}
 
-	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
-	if (!ShooterCharacter)
+	if (!ShooterHud)
 		return;
 
-	SetHudHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth());
+	if (!ShooterHud->GetCharacterOverlay())
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay()->ScoreAmount)
+		return;
+	
+	FString ScoreString{ FString::Printf(TEXT("%d"), FMath::FloorToInt(InScore)) };
+	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(ScoreString));
 }
 
 void AShooterCharacterController::BeginPlay()
