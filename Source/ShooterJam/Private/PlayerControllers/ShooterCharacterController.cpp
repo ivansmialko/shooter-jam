@@ -46,6 +46,8 @@ void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth
 
 void AShooterCharacterController::SetHudScore(float InScore)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Setting score %d"), FMath::FloorToInt(InScore));
+
 	if (!ShooterHud)
 	{
 		ShooterHud = Cast<AShooterHUD>(GetHUD());
@@ -81,7 +83,7 @@ void AShooterCharacterController::SetHudDefeats(int InDefeats)
 		return;
 
 	FString DefeatsString{ FString::Printf(TEXT("%d"), InDefeats) };
-	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(DefeatsString));
+	ShooterHud->GetCharacterOverlay()->DefeatsAmount->SetText(FText::FromString(DefeatsString));
 }
 
 void AShooterCharacterController::BeginPlay()

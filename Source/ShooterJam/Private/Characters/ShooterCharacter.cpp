@@ -191,7 +191,7 @@ void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Damage received"))
+	//UE_LOG(LogTemp, Warning, TEXT("Damage received"))
 
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
@@ -404,7 +404,7 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 
 void AShooterCharacter::OnRep_Health()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Replication works"));
+	//UE_LOG(LogTemp, Warning, TEXT("Replication works"));
 	ActionReceiveDamage();
 }
 
@@ -731,6 +731,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 	}
 
 	CheckHidePlayerIfCameraClose();
+	PollInit();
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

@@ -36,7 +36,7 @@ void AShooterPlayerState::UpdateDefeatsHud()
 	if (!Controller)
 		return;
 
-	Controller->SetHudScore(GetScore());
+	Controller->SetHudDefeats(GetDefeats());
 }
 
 void AShooterPlayerState::OnRep_Score()
@@ -59,8 +59,8 @@ void AShooterPlayerState::UpdateScore(float InNewScore)
 {
 	Super::SetScore(InNewScore);
 
-	SetScore(InNewScore);
-	if (Character->HasAuthority())
+	CheckInitMembers();
+	if (!Character->HasAuthority())
 	{
 		UpdateScoreHud();
 	}
@@ -69,6 +69,8 @@ void AShooterPlayerState::UpdateScore(float InNewScore)
 void AShooterPlayerState::UpdateDefeats(float InNewDefeats)
 {
 	Defeats = InNewDefeats;
+
+	CheckInitMembers();
 	if (!Character->HasAuthority())
 	{
 		UpdateDefeatsHud();
