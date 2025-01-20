@@ -9,6 +9,7 @@
 #include "Game/ShooterJam.h"
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerControllers/ShooterCharacterController.h"
+#include "PlayerState/ShooterPlayerState.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -308,6 +309,19 @@ float AShooterCharacter::CalculateSpeed() const
 	FVector CharacterVelocity{ GetVelocity() };
 	CharacterVelocity.Z = 0.f;
 	return static_cast<float>(CharacterVelocity.Size());
+}
+
+void AShooterCharacter::PollInit()
+{
+	if (PlayerState)
+		return;
+
+	PlayerState = GetPlayerState<AShooterPlayerState>();
+	if (!PlayerState)
+		return;
+
+	PlayerState->UpdateScoreHud();
+	PlayerState->UpdateDefeatsHud();
 }
 
 void AShooterCharacter::CalculateAimOffset_SimProxies()

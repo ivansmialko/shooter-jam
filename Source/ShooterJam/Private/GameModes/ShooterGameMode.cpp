@@ -22,6 +22,7 @@ void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharact
 		return;
 
 	AttackerPlayerState->UpdateScore(AttackerPlayerState->GetScore() + 1.f);
+	EliminatedPlayerState->UpdateDefeats(AttackerPlayerState->GetDefeats() + 1);
 
 	if (!InElimCharacter)
 		return;
