@@ -64,6 +64,26 @@ void AShooterCharacterController::SetHudScore(float InScore)
 	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(ScoreString));
 }
 
+void AShooterCharacterController::SetHudDefeats(int InDefeats)
+{
+	if (!ShooterHud)
+	{
+		ShooterHud = Cast<AShooterHUD>(GetHUD());
+	}
+
+	if (!ShooterHud)
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay())
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay()->DefeatsAmount)
+		return;
+
+	FString DefeatsString{ FString::Printf(TEXT("%d"), InDefeats) };
+	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(DefeatsString));
+}
+
 void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();

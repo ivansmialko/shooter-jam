@@ -6,6 +6,8 @@
 #include "Characters/ShooterCharacter.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 
+#include "Net/UnrealNetwork.h"
+
 void AShooterPlayerState::CheckInitMembers()
 {
 	if (!Character)
@@ -17,9 +19,18 @@ void AShooterPlayerState::CheckInitMembers()
 	{
 		Controller = Cast<AShooterCharacterController>(Character->GetController());
 	}
-}
+} 
 
 void AShooterPlayerState::UpdateScoreHud()
+{
+	CheckInitMembers();
+	if (!Controller)
+		return;
+
+	Controller->SetHudScore(GetScore());
+}
+
+void AShooterPlayerState::UpdateDefeatsHud()
 {
 	CheckInitMembers();
 	if (!Controller)
@@ -31,6 +42,17 @@ void AShooterPlayerState::UpdateScoreHud()
 void AShooterPlayerState::OnRep_Score()
 {
 	Super::OnRep_Score();
+	UpdateScoreHud();
+}
+
+void AShooterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	DOREPLIFETIME(AShooterPlayerState, Defeats);
+}
+
+void AShooterPlayerState::OnRep_Defeats()
+{
+	UpdateDefeatsHud();
 }
 
 void AShooterPlayerState::UpdateScore(float InNewScore)
@@ -41,5 +63,14 @@ void AShooterPlayerState::UpdateScore(float InNewScore)
 	if (Character->HasAuthority())
 	{
 		UpdateScoreHud();
+	}
+}
+
+void AShooterPlayerState::UpdateDefeats(float InNewDefeats)
+{
+	Defeats = InNewDefeats;
+	if (!Character->HasAuthority())
+	{
+		UpdateDefeatsHud();
 	}
 }

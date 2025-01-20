@@ -29,6 +29,7 @@ public:
 
 	void SetHudHealth(float InHealth, float InMaxHealth);
 	void SetHudScore(float InScore);
+	void SetHudDefeats(int InDefeats);
 
 protected:
 	//~ Begin AActor Inteface

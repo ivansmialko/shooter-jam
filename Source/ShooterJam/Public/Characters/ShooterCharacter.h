@@ -59,7 +59,8 @@ private:
 	UPROPERTY(EditDefaultsOnly)
 	float EliminationDelay{ 3.f };
 
-	class AShooterCharacterController* CharacterController;
+	class AShooterCharacterController* CharacterController{ nullptr };
+	class AShooterPlayerState* PlayerState{ nullptr };
 
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
@@ -151,6 +152,8 @@ protected:
 	void CalculateAimPitch();
 	void CalculateTurningInPlace(float DeltaTime);
 	float CalculateSpeed() const;
+
+	void PollInit();
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
