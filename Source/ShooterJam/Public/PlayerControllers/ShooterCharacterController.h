@@ -17,10 +17,21 @@ class SHOOTERJAM_API AShooterCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 
-
+//private methods
 private:
 	AShooterHUD* ShooterHud;
 
+//private methods
+private:
+	bool CheckInitHud();
+
+//protected methods
+protected:
+	//~ Begin AActor Inteface
+	virtual void BeginPlay() override;
+	//~ End AActor Interface
+
+//public methods
 public:
 
 	//~ Begin APlayerController Interface
@@ -29,10 +40,6 @@ public:
 
 	void SetHudHealth(float InHealth, float InMaxHealth);
 	void SetHudScore(float InScore);
-	void SetHudDefeats(int InDefeats);
-
-protected:
-	//~ Begin AActor Inteface
-	virtual void BeginPlay() override;
-	//~ End AActor Interface
+	void SetHudDefeats(int32 InDefeats);
+	void SetHudWeaponAmmo(int32 InAmmo);
 };

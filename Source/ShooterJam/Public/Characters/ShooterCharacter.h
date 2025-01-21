@@ -174,6 +174,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	virtual void Jump() override;
 	virtual void OnEliminated();
+	virtual void OnSpendRound(AWeaponBase* InWeapon);
 	virtual void Destroyed() override;
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);

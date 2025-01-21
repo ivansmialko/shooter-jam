@@ -1,6 +1,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Weaponry/BulletShell.h"
 #include "Characters/ShooterCharacter.h"
+#include "PlayerControllers/ShooterCharacterController.h"
 
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -47,6 +48,11 @@ void AWeaponBase::OnRep_WeaponState()
 	default:
 		break;
 	}
+}
+
+void AWeaponBase::OnRep_Ammo()
+{
+	SpendRoundNotifyOwner();
 }
 
 void AWeaponBase::OnStateEquipped()
@@ -97,6 +103,43 @@ void AWeaponBase::SpawnBulletShell()
 	FTransform EjectTransform{ AmmoEjectSocket->GetSocketTransform(Mesh) };
 
 	World->SpawnActor<ABulletShell>(BulletShellClass, EjectTransform.GetLocation(), EjectTransform.GetRotation().Rotator());
+}
+
+void AWeaponBase::SpendRound()
+{
+	--Ammo;
+	
+	if (CheckInitOwner() && OwnerCharacter->HasAuthority())
+	{
+		SpendRoundNotifyOwner();
+	}
+}
+
+void AWeaponBase::SpendRoundNotifyOwner()
+{
+	OwnerCharacter->OnSpendRound(this);
+}
+
+bool AWeaponBase::CheckInitOwner()
+{
+	if (OwnerCharacter && OwnerController)
+		return true;
+
+	if (!OwnerCharacter)
+	{
+		OwnerCharacter = Cast<AShooterCharacter>(GetOwner());
+	}
+	if (!OwnerCharacter)
+		return false;
+
+	if (!OwnerController)
+	{
+		OwnerController = Cast<AShooterCharacterController>(OwnerCharacter->GetController());
+	}
+	if (!OwnerCharacter)
+		return false;
+
+	return true;
 }
 
 void AWeaponBase::BeginPlay()
@@ -162,6 +205,7 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeaponBase, WeaponState);
+	DOREPLIFETIME(AWeaponBase, Ammo);
 }
 
 void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
@@ -208,5 +252,6 @@ void AWeaponBase::Fire(const FVector& HitTarget)
 	WeaponMesh->PlayAnimation(FireAnimation, false);
 
 	SpawnBulletShell();
+	SpendRound();
 }
 

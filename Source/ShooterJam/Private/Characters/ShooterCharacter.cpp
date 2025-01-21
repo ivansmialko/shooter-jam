@@ -791,6 +791,17 @@ void AShooterCharacter::OnEliminated()
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 }
 
+void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
+{
+	if (!InWeapon)
+		return;
+
+	if (!CharacterController)
+		return;
+
+	CharacterController->SetHudWeaponAmmo(InWeapon->GetWeaponAmmo());
+}
+
 void AShooterCharacter::Destroyed()
 {
 	Super::Destroy();

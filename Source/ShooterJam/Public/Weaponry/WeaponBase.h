@@ -70,6 +70,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float ZoomInterpSpeed{ 20.f };
 
+	UPROPERTY(EditAnywhere, Category = Ammo, ReplicatedUsing = OnRep_Ammo)
+	int32 Ammo;
+
+	UPROPERTY(EditAnywhere, Category = Ammo)
+	int32 MagCapacity;
+
+	UPROPERTY()
+	class AShooterCharacter* OwnerCharacter;
+	UPROPERTY()
+	class AShooterCharacterController* OwnerController;
+
 //protected members
 protected:
 	virtual void BeginPlay() override;
@@ -94,11 +105,17 @@ protected:
 private:
 	UFUNCTION()
 	void OnRep_WeaponState();
+	UFUNCTION()
+	void OnRep_Ammo();
 
 	void OnStateEquipped();
 	void OnStateDropped();
 
 	void SpawnBulletShell();
+	void SpendRound();
+	void SpendRoundNotifyOwner();
+
+	bool CheckInitOwner();
 
 //public methods
 public:
@@ -131,4 +148,5 @@ public:
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
+	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
 };
