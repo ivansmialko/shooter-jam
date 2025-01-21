@@ -20,17 +20,7 @@ class SHOOTERJAM_API AWeaponBase : public AActor
 {
 	GENERATED_BODY()
 	
-public:	
-	AWeaponBase();
-	virtual void Tick(float DeltaTime) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	void ShowPickUpWidget(bool bShowWidget);
-	void ChangeWeaponState(EWeaponState InState);
-	virtual void Fire(const FVector& HitTarget);
-
-	void OnDropped();
-
+//private members
 private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
 	USkeletalMeshComponent* WeaponMesh;
@@ -80,14 +70,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float ZoomInterpSpeed{ 20.f };
 
-	UFUNCTION()
-	void OnRep_WeaponState();
-
-	void OnStateEquipped();
-	void OnStateDropped();
-
-	void SpawnBulletShell();
-
+//protected members
 protected:
 	virtual void BeginPlay() override;
 
@@ -107,7 +90,35 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
+//private methods
+private:
+	UFUNCTION()
+	void OnRep_WeaponState();
 
+	void OnStateEquipped();
+	void OnStateDropped();
+
+	void SpawnBulletShell();
+
+//public methods
+public:
+	AWeaponBase();
+
+	//~ Begin AActor Inteface
+	virtual void Tick(float DeltaTime) override;
+	//~ End AActor Interface
+
+	//~ Begin UObject Interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~ End UObject Interface
+
+	void ShowPickUpWidget(bool bShowWidget);
+	void ChangeWeaponState(EWeaponState InState);
+	virtual void Fire(const FVector& HitTarget);
+
+	void OnDropped();
+
+//public getters
 public:
 	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
