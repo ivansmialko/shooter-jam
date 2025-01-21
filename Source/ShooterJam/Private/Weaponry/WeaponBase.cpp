@@ -52,7 +52,7 @@ void AWeaponBase::OnRep_WeaponState()
 
 void AWeaponBase::OnRep_Ammo()
 {
-	SpendRoundNotifyOwner();
+	NotifyOwner_Ammo();
 }
 
 void AWeaponBase::OnStateEquipped()
@@ -111,12 +111,15 @@ void AWeaponBase::SpendRound()
 	
 	if (CheckInitOwner() && OwnerCharacter->HasAuthority())
 	{
-		SpendRoundNotifyOwner();
+		NotifyOwner_Ammo();
 	}
 }
 
-void AWeaponBase::SpendRoundNotifyOwner()
+void AWeaponBase::NotifyOwner_Ammo()
 {
+	if (!CheckInitOwner())
+		return;
+
 	OwnerCharacter->OnSpendRound(this);
 }
 
@@ -193,11 +196,30 @@ void AWeaponBase::OnDropped()
 
 	WeaponMesh->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
 	SetOwner(nullptr);
+	OwnerCharacter = nullptr;
+	OwnerController = nullptr;
 }
 
 void AWeaponBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void AWeaponBase::OnRep_Owner()
+{
+	Super::OnRep_Owner();
+
+	if (!GetOwner())
+	{
+		OwnerCharacter = nullptr;
+		OwnerController = nullptr;
+		return;
+	}
+
+	if (!CheckInitOwner())
+		return;
+
+	NotifyOwner_Ammo();
 }
 
 void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

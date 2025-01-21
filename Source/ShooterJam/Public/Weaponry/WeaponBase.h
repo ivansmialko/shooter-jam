@@ -113,7 +113,6 @@ private:
 
 	void SpawnBulletShell();
 	void SpendRound();
-	void SpendRoundNotifyOwner();
 
 	bool CheckInitOwner();
 
@@ -123,6 +122,7 @@ public:
 
 	//~ Begin AActor Inteface
 	virtual void Tick(float DeltaTime) override;
+	virtual void OnRep_Owner() override;
 	//~ End AActor Interface
 
 	//~ Begin UObject Interface
@@ -131,6 +131,8 @@ public:
 
 	void ShowPickUpWidget(bool bShowWidget);
 	void ChangeWeaponState(EWeaponState InState);
+	void NotifyOwner_Ammo();
+
 	virtual void Fire(const FVector& HitTarget);
 
 	void OnDropped();

@@ -24,6 +24,7 @@ public:
 	
 	void EquipWeapon(class AWeaponBase* InWeaponToEquip);
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void DropWeapon();
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
