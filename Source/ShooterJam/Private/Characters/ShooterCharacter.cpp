@@ -441,6 +441,11 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 	PlayElimbotEffect();
 
 	DisableCharacter();
+
+	if (!CharacterController)
+		return;
+
+	CharacterController->SetHudWeaponAmmo(0);
 }
 
 void AShooterCharacter::ActionEquip()
