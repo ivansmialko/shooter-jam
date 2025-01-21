@@ -22,15 +22,7 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 
 void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
 {
-	if (!ShooterHud)
-	{
-		ShooterHud = Cast<AShooterHUD>(GetHUD());
-	}
-
-	if (!ShooterHud)
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay())
+	if (!CheckInitHud())
 		return;
 
 	if(!ShooterHud->GetCharacterOverlay()->HealthBar
@@ -46,17 +38,7 @@ void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth
 
 void AShooterCharacterController::SetHudScore(float InScore)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Setting score %d"), FMath::FloorToInt(InScore));
-
-	if (!ShooterHud)
-	{
-		ShooterHud = Cast<AShooterHUD>(GetHUD());
-	}
-
-	if (!ShooterHud)
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay())
+	if (!CheckInitHud())
 		return;
 
 	if (!ShooterHud->GetCharacterOverlay()->ScoreAmount)
@@ -66,17 +48,9 @@ void AShooterCharacterController::SetHudScore(float InScore)
 	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(ScoreString));
 }
 
-void AShooterCharacterController::SetHudDefeats(int InDefeats)
+void AShooterCharacterController::SetHudDefeats(int32 InDefeats)
 {
-	if (!ShooterHud)
-	{
-		ShooterHud = Cast<AShooterHUD>(GetHUD());
-	}
-
-	if (!ShooterHud)
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay())
+	if (!CheckInitHud())
 		return;
 
 	if (!ShooterHud->GetCharacterOverlay()->DefeatsAmount)
@@ -84,6 +58,34 @@ void AShooterCharacterController::SetHudDefeats(int InDefeats)
 
 	FString DefeatsString{ FString::Printf(TEXT("%d"), InDefeats) };
 	ShooterHud->GetCharacterOverlay()->DefeatsAmount->SetText(FText::FromString(DefeatsString));
+}
+
+void AShooterCharacterController::SetHudWeaponAmmo(int32 InAmmo)
+{
+	if (!CheckInitHud())
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount)
+		return;
+
+	FString WeaponAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
+	ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount->SetText(FText::FromString(WeaponAmmoString));
+}
+
+bool AShooterCharacterController::CheckInitHud()
+{
+	if (!ShooterHud)
+	{
+		ShooterHud = Cast<AShooterHUD>(GetHUD());
+	}
+
+	if (!ShooterHud)
+		return false;
+
+	if (!ShooterHud->GetCharacterOverlay())
+		return false;
+
+	return true;
 }
 
 void AShooterCharacterController::BeginPlay()
