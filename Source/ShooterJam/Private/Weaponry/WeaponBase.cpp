@@ -107,7 +107,7 @@ void AWeaponBase::SpawnBulletShell()
 
 void AWeaponBase::SpendRound()
 {
-	--Ammo;
+	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	
 	if (CheckInitOwner() && OwnerCharacter->HasAuthority())
 	{

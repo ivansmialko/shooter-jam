@@ -168,7 +168,7 @@ void UCombatComponent::OnFireTimerFinished()
 
 void UCombatComponent::FireWeapon()
 {
-	if (!bIsCanFire)
+	if (!CheckCanFire())
 		return;
 
 	//UE_LOG(LogTemp, Warning, TEXT("FireWeapon: Received firing"));
@@ -180,6 +180,20 @@ void UCombatComponent::FireWeapon()
 	Server_FireWeapon(HitTarget);
 
 	StartFireTimer();
+}
+
+bool UCombatComponent::CheckCanFire()
+{
+	if (!EquippedWeapon)
+		return false;
+
+	if (EquippedWeapon->IsEmpty())
+		return false;
+
+	if (!bIsCanFire)
+		return false;
+
+	return true;
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
