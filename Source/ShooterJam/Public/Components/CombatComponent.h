@@ -10,31 +10,15 @@
 #include "CombatComponent.generated.h"
 
 
+class AShooterCharacter;
+class AShooterCharacterController;
+class AShooterHUD;
+class AWeaponBase;
+
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERJAM_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
-
-public:	
-	UCombatComponent();
-	friend class AShooterCharacter;
-
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	
-	void EquipWeapon(class AWeaponBase* InWeaponToEquip);
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
-	void DropWeapon();
-
-	UFUNCTION()
-	void OnRep_EquippedWeapon();
-
-	UFUNCTION(Server, Reliable)
-	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
-
-	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
-
 private:
 	class AShooterCharacter* Character;
 	class AShooterCharacterController* CharacterController;
@@ -68,6 +52,31 @@ private:
 	FTimerHandle FireTimerHandler;
 	bool bIsCanFire{ true };
 
+public:
+	UCombatComponent();
+	friend class AShooterCharacter;
+
+	//~ Begin UActorComponent Interface
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	//~ End UActorComponent Interface
+
+	//~ Begin UObject Interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~ End UObject Interface
+
+	void EquipWeapon(AWeaponBase* InWeaponToEquip);
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
+	void DropWeapon();
+
+	UFUNCTION()
+	void OnRep_EquippedWeapon();
+
+	UFUNCTION(Server, Reliable)
+	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -77,6 +86,7 @@ protected:
 	void StartFireTimer();
 	void OnFireTimerFinished();
 	void FireWeapon();
+	bool CheckCanFire();
 
 public:
 	bool GetIsWeaponEquipped() const;

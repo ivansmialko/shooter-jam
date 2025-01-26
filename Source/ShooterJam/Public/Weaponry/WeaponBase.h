@@ -151,4 +151,5 @@ public:
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
+	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
 };
