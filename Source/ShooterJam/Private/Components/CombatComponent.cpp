@@ -31,6 +31,11 @@ void UCombatComponent::BeginPlay()
 		FovDefault = Character->GetFollowCamera()->FieldOfView;
 		FovCurrent = FovDefault;
 	}
+
+	if (Character->HasAuthority())
+	{
+		InitializeCarriedAmmo();
+	}
 }
 
 
@@ -242,8 +247,10 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 		return;
 
 	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+
 	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 	EquippedWeapon->SetOwner(Character);
+
 	//Notify owner character to update "ammo" count if on server. If on client - it will happen in OnRep_Owner, on the line above
 	if (Character->HasAuthority())
 	{
@@ -252,26 +259,8 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
-}
 
-bool UCombatComponent::GetIsWeaponEquipped() const
-{
-	return (EquippedWeapon != nullptr);
-}
-
-bool UCombatComponent::GetIsAiming() const
-{
-	return bIsAiming;
-}
-
-AWeaponBase* UCombatComponent::GetEquippedWeapon() const
-{
-	return EquippedWeapon;
-}
-
-FVector UCombatComponent::GetHitTarget() const
-{
-	return HitTarget;
+	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
 }
 
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
@@ -324,7 +313,10 @@ void UCombatComponent::OnRep_EquippedWeapon()
 
 void UCombatComponent::OnRep_CarriedAmmo()
 {
+	if (!EquippedWeapon)
+		return;
 
+	EquippedWeapon->NotifyOwner_Ammo();
 }
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -346,6 +338,19 @@ void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuan
 		return;
 
 	Character->PlayFireMontage(bIsAiming);
+}
+
+void UCombatComponent::InitializeCarriedAmmo()
+{
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_AR, StartingArAmmo);
+}
+
+void UCombatComponent::UpdateCurrentCarriedAmmo(const EWeaponType WeaponType)
+{
+	if (!CarriedAmmoMap.Contains(WeaponType))
+		return;
+
+	CarriedAmmo = CarriedAmmoMap[WeaponType];
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
