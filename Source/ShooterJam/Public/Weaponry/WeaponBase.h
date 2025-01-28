@@ -3,7 +3,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Animation/AnimationAsset.h"
+
+#include "Weaponry/WeaponTypes.h"
+
 #include "WeaponBase.generated.h"
+
+
+class USphereComponent;
+class UWidgetComponent;
+class ABulletShell;
+class UTexture2D;
+class AShooterCharacter;
+class AShooterCharacterController;
 
 UENUM()
 enum class EWeaponState : uint8
@@ -22,20 +33,11 @@ class SHOOTERJAM_API AWeaponBase : public AActor
 	
 //private members
 private:
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	USkeletalMeshComponent* WeaponMesh;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class USphereComponent* AreaSphere;
-
-	UPROPERTY(ReplicatedUsing = OnRep_WeaponState, VisibleAnywhere, Category = "Weapon Properties")
-	EWeaponState WeaponState;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon Properties")
-	class UWidgetComponent* PickUpWidget;
+	UPROPERTY(VisibleAnywhere, Category = "Weapon Physics")
+	USphereComponent* AreaSphere;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	class UAnimationAsset* FireAnimation;
+	EWeaponType WeaponType;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bIsAutomatic{ false };
@@ -43,43 +45,57 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 FireRate{ 30 };
 
-	//Calculated at beginplay, based on FireRate (bullets per minute)
-	float FireDelay{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ABulletShell> BulletShellClass;
-
-	UPROPERTY(EditAnywhere, Category = Crosshairs)
-	class UTexture2D* CrosshairsCenter;
-
-	UPROPERTY(EditAnywhere, Category = Crosshairs)
-	UTexture2D* CrosshairsLeft;
-
-	UPROPERTY(EditAnywhere, Category = Crosshairs)
-	UTexture2D* CrosshairsRight;
-
-	UPROPERTY(EditAnywhere, Category = Crosshairs)
-	UTexture2D* CrosshairsTop;
-
-	UPROPERTY(EditAnywhere, Category = Crosshairs)
-	UTexture2D* CrosshairsBottom;
-
-	UPROPERTY(EditAnywhere, Category = Zoom)
-	float FovZoomed{ 30.f };
-
-	UPROPERTY(EditAnywhere, Category = Zoom)
-	float ZoomInterpSpeed{ 20.f };
-
-	UPROPERTY(EditAnywhere, Category = Ammo, ReplicatedUsing = OnRep_Ammo)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_Ammo)
 	int32 Ammo;
 
-	UPROPERTY(EditAnywhere, Category = Ammo)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 MagCapacity;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	TSubclassOf<ABulletShell> BulletShellClass;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UTexture2D* CrosshairsCenter;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UTexture2D* CrosshairsLeft;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UTexture2D* CrosshairsRight;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UTexture2D* CrosshairsTop;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UTexture2D* CrosshairsBottom;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Feel")
+	float FovZoomed{ 30.f };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Feel")
+	float ZoomInterpSpeed{ 20.f };
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon State", ReplicatedUsing = OnRep_WeaponState)
+	EWeaponState WeaponState;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon State")
+	UWidgetComponent* PickUpWidget;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon State")
+	UAnimationAsset* FireAnimation;
+
+	UPROPERTY(VisibleAnywhere, Category = "Weapon State")
+	USkeletalMeshComponent* WeaponMesh;
+
+
 	UPROPERTY()
-	class AShooterCharacter* OwnerCharacter;
+	AShooterCharacter* OwnerCharacter;
+
 	UPROPERTY()
-	class AShooterCharacterController* OwnerController;
+	AShooterCharacterController* OwnerController;
+
+	//Calculated at beginplay, based on FireRate (bullets per minute)
+	float FireDelay{ 0 };
 
 //protected members
 protected:
@@ -139,17 +155,18 @@ public:
 
 //public getters
 public:
-	FORCEINLINE class USphereComponent* GetAreaSphere() const { return AreaSphere; }
+	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
+	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
+	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
+	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
+	FORCEINLINE float GetFireDelay() const { return FireDelay; }
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE UTexture2D* GetCrosshairsCenter() const { return CrosshairsCenter; }
 	FORCEINLINE UTexture2D* GetCrosshairsLeft() const { return CrosshairsLeft; }
 	FORCEINLINE UTexture2D* GetCrosshairsRight() const { return CrosshairsRight; }
 	FORCEINLINE UTexture2D* GetCrosshairsTop() const { return CrosshairsTop; }
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
-	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
-	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
-	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
-	FORCEINLINE float GetFireDelay() const { return FireDelay; }
-	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
-	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
 };

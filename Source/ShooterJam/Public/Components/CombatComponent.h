@@ -23,44 +23,59 @@ class SHOOTERJAM_API UCombatComponent : public UActorComponent
 
 //private fields
 private:
-	class AShooterCharacter* Character;
-	class AShooterCharacterController* CharacterController;
-	class AShooterHUD* ShooterHud;
-	FHUDPackage HudPackage;
-	FVector HitTarget;
 
+	//~ Begin Replicated fields
+	/** True if player holding aim button */
+	UPROPERTY(Replicated)
+	bool bIsAiming;
+
+	/** True if player holding fire button */
+	UPROPERTY(Replicated)
+	bool bIsFiring;
+
+	/** A weapon, player currently equipped with. Replicates to all machines */
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponBase* EquippedWeapon;
 
-	UPROPERTY(Replicated)
-	bool bIsAiming;
-	UPROPERTY(Replicated)
-	bool bIsFiring;
+	/**
+	 * Ammo carried for the currently equipped weapon
+	 * Using thing because TMap<EWeaponType, int32> cannot be replicated
+	 * Replicates only to owner machine
+	 */
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+	//~ End Replicated fields
+
+	//~ Begin Exposed fields
+	UPROPERTY(EditAnywhere, Category = Zoom)
+	float FovZoomed{ 30.f };
+
+	UPROPERTY(EditAnywhere, Category = Zoom)
+	float ZoomInterpSpeed{ 20.f };
+	//~ End Exposed fields
+
+	class AShooterCharacter* Character;
+	class AShooterCharacterController* CharacterController;
+	class AShooterHUD* ShooterHud;
+	FTimerHandle FireTimerHandler;
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+	FHUDPackage HudPackage;
+	FVector HitTarget;
 
 	//Crosshairs spread
 	float CrosshairVelocityFactor;
 	float CrosshairInAirFactor;
 	float CrosshairAimFactor;
 	float CrosshairShootingFactor;
-
 	//Aim FOV change
 	float FovCurrent;
 	float FovDefault;
-	UPROPERTY(EditAnywhere, Category = Zoom)
-	float FovZoomed{ 30.f };
-	UPROPERTY(EditAnywhere, Category = Zoom)
-	float ZoomInterpSpeed{ 20.f };
 
 	//Automatic fire
-	FTimerHandle FireTimerHandler;
 	bool bIsCanFire{ true };
 
-	//Ammo carried for the currently equipped weapon
-	//Using thing because TMap<> cannot be replicated
-	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
-	int32 CarriedAmmo;
-
-	TMap<EWeaponType, int32> CarriedAmmoMap;
+	UPROPERTY(EditAnywhere)
+	int32 StartingArAmmo{ 30 };
 
 //public methods
 public:
@@ -91,9 +106,17 @@ public:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
 
+
+//private methods
+private:
+	void InitializeCarriedAmmo();
+	void UpdateCurrentCarriedAmmo(const EWeaponType WeaponType);
+
 //protected methods
 protected:
+	//~ Begin UActorComponent Interface
 	virtual void BeginPlay() override;
+	//~ End UActorComponent Interface
 
 	void SetHUDCrosshairs(float DeltaTime);
 	void InterpFov(float DeltaTime);
@@ -103,13 +126,15 @@ protected:
 	void FireWeapon();
 	bool CheckCanFire();
 
-//public methods
+//public getters/setters
 public:
-	bool GetIsWeaponEquipped() const;
-	bool GetIsAiming() const;
+	FORCEINLINE bool GetIsWeaponEquipped() const { return EquippedWeapon != nullptr; }
+	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
+	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
+	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
+	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
+
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
 	void SetHitTarget(const FVector& TraceHitTarget);
-	AWeaponBase* GetEquippedWeapon() const;
-	FVector GetHitTarget() const;
 };

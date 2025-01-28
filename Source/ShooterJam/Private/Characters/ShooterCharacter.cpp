@@ -804,7 +804,11 @@ void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
 	if (!CharacterController)
 		return;
 
+	if (!CombatComponent)
+		return;
+
 	CharacterController->SetHudWeaponAmmo(InWeapon->GetWeaponAmmo());
+	CharacterController->SetHudCarriedAmmo(CombatComponent->GetCarriedAmmo());
 }
 
 void AShooterCharacter::Destroyed()
