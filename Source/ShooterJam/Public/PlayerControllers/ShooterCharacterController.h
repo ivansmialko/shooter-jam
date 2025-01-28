@@ -42,5 +42,7 @@ public:
 	void SetHudScore(float InScore);
 	void SetHudDefeats(int32 InDefeats);
 	void SetHudWeaponAmmo(int32 InAmmo);
+	void SetHudCarriedAmmoEmpty();
 	void SetHudCarriedAmmo(int32 InAmmo);
+	void SetHudWeaponAmmoEmpty();
 };

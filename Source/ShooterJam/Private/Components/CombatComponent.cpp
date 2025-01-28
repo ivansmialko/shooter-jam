@@ -241,14 +241,13 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	}
 
 	EquippedWeapon = InWeaponToEquip;
+	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 
 	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("RightHandSocket")) };
 	if (!HandSocket)
 		return;
 
 	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
-
-	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 	EquippedWeapon->SetOwner(Character);
 
 	//Notify owner character to update "ammo" count if on server. If on client - it will happen in OnRep_Owner, on the line above
@@ -435,6 +434,16 @@ void UCombatComponent::DropWeapon()
 		return;
 
 	EquippedWeapon->OnDropped();
+	EquippedWeapon = nullptr;
+}
+
+void UCombatComponent::DropWeaponLaunch()
+{
+	if (!EquippedWeapon)
+		return;
+
+	EquippedWeapon->OnDropped();
+	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * 1000);
 	EquippedWeapon = nullptr;
 }
 

@@ -103,6 +103,8 @@ protected:
 	UInputAction* AimAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* FireAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* DropWeaponAction;
 
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float BaseWalkSpeed{ 600.f };
@@ -141,6 +143,7 @@ protected:
 	void OnAimEnd(const FInputActionValue& Value);
 	void OnFireStart(const FInputActionValue& Value);
 	void OnFireEnd(const FInputActionValue& Value);
+	void OnDropWeapon(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);

@@ -93,6 +93,7 @@ public:
 	void EquipWeapon(AWeaponBase* InWeaponToEquip);
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	void DropWeapon();
+	void DropWeaponLaunch();
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();

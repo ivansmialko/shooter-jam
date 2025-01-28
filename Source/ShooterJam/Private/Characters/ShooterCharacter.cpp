@@ -188,6 +188,20 @@ void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 	CombatComponent->SetIsFiring(false);
 }
 
+void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->DropWeaponLaunch();
+
+	if (!CharacterController)
+		return;
+
+	CharacterController->SetHudWeaponAmmoEmpty();
+	CharacterController->SetHudCarriedAmmoEmpty();
+}
+
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
@@ -756,6 +770,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(AimAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnAimEnd);
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Started, this, &AShooterCharacter::OnFireStart);
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnFireEnd);
+	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
