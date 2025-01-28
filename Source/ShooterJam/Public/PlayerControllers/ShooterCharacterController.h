@@ -17,7 +17,7 @@ class SHOOTERJAM_API AShooterCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 
-//private methods
+//private variables
 private:
 	AShooterHUD* ShooterHud;
 
@@ -42,4 +42,5 @@ public:
 	void SetHudScore(float InScore);
 	void SetHudDefeats(int32 InDefeats);
 	void SetHudWeaponAmmo(int32 InAmmo);
+	void SetHudCarriedAmmo(int32 InAmmo);
 };

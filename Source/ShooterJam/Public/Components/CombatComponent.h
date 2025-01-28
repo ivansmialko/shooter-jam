@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
+#include "Weaponry/WeaponTypes.h"
 #include "HUD/ShooterHUD.h"
 
 #include "CombatComponent.generated.h"
@@ -19,6 +20,8 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERJAM_API UCombatComponent : public UActorComponent
 {
 	GENERATED_BODY()
+
+//private fields
 private:
 	class AShooterCharacter* Character;
 	class AShooterCharacterController* CharacterController;
@@ -52,6 +55,14 @@ private:
 	FTimerHandle FireTimerHandler;
 	bool bIsCanFire{ true };
 
+	//Ammo carried for the currently equipped weapon
+	//Using thing because TMap<> cannot be replicated
+	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
+	int32 CarriedAmmo;
+
+	TMap<EWeaponType, int32> CarriedAmmoMap;
+
+//public methods
 public:
 	UCombatComponent();
 	friend class AShooterCharacter;
@@ -71,12 +82,16 @@ public:
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
+	UFUNCTION()
+	void OnRep_CarriedAmmo();
+
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
 
+//protected methods
 protected:
 	virtual void BeginPlay() override;
 
@@ -88,6 +103,7 @@ protected:
 	void FireWeapon();
 	bool CheckCanFire();
 
+//public methods
 public:
 	bool GetIsWeaponEquipped() const;
 	bool GetIsAiming() const;

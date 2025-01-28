@@ -219,6 +219,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bIsAiming);
+	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 }
 
 void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
@@ -319,6 +320,11 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		return;
 
 	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+}
+
+void UCombatComponent::OnRep_CarriedAmmo()
+{
+
 }
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
