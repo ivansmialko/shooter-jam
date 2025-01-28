@@ -72,6 +72,18 @@ void AShooterCharacterController::SetHudWeaponAmmo(int32 InAmmo)
 	ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount->SetText(FText::FromString(WeaponAmmoString));
 }
 
+void AShooterCharacterController::SetHudCarriedAmmo(int32 InAmmo)
+{
+	if (!CheckInitHud())
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount)
+		return;
+
+	FString CarriedAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
+	ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount->SetText(FText::FromString(CarriedAmmoString));
+}
+
 bool AShooterCharacterController::CheckInitHud()
 {
 	if (!ShooterHud)
