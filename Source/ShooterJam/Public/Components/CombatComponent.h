@@ -125,6 +125,10 @@ private:
 	void InitializeCarriedAmmo();
 	void UpdateCurrentCarriedAmmo(const EWeaponType WeaponType);
 
+//public methods
+public:
+	void OnReloadFinished();
+
 //protected methods
 protected:
 	//~ Begin UActorComponent Interface
@@ -134,8 +138,9 @@ protected:
 	void SetHUDCrosshairs(float DeltaTime);
 	void InterpFov(float DeltaTime);
 
-	void StartFireTimer();
 	void OnFireTimerFinished();
+
+	void StartFireTimer();
 	void FireWeapon();
 	bool CheckCanFire();
 

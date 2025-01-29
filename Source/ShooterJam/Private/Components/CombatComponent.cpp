@@ -171,6 +171,17 @@ void UCombatComponent::OnFireTimerFinished()
 	FireWeapon();
 }
 
+void UCombatComponent::OnReloadFinished()
+{
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 void UCombatComponent::FireWeapon()
 {
 	if (!CheckCanFire())
@@ -472,6 +483,9 @@ void UCombatComponent::DropWeaponLaunch()
 void UCombatComponent::ReloadWeapon()
 {
 	if (!Character)
+		return;
+
+	if (CombatState == ECombatState::ECS_Reloading)
 		return;
 
 	CombatState = ECombatState::ECS_Reloading;

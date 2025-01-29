@@ -652,6 +652,14 @@ void AShooterCharacter::PlayReloadMontage()
 	AnimInstance->Montage_JumpToSection(SectionName);
 }
 
+void AShooterCharacter::OnReloadFinished()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnReloadFinished();
+}
+
 void AShooterCharacter::PlayHitReactMontage()
 {
 	if (!CombatComponent)

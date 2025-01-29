@@ -45,6 +45,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	TurningInPlace = ShooterCharacter->GetTurningInPlace();
 	bRotateRootBone = ShooterCharacter->GetRotateRootBone();
 	bIsEliminated = ShooterCharacter->GetIsEliminated();
+	bUseFabrik = !ShooterCharacter->GetIsReloading();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 
@@ -91,4 +92,12 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 			//DrawDebugLine(GetWorld(), MuzzleTipTransform.GetLocation(), ShooterCharacter->GetHitTarget(), FColor::Cyan);
 		}
 	}
+}
+
+void UShooterCharacterAnimInstance::Native_OnReloadFinished()
+{
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->OnReloadFinished();
 }
