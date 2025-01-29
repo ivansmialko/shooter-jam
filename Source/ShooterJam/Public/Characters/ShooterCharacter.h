@@ -12,27 +12,36 @@
 
 #include "ShooterCharacter.generated.h"
 
+class USpringArmComponent;
+class UCameraComponent;
+class UWidgetComponent;
+class AWeaponBase;
+class UCombatComponent;
+class UAnimMontage;
+
 UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
 {
 	GENERATED_BODY()
 private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class USpringArmComponent* CameraBoom;
+	USpringArmComponent* CameraBoom;
 	UPROPERTY(VisibleAnywhere, Category = Camera)
-	class UCameraComponent* FollowCamera;
+	UCameraComponent* FollowCamera;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class UWidgetComponent* OverheadWidget;
+	UWidgetComponent* OverheadWidget;
 	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
-	class AWeaponBase* OverlappingWeapon;
+	AWeaponBase* OverlappingWeapon;
 	UPROPERTY(VisibleAnywhere)
-	class UCombatComponent* CombatComponent;	
-	UPROPERTY(EditAnywhere, Category = Animation)
-	class UAnimMontage* FireWeaponMontage;
-	UPROPERTY(EditAnywhere, Category = Animation)
+	UCombatComponent* CombatComponent;	
+	UPROPERTY(EditAnywhere, Category = Animations)
+	UAnimMontage* FireWeaponMontage;
+	UPROPERTY(EditAnywhere, Category = Animations)
 	UAnimMontage* HitReactMontage;
-	UPROPERTY(EditAnywhere, Category = Animation)
+	UPROPERTY(EditAnywhere, Category = Animations)
 	UAnimMontage* EliminationMontage;
+	UPROPERTY(EditAnywhere, Category = Animations)
+	UAnimMontage* ReloadMontage;
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UCurveFloat* DissolveCurve;
 	UPROPERTY(EditAnywhere, Category = Effects)
@@ -74,6 +83,8 @@ private:
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
+	UFUNCTION(Server, Reliable)
+	void Server_OnReload();
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnEliminated();
 
@@ -81,6 +92,7 @@ private:
 	void ActionAimStart();
 	void ActionAimEnd();
 	void ActionReceiveDamage();
+	void ActionReload();
 
 	void DisableCharacter();
 	void DropWeapon();
@@ -105,6 +117,8 @@ protected:
 	UInputAction* FireAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputAction* DropWeaponAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UInputAction* ReloadAction;
 
 	UPROPERTY(EditAnywhere, Category = Movement)
 	float BaseWalkSpeed{ 600.f };
@@ -144,6 +158,7 @@ protected:
 	void OnFireStart(const FInputActionValue& Value);
 	void OnFireEnd(const FInputActionValue& Value);
 	void OnDropWeapon(const FInputActionValue& Value);
+	void OnReload(const FInputActionValue& Value);
 
 	UFUNCTION()
 	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
@@ -199,4 +214,5 @@ public:
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
+	void PlayReloadMontage();
 };

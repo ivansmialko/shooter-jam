@@ -10,6 +10,7 @@
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "PlayerState/ShooterPlayerState.h"
+#include "Weaponry/WeaponTypes.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -200,6 +201,18 @@ void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 
 	CharacterController->SetHudWeaponAmmoEmpty();
 	CharacterController->SetHudCarriedAmmoEmpty();
+}
+
+void AShooterCharacter::OnReload(const FInputActionValue& Value)
+{
+	if (HasAuthority())
+	{
+		ActionReload();
+	}
+	else
+	{
+		Server_OnReload();
+	}
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -446,6 +459,11 @@ void AShooterCharacter::Server_OnAimEnd_Implementation()
 	ActionAimEnd();
 }
 
+void AShooterCharacter::Server_OnReload_Implementation()
+{
+	ActionReload();
+}
+
 void AShooterCharacter::Multicast_OnEliminated_Implementation()
 {
 	bIsEliminated = true;
@@ -492,6 +510,14 @@ void AShooterCharacter::ActionReceiveDamage()
 {
 	PlayHitReactMontage();
 	HudUpdateHealth();
+}
+
+void AShooterCharacter::ActionReload()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->ReloadWeapon();
 }
 
 void AShooterCharacter::DisableCharacter()
@@ -644,6 +670,38 @@ void AShooterCharacter::PlayEliminationMontage()
 	AnimInstance->Montage_Play(EliminationMontage);
 }
 
+void AShooterCharacter::PlayReloadMontage()
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+		return;
+
+	if (!GetMesh())
+		return;
+
+	if (!ReloadMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	FName SectionName;
+	switch (CombatComponent->GetEquippedWeapon()->GetWeaponType())
+	{
+	case EWeaponType::EWT_AR:
+		SectionName = FName("Rifle");
+		break;
+	default:
+		break;
+	}
+
+	AnimInstance->Montage_Play(ReloadMontage);
+	AnimInstance->Montage_JumpToSection(SectionName);
+}
+
 void AShooterCharacter::PlayHitReactMontage()
 {
 	if (!CombatComponent)
@@ -771,6 +829,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Started, this, &AShooterCharacter::OnFireStart);
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnFireEnd);
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
+	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnReload);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

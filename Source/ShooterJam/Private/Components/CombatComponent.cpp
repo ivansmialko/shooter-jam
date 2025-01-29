@@ -447,3 +447,11 @@ void UCombatComponent::DropWeaponLaunch()
 	EquippedWeapon = nullptr;
 }
 
+void UCombatComponent::ReloadWeapon()
+{
+	if (!Character)
+		return;
+
+	Character->PlayReloadMontage();
+}
+
