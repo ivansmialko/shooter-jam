@@ -201,6 +201,11 @@ bool UCombatComponent::CheckCanFire()
 	return true;
 }
 
+void UCombatComponent::OnStateReload()
+{
+	Character->PlayReloadMontage();
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -224,6 +229,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bIsAiming);
+	DOREPLIFETIME(UCombatComponent, CombatState);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 }
 
@@ -316,6 +322,22 @@ void UCombatComponent::OnRep_CarriedAmmo()
 		return;
 
 	EquippedWeapon->NotifyOwner_Ammo();
+}
+
+void UCombatComponent::OnRep_CombatState()
+{
+	switch (CombatState)
+	{
+	case ECombatState::ECS_Unoccupied:
+		break;
+	case ECombatState::ECS_Reloading:
+	{
+		OnStateReload();
+	}
+		break;
+	default:
+		break;
+	}
 }
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -452,6 +474,10 @@ void UCombatComponent::ReloadWeapon()
 	if (!Character)
 		return;
 
-	Character->PlayReloadMontage();
+	CombatState = ECombatState::ECS_Reloading;
+	if (Character->HasAuthority())
+	{
+		OnStateReload();
+	}
 }
 
