@@ -237,15 +237,17 @@ public:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	virtual void PostInitializeComponents() override;
 	virtual void Jump() override;
+	virtual void Destroyed() override;
+
 	virtual void OnEliminated();
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
-	virtual void Destroyed() override;
+	virtual void OnReloadFinished();
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
 	void PlayReloadMontage();
 
-//public getters/setters
+	//public getters/setters
 public:
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
@@ -255,12 +257,14 @@ public:
 	FORCEINLINE bool GetIsAiming() const { return (CombatComponent && CombatComponent->GetIsAiming()); }
 	FORCEINLINE bool GetRotateRootBone() const { return bRotateRootBone; };
 	FORCEINLINE bool GetIsEliminated() const { return bIsEliminated; };
+	FORCEINLINE bool GetIsReloading() const { return (CombatComponent && CombatComponent->GetIsReloading()); }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
+
 	AWeaponBase* GetEquippedWeapon() const;
 	FVector GetHitTarget() const;
 };
