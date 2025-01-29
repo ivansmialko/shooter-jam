@@ -91,9 +91,11 @@ public:
 	//~ End UObject Interface
 
 	void EquipWeapon(AWeaponBase* InWeaponToEquip);
-	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	void DropWeapon();
 	void DropWeaponLaunch();
+	void ReloadWeapon();
+
+	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
