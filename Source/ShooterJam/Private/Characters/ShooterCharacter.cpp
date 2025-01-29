@@ -562,56 +562,6 @@ void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 	}
 }
 
-bool AShooterCharacter::GetIsWeaponEquipped() const
-{
-	return (CombatComponent && CombatComponent->GetIsWeaponEquipped());
-}
-
-bool AShooterCharacter::GetIsCrouched() const
-{
-	return bIsCrouched;
-}
-
-bool AShooterCharacter::GetIsAiming() const
-{
-	return (CombatComponent && CombatComponent->GetIsAiming());
-}
-
-float AShooterCharacter::GetAoYaw() const
-{
-	return AO_Yaw;
-}
-
-float AShooterCharacter::GetAoPitch() const
-{
-	return AO_Pitch;
-}
-
-float AShooterCharacter::GetHealth() const
-{
-	return Health;
-}
-
-float AShooterCharacter::GetMaxHealth() const
-{
-	return MaxHealth;
-}
-
-bool AShooterCharacter::GetRotateRootBone() const
-{
-	return bRotateRootBone;
-}
-
-bool AShooterCharacter::GetIsEliminated() const
-{
-	return bIsEliminated;
-}
-
-ETurningInPlace AShooterCharacter::GetTurningInPlace() const
-{
-	return TurningInPlace;
-}
-
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
 {
 	if (!CombatComponent)
