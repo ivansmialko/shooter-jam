@@ -6,6 +6,7 @@
 #include "Components/ActorComponent.h"
 
 #include "Weaponry/WeaponTypes.h"
+#include "Weaponry/CombatState.h"
 #include "HUD/ShooterHUD.h"
 
 #include "CombatComponent.generated.h"
@@ -44,6 +45,10 @@ private:
 	 */
 	UPROPERTY(ReplicatedUsing = OnRep_CarriedAmmo)
 	int32 CarriedAmmo;
+
+	/** Current state of player's combat, e.g. whether it reloading, or just hanging around, or something else */
+	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
+	ECombatState CombatState{ ECombatState::ECS_Unoccupied };
 	//~ End Replicated fields
 
 	//~ Begin Exposed fields
@@ -96,12 +101,17 @@ public:
 	void ReloadWeapon();
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
-
+	
+	//~ Begin Replication Notifies
 	UFUNCTION()
 	void OnRep_EquippedWeapon();
 
 	UFUNCTION()
 	void OnRep_CarriedAmmo();
+
+	UFUNCTION()
+	void OnRep_CombatState();
+	//~ End Replication Notifies
 
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
@@ -129,6 +139,8 @@ protected:
 	void FireWeapon();
 	bool CheckCanFire();
 
+	void OnStateReload();
+
 //public getters/setters
 public:
 	FORCEINLINE bool GetIsWeaponEquipped() const { return EquippedWeapon != nullptr; }
@@ -136,6 +148,7 @@ public:
 	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
+	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }
 
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
