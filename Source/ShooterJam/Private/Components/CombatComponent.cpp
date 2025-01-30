@@ -170,6 +170,12 @@ void UCombatComponent::OnFireTimerFinished()
 
 	//If firing button is still pressed, and weapon is automatic - shoot again automatically
 	FireWeapon();
+
+	if (!EquippedWeapon->IsEmpty())
+		return;
+
+	//Reload weapon automatically, if firing button is still pressed
+	ReloadWeapon();
 }
 
 void UCombatComponent::OnReloadFinished()
@@ -287,6 +293,12 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	}
 
 	PlayEquipSound();
+
+	if (EquippedWeapon->IsEmpty())
+	{
+		//Reload weapon automatically, if firing button is still pressed
+		ReloadWeapon();
+	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
