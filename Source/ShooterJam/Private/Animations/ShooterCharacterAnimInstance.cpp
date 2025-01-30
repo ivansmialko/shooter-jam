@@ -46,6 +46,8 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bRotateRootBone = ShooterCharacter->GetRotateRootBone();
 	bIsEliminated = ShooterCharacter->GetIsEliminated();
 	bUseFabrik = !ShooterCharacter->GetIsReloading();
+	bUseAimOffsets = !ShooterCharacter->GetIsReloading();
+	bTransformRightHand = !ShooterCharacter->GetIsReloading();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 

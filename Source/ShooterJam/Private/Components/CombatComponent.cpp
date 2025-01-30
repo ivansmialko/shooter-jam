@@ -13,6 +13,7 @@
 #include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "TimerManager.h"
+#include "Sound/SoundCue.h"
 
 UCombatComponent::UCombatComponent()
 {
@@ -285,6 +286,8 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 		EquippedWeapon->NotifyOwner_Ammo();
 	}
 
+	PlayEquipSound();
+
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
 
@@ -337,6 +340,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 		return;
 
 	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	PlayEquipSound();
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()
@@ -433,6 +437,25 @@ void UCombatComponent::ReloadAmmo()
 	CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 
 	EquippedWeapon->AddAmmo(-AmountToReload);
+}
+
+void UCombatComponent::PlayEquipSound()
+{
+	if (!Character)
+		return;
+
+	if (!EquippedWeapon)
+		return;
+
+	if (!EquippedWeapon->GetEquipSound())
+		return;
+
+	UGameplayStatics::PlaySoundAtLocation
+	(
+		this,
+		EquippedWeapon->GetEquipSound(),
+		Character->GetActorLocation()
+	);
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)

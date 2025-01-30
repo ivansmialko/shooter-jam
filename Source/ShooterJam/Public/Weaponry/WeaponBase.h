@@ -11,8 +11,10 @@
 
 class USphereComponent;
 class UWidgetComponent;
-class ABulletShell;
 class UTexture2D;
+class USoundCue;
+
+class ABulletShell;
 class AShooterCharacter;
 class AShooterCharacterController;
 
@@ -33,6 +35,8 @@ class SHOOTERJAM_API AWeaponBase : public AActor
 	
 //private members
 private:
+
+//~ Begin exposed members
 	UPROPERTY(VisibleAnywhere, Category = "Weapon Physics")
 	USphereComponent* AreaSphere;
 
@@ -69,6 +73,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Style")
 	UTexture2D* CrosshairsBottom;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	USoundCue* EquipSound;
+
 	UPROPERTY(EditAnywhere, Category = "Weapon Feel")
 	float FovZoomed{ 30.f };
 
@@ -87,6 +94,7 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Weapon State")
 	USkeletalMeshComponent* WeaponMesh;
 
+//~ End exposed members
 
 	UPROPERTY()
 	AShooterCharacter* OwnerCharacter;
@@ -171,4 +179,5 @@ public:
 	FORCEINLINE UTexture2D* GetCrosshairsRight() const { return CrosshairsRight; }
 	FORCEINLINE UTexture2D* GetCrosshairsTop() const { return CrosshairsTop; }
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
+	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
 };
