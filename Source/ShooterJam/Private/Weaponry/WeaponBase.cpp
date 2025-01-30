@@ -263,6 +263,20 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 
 }
 
+void AWeaponBase::AddAmmo(int32 AmmoToAdd)
+{
+	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
+
+	if (!CheckInitOwner())
+		return;
+
+	if (!OwnerCharacter->HasAuthority())
+		return;
+
+	//Only for server player. Clients will be updated through OnRep_Ammo
+	NotifyOwner_Ammo();
+}
+
 void AWeaponBase::Fire(const FVector& HitTarget)
 {
 	if (!FireAnimation)

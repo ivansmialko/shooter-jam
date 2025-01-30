@@ -147,6 +147,7 @@ public:
 
 	void ShowPickUpWidget(bool bShowWidget);
 	void ChangeWeaponState(EWeaponState InState);
+	void AddAmmo(int32 AmmoToAdd);
 	void NotifyOwner_Ammo();
 
 	virtual void Fire(const FVector& HitTarget);
@@ -158,6 +159,7 @@ public:
 	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
+	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }

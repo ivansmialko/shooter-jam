@@ -176,9 +176,11 @@ void UCombatComponent::OnReloadFinished()
 	if (!Character)
 		return;
 
+
 	if (Character->HasAuthority())
 	{
 		CombatState = ECombatState::ECS_Unoccupied;
+		ReloadAmmo();
 
 		//Resume firing. Only aplicable for server.
 		//For the client, OnRep_CombatState is the case
@@ -369,7 +371,6 @@ void UCombatComponent::OnRep_CombatState()
 
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Server: Received firing"));
 	Multicast_FireWeapon(TraceHitTarget);
 }
 
@@ -400,6 +401,38 @@ void UCombatComponent::UpdateCurrentCarriedAmmo(const EWeaponType WeaponType)
 		return;
 
 	CarriedAmmo = CarriedAmmoMap[WeaponType];
+}
+
+int32 UCombatComponent::CalculateAmountToReload()
+{
+	if (!EquippedWeapon)
+		return 0;
+
+	if (!CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+		return 0;
+
+	int32 RoomInMag{ EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetWeaponAmmo() };
+	int32 AmountCarried{ CarriedAmmoMap[EquippedWeapon->GetWeaponType()] };
+	int32 Least{ FMath::Min(RoomInMag, AmountCarried) };
+	return FMath::Clamp(RoomInMag, 0, Least);
+}
+
+void UCombatComponent::ReloadAmmo()
+{
+	if (!EquippedWeapon)
+		return;
+
+	if (!CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+		return;
+
+	if (CarriedAmmoMap[EquippedWeapon->GetWeaponType()] == 0)
+		return;
+
+	int32 AmountToReload{ CalculateAmountToReload() };
+	CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= AmountToReload;
+	CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
+
+	EquippedWeapon->AddAmmo(-AmountToReload);
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
@@ -499,6 +532,10 @@ void UCombatComponent::DropWeaponLaunch()
 
 void UCombatComponent::ReloadWeapon()
 {
+	//Initialize reload process
+	//e.g. start animation. Actual ammo reloading happens at the end of an animation
+	//See ReloadAmmo()
+
 	if (!Character)
 		return;
 
