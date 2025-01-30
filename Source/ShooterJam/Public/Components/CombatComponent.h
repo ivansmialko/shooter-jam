@@ -124,10 +124,11 @@ public:
 private:
 	void InitializeCarriedAmmo();
 	void UpdateCurrentCarriedAmmo(const EWeaponType WeaponType);
+	void ReloadAmmo();
+	void PlayEquipSound();
 
 	int32 CalculateAmountToReload();
 
-	void ReloadAmmo();
 
 //public methods
 public:
