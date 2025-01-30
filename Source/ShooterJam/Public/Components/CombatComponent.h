@@ -125,6 +125,10 @@ private:
 	void InitializeCarriedAmmo();
 	void UpdateCurrentCarriedAmmo(const EWeaponType WeaponType);
 
+	int32 CalculateAmountToReload();
+
+	void ReloadAmmo();
+
 //public methods
 public:
 	void OnReloadFinished();
