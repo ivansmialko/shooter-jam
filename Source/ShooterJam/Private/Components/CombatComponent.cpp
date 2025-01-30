@@ -176,10 +176,17 @@ void UCombatComponent::OnReloadFinished()
 	if (!Character)
 		return;
 
-	if (!Character->HasAuthority())
-		return;
+	if (Character->HasAuthority())
+	{
+		CombatState = ECombatState::ECS_Unoccupied;
 
-	CombatState = ECombatState::ECS_Unoccupied;
+		//Resume firing. Only aplicable for server.
+		//For the client, OnRep_CombatState is the case
+		if (bIsFiring)
+		{
+			FireWeapon();
+		}
+	}
 }
 
 void UCombatComponent::FireWeapon()
@@ -207,6 +214,9 @@ bool UCombatComponent::CheckCanFire()
 		return false;
 
 	if (!bIsCanFire)
+		return false;
+
+	if (CombatState != ECombatState::ECS_Unoccupied)
 		return false;
 
 	return true;
@@ -340,6 +350,12 @@ void UCombatComponent::OnRep_CombatState()
 	switch (CombatState)
 	{
 	case ECombatState::ECS_Unoccupied:
+	{
+		if (bIsFiring)
+		{
+			FireWeapon();
+		}
+	}
 		break;
 	case ECombatState::ECS_Reloading:
 	{
@@ -359,7 +375,8 @@ void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantiz
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Multicast client: Received firing"));
+	if (CombatState != ECombatState::ECS_Unoccupied)
+		return;
 
 	if (!EquippedWeapon)
 		return;
