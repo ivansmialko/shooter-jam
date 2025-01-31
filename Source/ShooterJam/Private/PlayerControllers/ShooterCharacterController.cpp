@@ -20,6 +20,13 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 	SetHudHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth());
 }
 
+void AShooterCharacterController::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	SetHudTime();
+}
+
 void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
 {
 	if (!CheckInitHud())
@@ -83,6 +90,21 @@ void AShooterCharacterController::SetHudWeaponAmmoEmpty()
 	ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount->SetText(FText::FromString(TEXT("*")));
 }
 
+void AShooterCharacterController::SetHudMatchCountdown(float InCountdownTime)
+{
+	if (!CheckInitHud())
+		return;
+
+	if (!ShooterHud->GetCharacterOverlay()->MatchCountdownText)
+		return;
+
+	int32 Minutes{ FMath::FloorToInt(InCountdownTime / 60) };
+	int32 Seconds{ static_cast<int32>(InCountdownTime) - Minutes * 60 };
+
+	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
+	ShooterHud->GetCharacterOverlay()->MatchCountdownText->SetText(FText::FromString(CountdownString));
+}
+
 void AShooterCharacterController::SetHudCarriedAmmo(int32 InAmmo)
 {
 	if (!CheckInitHud())
@@ -127,4 +149,14 @@ void AShooterCharacterController::BeginPlay()
 	Super::BeginPlay();
 
 	ShooterHud = Cast<AShooterHUD>(GetHUD());
+}
+
+void AShooterCharacterController::SetHudTime()
+{
+	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds()) };
+	if (SecondsLeft != MatchTime)
+	{
+		SetHudMatchCountdown(static_cast<float>(SecondsLeft));
+	}
+	MatchTime = SecondsLeft;
 }
