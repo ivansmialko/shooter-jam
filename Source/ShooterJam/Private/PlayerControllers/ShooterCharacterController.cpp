@@ -20,11 +20,39 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 	SetHudHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth());
 }
 
+void AShooterCharacterController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+
+	if (IsLocalController())
+	{
+		Server_RequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
 void AShooterCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
+	if (IsLocalController())
+	{
+		TimeSyncTimer -= DeltaSeconds;
+		if (TimeSyncTimer <= 0.f)
+		{
+			Server_RequestServerTime(GetWorld()->GetTimeSeconds());
+			TimeSyncTimer = TimeSyncFrequency;
+		}
+	}
+
 	SetHudTime();
+}
+
+float AShooterCharacterController::GetServerTime()
+{
+	if (HasAuthority())
+		return GetWorld()->GetTimeSeconds();
+
+	return GetWorld()->GetTimeSeconds() + ClientServerDelta;
 }
 
 void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
@@ -144,6 +172,20 @@ bool AShooterCharacterController::CheckInitHud()
 	return true;
 }
 
+void AShooterCharacterController::Server_RequestServerTime_Implementation(float InTimeOfClientRequest)
+{
+	float ServerTime{ static_cast<float>(GetWorld()->GetTimeSeconds()) };
+	Client_ReportServerTime(InTimeOfClientRequest, ServerTime);
+}
+
+void AShooterCharacterController::Client_ReportServerTime_Implementation(float InTimeOfClientRequest, float InServerTime)
+{
+	float RoundTripTime{ static_cast<float>(GetWorld()->GetTimeSeconds()) - InTimeOfClientRequest };
+	float CurrentServerTime{ InServerTime + RoundTripTime * 0.5f };
+
+	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
 void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -153,10 +195,11 @@ void AShooterCharacterController::BeginPlay()
 
 void AShooterCharacterController::SetHudTime()
 {
-	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetWorld()->GetTimeSeconds()) };
-	if (SecondsLeft != MatchTime)
+	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetServerTime()) };
+	UE_LOG(LogTemp, Warning, TEXT("%f"), GetServerTime());
+	if (SecondsLeft != MatchTimeLeft)
 	{
 		SetHudMatchCountdown(static_cast<float>(SecondsLeft));
 	}
-	MatchTime = SecondsLeft;
+	MatchTimeLeft = SecondsLeft;
 }
