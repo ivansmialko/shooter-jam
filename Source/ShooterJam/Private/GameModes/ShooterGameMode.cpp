@@ -10,6 +10,25 @@
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "GameFramework/PlayerStart.h"
 
+AShooterGameMode::AShooterGameMode()
+{
+	bDelayedStart = true;
+}
+
+void AShooterGameMode::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (GetMatchState() == MatchState::WaitingToStart)
+	{
+		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		if (CountdownTime <= 0.f)
+		{
+			StartMatch();
+		}
+	}
+}
+
 void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
 {
 	if (!InAttackerController)
@@ -50,4 +69,10 @@ void AShooterGameMode::RequestRespawn(ACharacter* InCharacter, AController* InCo
 	int32 RandomIndex = FMath::RandRange(0, PlayerStartsArray.Num() - 1);
 
 	RestartPlayerAtPlayerStart(InController, PlayerStartsArray[RandomIndex]);
+}
+
+void AShooterGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	LevelStartingTime = GetWorld()->GetTimeSeconds();
 }

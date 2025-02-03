@@ -14,8 +14,27 @@ class SHOOTERJAM_API AShooterGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+private:
+	UPROPERTY(EditDefaultsOnly)
+	float WarmupTime{ 10.f };
+
+	float LevelStartingTime{ 0.f };
+	float CountdownTime{ -1.0f };
+
+//public methods
 public:
-	virtual void OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
+	AShooterGameMode();
 	
+	virtual void Tick(float DeltaSeconds);
+
+	virtual void OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
 	virtual void RequestRespawn(ACharacter* InCharacter, AController* InController);
+
+//protected methods
+protected:
+	virtual void BeginPlay() override;
+
+//public getters/setters
+public:
+	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 };
