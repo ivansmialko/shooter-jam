@@ -6,7 +6,9 @@
 #include "HUD/ShooterHUD.h"
 #include "HUD/CharacterOverlay.h"
 #include "Characters/ShooterCharacter.h"
+#include "GameModes/ShooterGameMode.h"
 
+#include "Net/UnrealNetwork.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 void AShooterCharacterController::OnPossess(APawn* InPawn)
@@ -28,6 +30,13 @@ void AShooterCharacterController::ReceivedPlayer()
 	{
 		Server_RequestServerTime(GetWorld()->GetTimeSeconds());
 	}
+}
+
+void AShooterCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AShooterCharacterController, MatchState);
 }
 
 void AShooterCharacterController::Tick(float DeltaSeconds)
@@ -53,6 +62,13 @@ float AShooterCharacterController::GetServerTime()
 		return GetWorld()->GetTimeSeconds();
 
 	return GetWorld()->GetTimeSeconds() + ClientServerDelta;
+}
+
+void AShooterCharacterController::OnMatchStateSet(FName InState)
+{
+	MatchState = InState;
+
+	HandleMatchState();
 }
 
 void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
@@ -184,6 +200,22 @@ void AShooterCharacterController::Client_ReportServerTime_Implementation(float I
 	float CurrentServerTime{ InServerTime + RoundTripTime * 0.5f };
 
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+}
+
+void AShooterCharacterController::HandleMatchState()
+{
+	if (MatchState == MatchState::InProgress)
+	{
+		if (!CheckInitHud())
+			return;
+
+		ShooterHud->AddCharacterOverlay();
+	}
+}
+
+void AShooterCharacterController::OnRep_MatchState()
+{
+	HandleMatchState();
 }
 
 void AShooterCharacterController::BeginPlay()

@@ -20,7 +20,6 @@ private:
 
 	float LevelStartingTime{ 0.f };
 	float CountdownTime{ -1.0f };
-
 //public methods
 public:
 	AShooterGameMode();
@@ -32,7 +31,14 @@ public:
 
 //protected methods
 protected:
+	//~ Begin AActor Interface
 	virtual void BeginPlay() override;
+	//~ End AActor Interface
+
+	//~ Begin AGameMode Interface
+	virtual void OnMatchStateSet();
+	//~ End AGameMode Interface
+
 
 //public getters/setters
 public:

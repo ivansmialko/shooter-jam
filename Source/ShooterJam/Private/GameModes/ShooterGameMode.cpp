@@ -76,3 +76,17 @@ void AShooterGameMode::BeginPlay()
 	Super::BeginPlay();
 	LevelStartingTime = GetWorld()->GetTimeSeconds();
 }
+
+void AShooterGameMode::OnMatchStateSet()
+{
+	Super::OnMatchStateSet();
+
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AShooterCharacterController* ShooterController = Cast<AShooterCharacterController>(*It);
+		if (!ShooterController)
+			return;
+
+		ShooterController->OnMatchStateSet(MatchState);
+	}
+}
