@@ -95,8 +95,6 @@ void AShooterHUD::AddCharacterOverlay()
 void AShooterHUD::BeginPlay()
 {
 	Super::BeginPlay();
-
-	AddCharacterOverlay();
 }
 
 void AShooterHUD::SetHudPackage(FHUDPackage& InHUDPackage)

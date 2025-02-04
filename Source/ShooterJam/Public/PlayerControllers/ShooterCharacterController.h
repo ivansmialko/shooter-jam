@@ -35,6 +35,10 @@ private:
 
 	float MatchTime{ 120.f };
 	int32 MatchTimeLeft{ 0 };
+	
+	//Current match state, syncronized with ShooterGameMode's match state
+	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
+	FName MatchState;
 
 //private methods
 private:
@@ -53,6 +57,8 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_ReportServerTime(float InTimeOfClientRequest, float InServerTime);
 
+	void OnRep_MatchState();
+
 //protected methods
 protected:
 	//~ Begin AActor Inteface
@@ -63,6 +69,14 @@ protected:
 //public methods
 public:
 
+	//~ Begin UObject Interface
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	//~ End UObject Interface
+
+	//~ Begin AActor Interface
+	virtual void Tick(float DeltaSeconds) override;
+	//~ End AActor Interface
+
 	//~ Begin APlayerController Interface
 	virtual void OnPossess(APawn* InPawn) override;
 
@@ -70,12 +84,10 @@ public:
 	virtual void ReceivedPlayer() override;
 	//~ End APlayerController Interface
 
-	//~ Begin AActor Interface
-	virtual void Tick(float DeltaSeconds) override;
-	//~ End AActor Interface
-
 	/** Current world time on server, synchronized */
 	virtual float GetServerTime();
+
+	void OnMatchStateSet(FName InState);
 
 	void SetHudHealth(float InHealth, float InMaxHealth);
 	void SetHudScore(float InScore);

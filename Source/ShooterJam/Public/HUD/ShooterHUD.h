@@ -31,7 +31,8 @@ public:
 
 private:
 	FHUDPackage HudPackage;
-	class UCharacterOverlay* CharacterOverlay;
+
+	class UCharacterOverlay* CharacterOverlay{ nullptr };
 
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	TSubclassOf<class UUserWidget> CharacterOverlayClass;
@@ -40,12 +41,13 @@ private:
 	float CrosshairSpreadMax{ 60.f };
 
 	void DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread, const FLinearColor& CrosshairsColor);
-	void AddCharacterOverlay();
 
 protected:
 	virtual void BeginPlay() override;
 
 public:
 	void SetHudPackage(FHUDPackage& InHUDPackage);
+	void AddCharacterOverlay();
+
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
 };
