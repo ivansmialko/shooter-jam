@@ -7,19 +7,16 @@
 #include "HUD/CharacterOverlay.h"
 #include "Characters/ShooterCharacter.h"
 #include "GameModes/ShooterGameMode.h"
+#include "PlayerState/ShooterPlayerState.h"
 
 #include "Net/UnrealNetwork.h"
-#include "Components/ProgressBar.h"
-#include "Components/TextBlock.h"
+
 void AShooterCharacterController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
-	if (!ShooterCharacter)
-		return;
-
-	SetHudHealth(ShooterCharacter->GetHealth(), ShooterCharacter->GetMaxHealth());
+	DefaultInitHud(ShooterCharacter);
 }
 
 void AShooterCharacterController::ReceivedPlayer()
@@ -71,105 +68,12 @@ void AShooterCharacterController::OnMatchStateSet(FName InState)
 	HandleMatchState();
 }
 
-void AShooterCharacterController::SetHudHealth(float InHealth, float InMaxHealth)
+AShooterHUD* AShooterCharacterController::GetPlayerHud()
 {
 	if (!CheckInitHud())
-		return;
+		return nullptr;
 
-	if(!ShooterHud->GetCharacterOverlay()->HealthBar
-		|| !ShooterHud->GetCharacterOverlay()->HealthText)
-		return;
-
-	const float HealthPercent{ InHealth / InMaxHealth };
-	ShooterHud->GetCharacterOverlay()->HealthBar->SetPercent(HealthPercent);
-
-	FString HealthString{ FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(InHealth), FMath::CeilToInt(InMaxHealth)) };
-	ShooterHud->GetCharacterOverlay()->HealthText->SetText(FText::FromString(HealthString));
-}
-
-void AShooterCharacterController::SetHudScore(float InScore)
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->ScoreAmount)
-		return;
-	
-	FString ScoreString{ FString::Printf(TEXT("%d"), FMath::FloorToInt(InScore)) };
-	ShooterHud->GetCharacterOverlay()->ScoreAmount->SetText(FText::FromString(ScoreString));
-}
-
-void AShooterCharacterController::SetHudDefeats(int32 InDefeats)
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->DefeatsAmount)
-		return;
-
-	FString DefeatsString{ FString::Printf(TEXT("%d"), InDefeats) };
-	ShooterHud->GetCharacterOverlay()->DefeatsAmount->SetText(FText::FromString(DefeatsString));
-}
-
-void AShooterCharacterController::SetHudWeaponAmmo(int32 InAmmo)
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount)
-		return;
-
-	FString WeaponAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
-	ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount->SetText(FText::FromString(WeaponAmmoString));
-}
-
-void AShooterCharacterController::SetHudWeaponAmmoEmpty()
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount)
-		return;
-
-	ShooterHud->GetCharacterOverlay()->WeaponAmmoAmount->SetText(FText::FromString(TEXT("*")));
-}
-
-void AShooterCharacterController::SetHudMatchCountdown(float InCountdownTime)
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->MatchCountdownText)
-		return;
-
-	int32 Minutes{ FMath::FloorToInt(InCountdownTime / 60) };
-	int32 Seconds{ static_cast<int32>(InCountdownTime) - Minutes * 60 };
-
-	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
-	ShooterHud->GetCharacterOverlay()->MatchCountdownText->SetText(FText::FromString(CountdownString));
-}
-
-void AShooterCharacterController::SetHudCarriedAmmo(int32 InAmmo)
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount)
-		return;
-
-	FString CarriedAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
-	ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount->SetText(FText::FromString(CarriedAmmoString));
-}
-
-void AShooterCharacterController::SetHudCarriedAmmoEmpty()
-{
-	if (!CheckInitHud())
-		return;
-
-	if (!ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount)
-		return;
-
-	ShooterHud->GetCharacterOverlay()->CarriedAmmoAmount->SetText(FText::FromString(TEXT("*")));
+	return ShooterHud;
 }
 
 bool AShooterCharacterController::CheckInitHud()
@@ -179,13 +83,7 @@ bool AShooterCharacterController::CheckInitHud()
 		ShooterHud = Cast<AShooterHUD>(GetHUD());
 	}
 
-	if (!ShooterHud)
-		return false;
-
-	if (!ShooterHud->GetCharacterOverlay())
-		return false;
-
-	return true;
+	return ShooterHud != nullptr;
 }
 
 void AShooterCharacterController::Server_RequestServerTime_Implementation(float InTimeOfClientRequest)
@@ -218,6 +116,26 @@ void AShooterCharacterController::OnRep_MatchState()
 	HandleMatchState();
 }
 
+void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCharacter)
+{
+	if (!InShooterCharacter)
+		return;
+
+	if (!GetPlayerHud())
+		return;
+
+	GetPlayerHud()->SetHealth(InShooterCharacter->GetHealth(), InShooterCharacter->GetMaxHealth());
+	GetPlayerHud()->SetWeaponAmmoEmpty();
+	GetPlayerHud()->SetCarriedAmmoEmpty();
+
+	AShooterPlayerState* ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+	if (!ShooterPlayerState)
+		return;
+
+	GetPlayerHud()->SetScore(ShooterPlayerState->GetScore());
+	GetPlayerHud()->SetDefeats(ShooterPlayerState->GetDefeats());
+}
+
 void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -227,11 +145,14 @@ void AShooterCharacterController::BeginPlay()
 
 void AShooterCharacterController::SetHudTime()
 {
+	if (!GetPlayerHud())
+		return;
+
 	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetServerTime()) };
 	UE_LOG(LogTemp, Warning, TEXT("%f"), GetServerTime());
 	if (SecondsLeft != MatchTimeLeft)
 	{
-		SetHudMatchCountdown(static_cast<float>(SecondsLeft));
+		GetPlayerHud()->SetMatchCountdown(static_cast<float>(SecondsLeft));
 	}
 	MatchTimeLeft = SecondsLeft;
 }

@@ -8,6 +8,7 @@
 #include "ShooterCharacterController.generated.h"
 
 class AShooterHUD;
+class AShooterCharacter;
 
 /**
  * 
@@ -57,14 +58,18 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_ReportServerTime(float InTimeOfClientRequest, float InServerTime);
 
+	void HandleMatchState();
+
+	UFUNCTION()
 	void OnRep_MatchState();
+
+	void DefaultInitHud(AShooterCharacter* ShooterCharacter);
 
 //protected methods
 protected:
 	//~ Begin AActor Inteface
 	virtual void BeginPlay() override;
 	//~ End AActor Interface
-
 
 //public methods
 public:
@@ -89,12 +94,8 @@ public:
 
 	void OnMatchStateSet(FName InState);
 
-	void SetHudHealth(float InHealth, float InMaxHealth);
-	void SetHudScore(float InScore);
-	void SetHudDefeats(int32 InDefeats);
-	void SetHudWeaponAmmo(int32 InAmmo);
-	void SetHudCarriedAmmoEmpty();
-	void SetHudCarriedAmmo(int32 InAmmo);
-	void SetHudWeaponAmmoEmpty();
-	void SetHudMatchCountdown(float InCountdownTime);
+
+//public getters/setters
+public:
+	AShooterHUD* GetPlayerHud();
 };

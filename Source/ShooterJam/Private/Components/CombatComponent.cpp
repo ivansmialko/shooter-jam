@@ -69,8 +69,8 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 
 	if (!EquippedWeapon)
 	{
-		FHUDPackage EmptyHudPackage;
-		ShooterHud->SetHudPackage(EmptyHudPackage);
+		FCrosshairsPackage EmptyHudPackage;
+		ShooterHud->SetCrosshairsPackage(EmptyHudPackage);
 		return;
 	}
 
@@ -115,7 +115,7 @@ void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
 	HudPackage.CrosshairSpread -= CrosshairAimFactor;
 	HudPackage.CrosshairSpread += CrosshairShootingFactor;
 
-	ShooterHud->SetHudPackage(HudPackage);
+	ShooterHud->SetCrosshairsPackage(HudPackage);
 }
 
 void UCombatComponent::InterpFov(float DeltaTime)

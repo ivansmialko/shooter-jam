@@ -4,6 +4,8 @@
 #include "HUD/ShooterHUD.h"
 #include "HUD/CharacterOverlay.h"
 
+#include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "GameFramework/PlayerController.h"
 
 void AShooterHUD::DrawHUD()
@@ -18,44 +20,44 @@ void AShooterHUD::DrawHUD()
 
 	const FVector2D VieportCenter{ ViewportSize.X * 0.5f, ViewportSize.Y * 0.5f };
 
-	const float CurrSpreadScaled{ CrosshairSpreadMax * HudPackage.CrosshairSpread };
+	const float CurrSpreadScaled{ CrosshairSpreadMax * CrosshairsPackage.CrosshairSpread };
 
 	FVector2D CurrSpread{ 0.f, 0.f };
-	if (HudPackage.CrosshairsCenter)
+	if (CrosshairsPackage.CrosshairsCenter)
 	{
-		DrawCrosshair(HudPackage.CrosshairsCenter, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
+		DrawCrosshair(CrosshairsPackage.CrosshairsCenter, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
 
-	if (HudPackage.CrosshairsLeft)
+	if (CrosshairsPackage.CrosshairsLeft)
 	{
 		CurrSpread.X = CurrSpreadScaled * -1.f;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HudPackage.CrosshairsLeft, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
+		DrawCrosshair(CrosshairsPackage.CrosshairsLeft, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
 
-	if (HudPackage.CrosshairsRight)
+	if (CrosshairsPackage.CrosshairsRight)
 	{
 		CurrSpread.X = CurrSpreadScaled;
 		CurrSpread.Y = 0.f;
 
-		DrawCrosshair(HudPackage.CrosshairsRight, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
+		DrawCrosshair(CrosshairsPackage.CrosshairsRight, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
 
-	if (HudPackage.CrosshairsTop)
+	if (CrosshairsPackage.CrosshairsTop)
 	{
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled * -1.f;
 
-		DrawCrosshair(HudPackage.CrosshairsTop, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
+		DrawCrosshair(CrosshairsPackage.CrosshairsTop, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
 
-	if (HudPackage.CrosshairsBottom)
+	if (CrosshairsPackage.CrosshairsBottom)
 	{
 		CurrSpread.X = 0.f;
 		CurrSpread.Y = CurrSpreadScaled;
 
-		DrawCrosshair(HudPackage.CrosshairsBottom, VieportCenter, CurrSpread, HudPackage.CrosshairsColor);
+		DrawCrosshair(CrosshairsPackage.CrosshairsBottom, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
 }
 
@@ -97,7 +99,124 @@ void AShooterHUD::BeginPlay()
 	Super::BeginPlay();
 }
 
-void AShooterHUD::SetHudPackage(FHUDPackage& InHUDPackage)
+void AShooterHUD::SetCrosshairsPackage(FCrosshairsPackage& InCrosshairsPackage)
 {
-	HudPackage = InHUDPackage;
+	CrosshairsPackage = InCrosshairsPackage;
+}
+
+void AShooterHUD::SetHealth(float InHealth, float InMaxHealth)
+{
+	//Cache values
+	Health = InHealth;
+	MaxHealth = InMaxHealth;
+
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->HealthText ||
+		!CharacterOverlay->HealthBar)
+		return;
+
+	const float HealthPercent{ Health / MaxHealth };
+	CharacterOverlay->HealthBar->SetPercent(HealthPercent);
+
+	FString HealthString{ FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(InHealth), FMath::CeilToInt(InMaxHealth)) };
+	CharacterOverlay->HealthText->SetText(FText::FromString(HealthString));
+}
+
+void AShooterHUD::SetScore(float InScore)
+{
+	//Cache value
+	Score = InScore;
+
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->ScoreAmount)
+		return;
+
+	FString ScoreString{ FString::Printf(TEXT("%d"), FMath::FloorToInt(InScore)) };
+	CharacterOverlay->ScoreAmount->SetText(FText::FromString(ScoreString));
+}
+
+void AShooterHUD::SetDefeats(int32 InDefeats)
+{
+	//Cache value
+	Defeats = InDefeats;
+
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->DefeatsAmount)
+		return;
+
+	FString DefeatsString{ FString::Printf(TEXT("%d"), InDefeats) };
+	CharacterOverlay->DefeatsAmount->SetText(FText::FromString(DefeatsString));
+}
+
+void AShooterHUD::SetWeaponAmmo(int32 InAmmo)
+{
+	//Cache value
+	Ammo = InAmmo;
+
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->WeaponAmmoAmount)
+		return;
+
+	FString WeaponAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
+	CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(WeaponAmmoString));
+}
+
+void AShooterHUD::SetCarriedAmmoEmpty()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->CarriedAmmoAmount)
+		return;
+
+	CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(TEXT("*")));
+}
+
+void AShooterHUD::SetCarriedAmmo(int32 InAmmo)
+{
+	//Cache value
+	CarriedAmmo = InAmmo;
+
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->CarriedAmmoAmount)
+		return;
+
+	FString CarriedAmmoString{ FString::Printf(TEXT("%d"), InAmmo) };
+	CharacterOverlay->CarriedAmmoAmount->SetText(FText::FromString(CarriedAmmoString));
+}
+
+void AShooterHUD::SetWeaponAmmoEmpty()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->WeaponAmmoAmount)
+		return;
+
+	CharacterOverlay->WeaponAmmoAmount->SetText(FText::FromString(TEXT("*")));
+}
+
+void AShooterHUD::SetMatchCountdown(float InCountdownTime)
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->MatchCountdownText)
+		return;
+
+	int32 Minutes{ FMath::FloorToInt(InCountdownTime / 60) };
+	int32 Seconds{ static_cast<int32>(InCountdownTime) - Minutes * 60 };
+	
+	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
+	CharacterOverlay->MatchCountdownText->SetText(FText::FromString(CountdownString));
 }

@@ -18,7 +18,8 @@ class SHOOTERJAM_API AShooterPlayerState : public APlayerState
 	//private members
 private:
 	class AShooterCharacter* Character{ nullptr };
-	class AShooterCharacterController* Controller{ nullptr };
+	class AShooterCharacterController* PlayerController{ nullptr };
+
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
 
