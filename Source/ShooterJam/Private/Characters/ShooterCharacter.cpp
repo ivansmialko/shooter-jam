@@ -86,11 +86,11 @@ void AShooterCharacter::BeginPlay()
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
 	}
 
-	APlayerController* PlayerController = Cast<APlayerController>(GetController());
-	if(!PlayerController)
+	APlayerController* ShooterPlayerController = Cast<APlayerController>(GetController());
+	if(!ShooterPlayerController)
 		return;
 
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(ShooterPlayerController->GetLocalPlayer());
 	if(!Subsystem) 
 		return;
 
@@ -196,11 +196,14 @@ void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 
 	CombatComponent->DropWeaponLaunch();
 
-	if (!CharacterController)
+	if (!PlayerController)
 		return;
 
-	CharacterController->SetHudWeaponAmmoEmpty();
-	CharacterController->SetHudCarriedAmmoEmpty();
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->SetWeaponAmmoEmpty();
+	PlayerController->GetPlayerHud()->SetCarriedAmmoEmpty();
 }
 
 void AShooterCharacter::OnReload(const FInputActionValue& Value)
@@ -239,7 +242,7 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	if (!AttackerController)
 		return;
 
-	GameMode->OnPlayerEliminated(this, CharacterController, AttackerController);
+	GameMode->OnPlayerEliminated(this, PlayerController, AttackerController);
 }
 
 void AShooterCharacter::OnEliminatedTimerFinished()
@@ -474,10 +477,13 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 
 	DisableCharacter();
 
-	if (!CharacterController)
+	if (!PlayerController)
 		return;
 
-	CharacterController->SetHudWeaponAmmo(0);
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->SetWeaponAmmo(0);
 }
 
 void AShooterCharacter::ActionEquip()
@@ -525,9 +531,9 @@ void AShooterCharacter::DisableCharacter()
 	//Disable movement
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if (CharacterController)
+	if (PlayerController)
 	{
-		DisableInput(CharacterController);
+		DisableInput(PlayerController);
 	}
 
 	//Disable collision
@@ -723,15 +729,18 @@ void AShooterCharacter::PlayElimbotEffect()
 
 void AShooterCharacter::HudUpdateHealth()
 {
-	if (!CharacterController)
+	if (!PlayerController)
 	{
-		CharacterController = Cast<AShooterCharacterController>(GetController());
+		PlayerController = Cast<AShooterCharacterController>(GetController());
 	}
 
-	if (!CharacterController)
+	if (!PlayerController)
 		return;
 
-	CharacterController->SetHudHealth(Health, MaxHealth);
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->SetHealth(Health, MaxHealth);
 }
 
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
@@ -833,14 +842,14 @@ void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
 	if (!InWeapon)
 		return;
 
-	if (!CharacterController)
+	if (!PlayerController)
 		return;
 
 	if (!CombatComponent)
 		return;
 
-	CharacterController->SetHudWeaponAmmo(InWeapon->GetWeaponAmmo());
-	CharacterController->SetHudCarriedAmmo(CombatComponent->GetCarriedAmmo());
+	PlayerController->GetPlayerHud()->SetWeaponAmmo(InWeapon->GetWeaponAmmo());
+	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
 }
 
 void AShooterCharacter::Destroyed()

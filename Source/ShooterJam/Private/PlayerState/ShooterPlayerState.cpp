@@ -15,28 +15,36 @@ void AShooterPlayerState::CheckInitMembers()
 		Character = Cast<AShooterCharacter>(GetPawn());
 	}
 
-	if (!Controller && Character)
+	if (!PlayerController && Character)
 	{
-		Controller = Cast<AShooterCharacterController>(Character->GetController());
+		PlayerController = Cast<AShooterCharacterController>(Character->GetController());
 	}
 } 
 
 void AShooterPlayerState::UpdateScoreHud()
 {
 	CheckInitMembers();
-	if (!Controller)
+
+	if (!PlayerController)
 		return;
 
-	Controller->SetHudScore(GetScore());
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->SetScore(GetScore());
 }
 
 void AShooterPlayerState::UpdateDefeatsHud()
 {
 	CheckInitMembers();
-	if (!Controller)
+
+	if (!PlayerController)
 		return;
 
-	Controller->SetHudDefeats(GetDefeats());
+	if (!PlayerController->GetPlayerHud())
+		return;
+	
+	PlayerController->GetPlayerHud()->SetDefeats(GetDefeats());
 }
 
 void AShooterPlayerState::OnRep_Score()

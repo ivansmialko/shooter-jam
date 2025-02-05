@@ -64,7 +64,7 @@ private:
 	class AShooterHUD* ShooterHud;
 	FTimerHandle FireTimerHandler;
 	TMap<EWeaponType, int32> CarriedAmmoMap;
-	FHUDPackage HudPackage;
+	FCrosshairsPackage HudPackage;
 	FVector HitTarget;
 
 	//Crosshairs spread

@@ -156,7 +156,7 @@ private:
 	FTimerHandle EliminatedTimer;
 	FOnTimelineFloat DissolveTrackDlg;
 
-	AShooterCharacterController* CharacterController{ nullptr };
+	AShooterCharacterController* PlayerController{ nullptr };
 	AShooterPlayerState* PlayerState{ nullptr };
 
 //protected members
