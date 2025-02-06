@@ -85,16 +85,6 @@ void AShooterCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
 	}
-
-	APlayerController* ShooterPlayerController = Cast<APlayerController>(GetController());
-	if(!ShooterPlayerController)
-		return;
-
-	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(ShooterPlayerController->GetLocalPlayer());
-	if(!Subsystem) 
-		return;
-
-	Subsystem->AddMappingContext(InputMappingContext, 0);
 }
 
 void AShooterCharacter::OnMove(const FInputActionValue& Value)
@@ -352,6 +342,20 @@ void AShooterCharacter::PollInit()
 
 	PlayerState->UpdateScoreHud();
 	PlayerState->UpdateDefeatsHud();
+}
+
+void AShooterCharacter::InitInputs()
+{
+	APlayerController* ShooterPlayerController = Cast<APlayerController>(GetController());
+	if (!ShooterPlayerController)
+		return;
+
+	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(ShooterPlayerController->GetLocalPlayer());
+	if (!Subsystem)
+		return;
+
+	Subsystem->AddMappingContext(InputMappingContext, 0);
+	bInputInitialized = true;
 }
 
 void AShooterCharacter::CalculateAimOffset_SimProxies()

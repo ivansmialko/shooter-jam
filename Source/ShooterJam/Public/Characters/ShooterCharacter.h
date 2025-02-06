@@ -141,6 +141,7 @@ private:
 //~ End Replicated members
 
 	bool bRotateRootBone;
+	bool bInputInitialized{ false };
 	float AO_Yaw;
 	float AO_Pitch;
 	float Root_AO_Yaw;
@@ -246,6 +247,8 @@ public:
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
 	void PlayReloadMontage();
+
+	void InitInputs();
 
 	//public getters/setters
 public:

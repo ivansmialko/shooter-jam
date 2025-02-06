@@ -16,7 +16,12 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
+	if (!ShooterCharacter)
+		return;
+
 	DefaultInitHud(ShooterCharacter);
+
+	ShooterCharacter->InitInputs();
 }
 
 void AShooterCharacterController::ReceivedPlayer()
