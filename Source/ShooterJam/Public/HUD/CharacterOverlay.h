@@ -10,7 +10,7 @@ class UProgressBar;
 class UTextBlock;
 
 /**
- * 
+ * C++ base for W_CharacterOverlay. Collection of widgets that represents user's HUD
  */
 UCLASS()
 class SHOOTERJAM_API UCharacterOverlay : public UUserWidget
