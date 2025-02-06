@@ -3,6 +3,7 @@
 
 #include "HUD/ShooterHUD.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/AnnouncementWidget.h"
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -84,14 +85,38 @@ void AShooterHUD::AddCharacterOverlay()
 	if (!PlayerController)
 		return;
 
-	if (!CharacterOverlayClass)
+	if (!CharacterOverlayBlueprint)
 		return;
 
-	CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayClass);
+	CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayBlueprint);
 	if (!CharacterOverlay)
 		return;
 
 	CharacterOverlay->AddToViewport();
+}
+
+void AShooterHUD::AddAnnouncementWidget()
+{
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (!PlayerController)
+		return;
+
+	if (!AnnouncementWidgetBlueprint)
+		return;
+
+	AnnouncementWidget = CreateWidget<UAnnouncementWidget>(PlayerController, AnnouncementWidgetBlueprint);
+	if (!AnnouncementWidget)
+		return;
+
+	AnnouncementWidget->AddToViewport();
+}
+
+void AShooterHUD::HideAnnouncementWidget()
+{
+	if (!AnnouncementWidget)
+		return;
+
+	AnnouncementWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AShooterHUD::BeginPlay()

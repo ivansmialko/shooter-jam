@@ -107,11 +107,23 @@ void AShooterCharacterController::Client_ReportServerTime_Implementation(float I
 
 void AShooterCharacterController::HandleMatchState()
 {
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		if (!CheckInitHud())
+		{
+			UE_LOG(LogTemp, Error, TEXT("Received handle match state. NO HUD YET"));
+			return;
+		}
+
+		ShooterHud->AddAnnouncementWidget();
+	}
+
 	if (MatchState == MatchState::InProgress)
 	{
 		if (!CheckInitHud())
 			return;
 
+		ShooterHud->HideAnnouncementWidget();
 		ShooterHud->AddCharacterOverlay();
 	}
 }
@@ -146,6 +158,7 @@ void AShooterCharacterController::BeginPlay()
 	Super::BeginPlay();
 
 	ShooterHud = Cast<AShooterHUD>(GetHUD());
+	UE_LOG(LogTemp, Error, TEXT("Begin play for controller"));
 }
 
 void AShooterCharacterController::SetHudTime()
@@ -154,7 +167,6 @@ void AShooterCharacterController::SetHudTime()
 		return;
 
 	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetServerTime()) };
-	UE_LOG(LogTemp, Warning, TEXT("%f"), GetServerTime());
 	if (SecondsLeft != MatchTimeLeft)
 	{
 		GetPlayerHud()->SetMatchCountdown(static_cast<float>(SecondsLeft));

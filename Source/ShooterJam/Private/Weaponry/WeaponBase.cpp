@@ -165,7 +165,6 @@ void AWeaponBase::BeginPlay()
 	
 	//Calculate fire delay	
 	FireDelay = 60.f / static_cast<float>(FireRate);
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("FireDelay, %f"), FireDelay));
 }
 
 void AWeaponBase::OnAreaSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -174,7 +173,6 @@ void AWeaponBase::OnAreaSphereOverlapBegin(UPrimitiveComponent* OverlappedCompon
 	if (!ShooterCharacter)
 		return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Setting overlapping widget"));
 	ShooterCharacter->SetOverlappingWeapon(this);
 }
 
@@ -235,7 +233,6 @@ void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
 	if (!PickUpWidget)
 		return;
 
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString("Hiding widget"));
 	PickUpWidget->SetVisibility(bShowWidget);
 }
 

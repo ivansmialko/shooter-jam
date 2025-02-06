@@ -16,7 +16,6 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if (!OwnerController)
 		return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("Applying damage"));
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
 
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);

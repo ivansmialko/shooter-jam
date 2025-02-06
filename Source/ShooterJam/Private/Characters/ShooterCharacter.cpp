@@ -211,8 +211,6 @@ void AShooterCharacter::OnReload(const FInputActionValue& Value)
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Damage received"))
-
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
 	//That for server to play player-server effects
@@ -274,11 +272,6 @@ void AShooterCharacter::CalculateAimOffset(float DeltaTime)
  
 		TurningInPlace = ETurningInPlace::TIP_NotTurning;
 	}
-
-	//if (!IsLocallyControlled())
-	//{
-	//	UE_LOG(LogTemp, Warning, TEXT("Yaw: %f"), AO_Yaw);
-	//}
 }
 
 void AShooterCharacter::CalculateAimPitch()
@@ -300,8 +293,6 @@ void AShooterCharacter::CalculateTurningInPlace(float DeltaTime)
 		Root_AO_Yaw = AO_Yaw;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("AO_YAW: %f"), AO_Yaw);
-	//UE_LOG(LogTemp, Warning, TEXT("Root AO_YAW: %f"), AO_Yaw);
 	if (AO_Yaw > 90.f)
 	{
 		TurningInPlace = ETurningInPlace::TIP_Right;
@@ -379,8 +370,6 @@ void AShooterCharacter::CalculateAimOffset_SimProxies()
 	ProxyRotation = GetActorRotation();
 	ProxyYaw = UKismetMathLibrary::NormalizedDeltaRotator(ProxyRotation, ProxyRotationLastFrame).Yaw;
 
-	//UE_LOG(LogTemp, Warning, TEXT("ProxyYaw: %f"), ProxyYaw);
-
 	if (FMath::Abs(ProxyYaw) > ProxyTurnTreshold)
 	{
 		if (ProxyYaw > ProxyTurnTreshold)
@@ -438,7 +427,6 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 
 void AShooterCharacter::OnRep_Health()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Replication works"));
 	ActionReceiveDamage();
 }
 

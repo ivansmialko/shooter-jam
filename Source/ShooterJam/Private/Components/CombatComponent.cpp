@@ -203,8 +203,6 @@ void UCombatComponent::FireWeapon()
 	if (!CheckCanFire())
 		return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("FireWeapon: Received firing"));
-
 	bIsCanFire = false;
 	CrosshairShootingFactor = .75f;
 
