@@ -105,4 +105,5 @@ public:
 	void SetCarriedAmmo(int32 InAmmo);
 	void SetWeaponAmmoEmpty();
 	void SetMatchCountdown(float InCountdownTime);
+	void SetWarmupCountdown(float InCountDownTime);
 };

@@ -97,6 +97,9 @@ void AShooterHUD::AddCharacterOverlay()
 
 void AShooterHUD::AddAnnouncementWidget()
 {
+	if (AnnouncementWidget && AnnouncementWidget->IsInViewport())
+		return;
+
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (!PlayerController)
 		return;
@@ -244,4 +247,19 @@ void AShooterHUD::SetMatchCountdown(float InCountdownTime)
 	
 	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
 	CharacterOverlay->MatchCountdownText->SetText(FText::FromString(CountdownString));
+}
+
+void AShooterHUD::SetWarmupCountdown(float InCountDownTime)
+{
+	if (!AnnouncementWidget)
+		return;
+
+	if (!AnnouncementWidget->WarmupTime)
+		return;
+
+	int32 Minutes{ FMath::FloorToInt(InCountDownTime / 60) };
+	int32 Seconds{ static_cast<int32>(InCountDownTime) - Minutes * 60 };
+	
+	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
+	AnnouncementWidget->WarmupTime->SetText(FText::FromString(CountdownString));
 }

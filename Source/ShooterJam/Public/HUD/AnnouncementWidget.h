@@ -16,6 +16,7 @@ class SHOOTERJAM_API UAnnouncementWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	
+public:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* WarmupTime;
 	UPROPERTY(meta = (BindWidget))
