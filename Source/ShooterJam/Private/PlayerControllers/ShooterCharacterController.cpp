@@ -10,6 +10,7 @@
 #include "PlayerState/ShooterPlayerState.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Kismet/GameplayStatics.h"
 
 void AShooterCharacterController::OnPossess(APawn* InPawn)
 {
@@ -55,7 +56,17 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 		}
 	}
 
-	SetHudTime();
+	if (CountdownTimer > 0.f)
+	{
+		CountdownTimer -= DeltaSeconds;
+		if (CountdownTimer <= 0.f)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Settings timers"));
+			UpdateCountdowns();
+
+			CountdownTimer = CountdownTimerFrequency;
+		}
+	}
 }
 
 float AShooterCharacterController::GetServerTime()
@@ -69,7 +80,6 @@ float AShooterCharacterController::GetServerTime()
 void AShooterCharacterController::OnMatchStateSet(FName InState)
 {
 	MatchState = InState;
-
 	HandleMatchState();
 }
 
@@ -97,6 +107,29 @@ void AShooterCharacterController::Server_RequestServerTime_Implementation(float 
 	Client_ReportServerTime(InTimeOfClientRequest, ServerTime);
 }
 
+void AShooterCharacterController::Server_RequestGameSettings_Implementation()
+{
+	AShooterGameMode* GameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+	if (!GameMode)
+		return;
+
+	WarmupDuration = GameMode->GetWarmupDuration();
+	MatchDuration = GameMode->GetMatchDuration();
+	LevelStartingTime = GameMode->GetLevelStartingTime();
+	MatchState = GameMode->GetMatchState();
+
+	Client_ReportGameSettings_Implementation(MatchState, WarmupDuration, MatchDuration, LevelStartingTime);
+}
+
+void AShooterCharacterController::Client_ReportGameSettings_Implementation(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime)
+{
+	MatchState = InMatchState;
+	WarmupDuration = InWarmupDuration;
+	MatchDuration = InMatchDuration;
+	LevelStartingTime = InLevelStartingTime;
+	OnMatchStateSet(MatchState);
+}
+
 void AShooterCharacterController::Client_ReportServerTime_Implementation(float InTimeOfClientRequest, float InServerTime)
 {
 	float RoundTripTime{ static_cast<float>(GetWorld()->GetTimeSeconds()) - InTimeOfClientRequest };
@@ -110,12 +143,10 @@ void AShooterCharacterController::HandleMatchState()
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		if (!CheckInitHud())
-		{
-			UE_LOG(LogTemp, Error, TEXT("Received handle match state. NO HUD YET"));
 			return;
-		}
 
 		ShooterHud->AddAnnouncementWidget();
+		UpdateCountdowns();
 	}
 
 	if (MatchState == MatchState::InProgress)
@@ -157,19 +188,25 @@ void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	Server_RequestGameSettings_Implementation();
 	ShooterHud = Cast<AShooterHUD>(GetHUD());
-	UE_LOG(LogTemp, Error, TEXT("Begin play for controller"));
+
+	CountdownTimer = CountdownTimerFrequency;
 }
 
-void AShooterCharacterController::SetHudTime()
+void AShooterCharacterController::UpdateCountdowns()
 {
 	if (!GetPlayerHud())
 		return;
 
-	int64 SecondsLeft{ FMath::CeilToInt(MatchTime - GetServerTime()) };
-	if (SecondsLeft != MatchTimeLeft)
+	if (MatchState == MatchState::WaitingToStart)
 	{
-		GetPlayerHud()->SetMatchCountdown(static_cast<float>(SecondsLeft));
+		float TimeLeft = WarmupDuration - GetServerTime() + LevelStartingTime;
+		GetPlayerHud()->SetWarmupCountdown(static_cast<float>(TimeLeft));
 	}
-	MatchTimeLeft = SecondsLeft;
+	else if (MatchState == MatchState::InProgress)
+	{
+		float TimeLeft = WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime;
+		GetPlayerHud()->SetMatchCountdown(static_cast<float>(TimeLeft));
+	}
 }

@@ -34,8 +34,16 @@ private:
 	/** Timer, controller is using to request servertime with TimeSyncFrequency*/
 	float TimeSyncTimer{ TimeSyncFrequency };
 
-	float MatchTime{ 120.f };
-	int32 MatchTimeLeft{ 0 };
+	/** Copy of ShooterGameMode's match duration */
+	float MatchDuration{ 0.f };
+	/** Copy of ShooterGameMode's warmup duration */
+	float WarmupDuration{ 0.f };
+	/** Copy of ShooterGameMode's time when level started */
+	float LevelStartingTime{ 0.f };
+	/**  Timer to update warmup/match countdown every second */
+	float CountdownTimer{ -1.0f };
+	/** Time to update CountdownTimer */
+	float CountdownTimerFrequency{ 1.0f };
 	
 	//Current match state, syncronized with ShooterGameMode's match state
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
@@ -45,7 +53,7 @@ private:
 private:
 
 	/** Sets current match time to HUD */
-	void SetHudTime();
+	void UpdateCountdowns();
 
 	/** Initialized hud variables */
 	bool CheckInitHud();
@@ -53,6 +61,15 @@ private:
 	/** Requests the current server time, passing in the client's time when the request was sent */
 	UFUNCTION(Server, Reliable)
 	void Server_RequestServerTime(float InTimeOfClientRequest);
+
+	/**  Request game settings, such as match time, warmup time, current match state.
+		Used to deliver settings for server's version of a character */
+	UFUNCTION(Server, Reliable)
+	void Server_RequestGameSettings();
+
+	/**  Same as Server_RequestGameSettings, but delivers settings from server's to client's version of a character */
+	UFUNCTION(server, Reliable)
+	void Client_ReportGameSettings(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime);
 
 	/** Reports the current time to the client, in response to Server_RequestServerTime */
 	UFUNCTION(Client, Reliable)

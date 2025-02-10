@@ -15,9 +15,15 @@ class SHOOTERJAM_API AShooterGameMode : public AGameMode
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditDefaultsOnly)
-	float WarmupTime{ 10.f };
 
+	/** Duration of pre-match warmup screen with flying mode */
+	UPROPERTY(EditDefaultsOnly)
+	float WarmupDuration{ 10.f };
+	/** Duration of match */
+	UPROPERTY(EditDefaultsOnly)
+	float MatchDuration{ 120.f };
+
+	/** UNIX time when level has been loaded */
 	float LevelStartingTime{ 0.f };
 	float CountdownTime{ -1.0f };
 //public methods
@@ -43,4 +49,7 @@ protected:
 //public getters/setters
 public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
+	FORCEINLINE float GetWarmupDuration() const { return WarmupDuration; }
+	FORCEINLINE float GetMatchDuration() const { return MatchDuration; }
+	FORCEINLINE float GetLevelStartingTime() const { return LevelStartingTime; }
 };

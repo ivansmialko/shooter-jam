@@ -21,7 +21,7 @@ void AShooterGameMode::Tick(float DeltaSeconds)
 
 	if (GetMatchState() == MatchState::WaitingToStart)
 	{
-		CountdownTime = WarmupTime - GetWorld()->GetTimeSeconds() + LevelStartingTime;
+		CountdownTime = WarmupDuration - GetWorld()->GetTimeSeconds() + LevelStartingTime;
 		if (CountdownTime <= 0.f)
 		{
 			StartMatch();
