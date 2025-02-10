@@ -42,9 +42,14 @@ private:
 	float LevelStartingTime{ 0.f };
 	/**  Timer to update warmup/match countdown every second */
 	float CountdownTimer{ -1.0f };
-	/** Time to update CountdownTimer */
+	/** CountdownTimer length*/
 	float CountdownTimerFrequency{ 1.0f };
 	
+	/** Timer to poll-check when hud becomes available */
+	float PollInitHudTimer{ -1.0f };
+	/** PollInitHudTimer length */
+	float PollInitHudTimerFrequency{ 0.1f };
+
 	//Current match state, syncronized with ShooterGameMode's match state
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
@@ -81,7 +86,6 @@ private:
 	void OnRep_MatchState();
 
 	void DefaultInitHud(AShooterCharacter* ShooterCharacter);
-
 //protected methods
 protected:
 	//~ Begin AActor Inteface
