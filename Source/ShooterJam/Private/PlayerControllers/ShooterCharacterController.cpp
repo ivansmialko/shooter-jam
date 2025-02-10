@@ -61,10 +61,25 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 		CountdownTimer -= DeltaSeconds;
 		if (CountdownTimer <= 0.f)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Settings timers"));
 			UpdateCountdowns();
-
 			CountdownTimer = CountdownTimerFrequency;
+		}
+	}
+
+	if (PollInitHudTimer > 0.f)
+	{
+		PollInitHudTimer -= DeltaSeconds;
+		if (PollInitHudTimer <= 0.f)
+		{
+			if (CheckInitHud())
+			{
+				Server_RequestGameSettings_Implementation();
+				CountdownTimer = CountdownTimerFrequency;
+			}
+			else
+			{
+				PollInitHudTimer = PollInitHudTimerFrequency;
+			}
 		}
 	}
 }
@@ -182,16 +197,17 @@ void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCha
 
 	GetPlayerHud()->SetScore(ShooterPlayerState->GetScore());
 	GetPlayerHud()->SetDefeats(ShooterPlayerState->GetDefeats());
+	UpdateCountdowns();
 }
 
 void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Server_RequestGameSettings_Implementation();
-	ShooterHud = Cast<AShooterHUD>(GetHUD());
-
-	CountdownTimer = CountdownTimerFrequency;
+	if (IsLocalController())
+	{
+		PollInitHudTimer = PollInitHudTimerFrequency;
+	}
 }
 
 void AShooterCharacterController::UpdateCountdowns()
