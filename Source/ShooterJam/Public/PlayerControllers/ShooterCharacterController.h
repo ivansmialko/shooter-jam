@@ -73,7 +73,7 @@ private:
 	void Server_RequestGameSettings();
 
 	/**  Same as Server_RequestGameSettings, but delivers settings from server's to client's version of a character */
-	UFUNCTION(server, Reliable)
+	UFUNCTION(Client, Reliable)
 	void Client_ReportGameSettings(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime);
 
 	/** Reports the current time to the client, in response to Server_RequestServerTime */

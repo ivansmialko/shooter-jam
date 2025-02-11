@@ -87,6 +87,13 @@ void AShooterCharacter::BeginPlay()
 	}
 }
 
+void AShooterCharacter::PossessedBy(AController* NewController)
+{
+	//Using this, because at BeginPlay stage we have no player controller
+	//And because ShooterCharacterController::OnPossess not called on server
+	InitInputs();
+}
+
 void AShooterCharacter::OnMove(const FInputActionValue& Value)
 {
 	if (!GetController())
