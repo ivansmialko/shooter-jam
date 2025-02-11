@@ -21,8 +21,6 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 		return;
 
 	DefaultInitHud(ShooterCharacter);
-
-	ShooterCharacter->InitInputs();
 }
 
 void AShooterCharacterController::ReceivedPlayer()
@@ -73,8 +71,7 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 		{
 			if (CheckInitHud())
 			{
-				Server_RequestGameSettings_Implementation();
-				CountdownTimer = CountdownTimerFrequency;
+				HandleMatchState();
 			}
 			else
 			{
@@ -133,7 +130,7 @@ void AShooterCharacterController::Server_RequestGameSettings_Implementation()
 	LevelStartingTime = GameMode->GetLevelStartingTime();
 	MatchState = GameMode->GetMatchState();
 
-	Client_ReportGameSettings_Implementation(MatchState, WarmupDuration, MatchDuration, LevelStartingTime);
+	Client_ReportGameSettings(MatchState, WarmupDuration, MatchDuration, LevelStartingTime);
 }
 
 void AShooterCharacterController::Client_ReportGameSettings_Implementation(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime)
@@ -160,6 +157,7 @@ void AShooterCharacterController::HandleMatchState()
 		if (!CheckInitHud())
 			return;
 
+		CountdownTimer = CountdownTimerFrequency;
 		ShooterHud->AddAnnouncementWidget();
 		UpdateCountdowns();
 	}
@@ -204,10 +202,13 @@ void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (IsLocalController())
-	{
-		PollInitHudTimer = PollInitHudTimerFrequency;
-	}
+	PollInitHudTimer = PollInitHudTimerFrequency;
+	Server_RequestGameSettings();
+
+	//FString LocalRoleString = UEnum::GetDisplayValueAsText<ENetRole>(GetLocalRole()).ToString();
+	//FString SysMessage = FString::Printf(TEXT("Player %s, %d, is local: %s."), *LocalRoleString, static_cast<int>(GetNetMode()), (IsLocalController() ? TEXT("true") : TEXT("false")));
+	//FString UserMessage = FString::Printf(TEXT("BeginPlay(), i'm %s."), *GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
 }
 
 void AShooterCharacterController::UpdateCountdowns()
