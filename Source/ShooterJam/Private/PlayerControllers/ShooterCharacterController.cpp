@@ -170,6 +170,15 @@ void AShooterCharacterController::HandleMatchState()
 		ShooterHud->HideAnnouncementWidget();
 		ShooterHud->AddCharacterOverlay();
 	}
+
+	if (MatchState == MatchState::Cooldown)
+	{
+		if (!CheckInitHud())
+			return;
+
+		ShooterHud->HideCharacterOverlay();
+		ShooterHud->AddAnnouncementWidget();
+	}
 }
 
 void AShooterCharacterController::OnRep_MatchState()

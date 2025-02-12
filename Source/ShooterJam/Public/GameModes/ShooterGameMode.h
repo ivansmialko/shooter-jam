@@ -6,6 +6,11 @@
 #include "GameFramework/GameMode.h"
 #include "ShooterGameMode.generated.h"
 
+namespace MatchState
+{
+	extern SHOOTERJAM_API const FName Cooldown; //Match duration has been reached. Display winner and begin cooldown timer
+};
+
 /**
  * 
  */
@@ -22,6 +27,9 @@ private:
 	/** Duration of match */
 	UPROPERTY(EditDefaultsOnly)
 	float MatchDuration{ 120.f };
+	/** Duration of after-match cooldown */
+	UPROPERTY(EditDefaultsOnly)
+	float MatchCooldown{ 10.f };
 
 	/** UNIX time when level has been loaded */
 	float LevelStartingTime{ 0.f };
