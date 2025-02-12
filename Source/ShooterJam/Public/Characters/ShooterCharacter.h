@@ -165,8 +165,11 @@ protected:
 
 //~ Begin AActor Interface
 	virtual void BeginPlay() override;
-	virtual void PossessedBy(AController* NewController) override;
 //~ End AActor Interface
+
+//~ Begin APawn Interface
+	virtual void Restart() override;
+//~ End APawn Interface
 
 //private methods
 private:
