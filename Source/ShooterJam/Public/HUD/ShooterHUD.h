@@ -83,14 +83,17 @@ public:
 	virtual void DrawHUD() override;
 	//~ End AHUD Interface
 
-	//** Creates an instance of UUserWidget and add it to the screen
+	/** Creates an instance of UUserWidget and add it to the screen */ 
 	void AddCharacterOverlay();
 
-	//** Creates an instance of UUserWidget and add it to the screen
+	/** Creates an instance of UUserWidget and add it to the screen */
 	void AddAnnouncementWidget();
 
-	//** Hides an announcement widget
+	/** Hides an announcement widget */
 	void HideAnnouncementWidget();
+
+	/** Hides a character overlay widget */
+	void HideCharacterOverlay();
 
 //public getters/setters
 public:

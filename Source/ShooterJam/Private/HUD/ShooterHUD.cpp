@@ -98,7 +98,10 @@ void AShooterHUD::AddCharacterOverlay()
 void AShooterHUD::AddAnnouncementWidget()
 {
 	if (AnnouncementWidget && AnnouncementWidget->IsInViewport())
+	{
+		AnnouncementWidget->SetVisibility(ESlateVisibility::Visible);
 		return;
+	}
 
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (!PlayerController)
@@ -120,6 +123,14 @@ void AShooterHUD::HideAnnouncementWidget()
 		return;
 
 	AnnouncementWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AShooterHUD::HideCharacterOverlay()
+{
+	if (!CharacterOverlay)
+		return;
+
+	CharacterOverlay->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void AShooterHUD::BeginPlay()
