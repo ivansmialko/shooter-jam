@@ -59,5 +59,6 @@ public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 	FORCEINLINE float GetWarmupDuration() const { return WarmupDuration; }
 	FORCEINLINE float GetMatchDuration() const { return MatchDuration; }
+	FORCEINLINE float GetCooldownDuration() const { return CountdownTime; }
 	FORCEINLINE float GetLevelStartingTime() const { return LevelStartingTime; }
 };

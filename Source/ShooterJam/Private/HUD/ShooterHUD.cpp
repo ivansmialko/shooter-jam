@@ -133,6 +133,17 @@ void AShooterHUD::HideCharacterOverlay()
 	CharacterOverlay->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void AShooterHUD::HideAnnouncementInfoText()
+{
+	if (!AnnouncementWidget)
+		return;
+
+	if (!AnnouncementWidget->InfoText)
+		return;
+
+	AnnouncementWidget->InfoText->SetVisibility(ESlateVisibility::Hidden);
+}
+
 void AShooterHUD::BeginPlay()
 {
 	Super::BeginPlay();
@@ -253,6 +264,11 @@ void AShooterHUD::SetMatchCountdown(float InCountdownTime)
 	if (!CharacterOverlay->MatchCountdownText)
 		return;
 
+	if (InCountdownTime < 0.f)
+	{
+		CharacterOverlay->MatchCountdownText->SetText(FText());
+	}
+
 	int32 Minutes{ FMath::FloorToInt(InCountdownTime / 60) };
 	int32 Seconds{ static_cast<int32>(InCountdownTime) - Minutes * 60 };
 	
@@ -268,9 +284,27 @@ void AShooterHUD::SetWarmupCountdown(float InCountDownTime)
 	if (!AnnouncementWidget->WarmupTime)
 		return;
 
+	if (InCountDownTime < 0.f)
+	{
+		AnnouncementWidget->WarmupTime->SetText(FText());
+		return;
+	}
+
 	int32 Minutes{ FMath::FloorToInt(InCountDownTime / 60) };
 	int32 Seconds{ static_cast<int32>(InCountDownTime) - Minutes * 60 };
 	
 	FString CountdownString{ FString::Printf(TEXT("%02d:%02d"), Minutes, Seconds) };
 	AnnouncementWidget->WarmupTime->SetText(FText::FromString(CountdownString));
+}
+
+void AShooterHUD::SetAnnouncementText(FText InText)
+{
+	if (!AnnouncementWidget)
+		return;
+
+	if (!AnnouncementWidget->AnnouncementText)
+		return;
+
+	FString AnnouncementString{ TEXT("Waiting for the new match to start") };
+	AnnouncementWidget->AnnouncementText->SetText(FText::FromString(AnnouncementString));
 }

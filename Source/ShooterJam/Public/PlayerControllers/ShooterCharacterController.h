@@ -38,6 +38,8 @@ private:
 	float MatchDuration{ 0.f };
 	/** Copy of ShooterGameMode's warmup duration */
 	float WarmupDuration{ 0.f };
+	/** Copy of ShooterGameMode's cooldown duration */
+	float CooldownDuration{ 0.f };
 	/** Copy of ShooterGameMode's time when level started */
 	float LevelStartingTime{ 0.f };
 	/**  Timer to update warmup/match countdown every second */
@@ -74,7 +76,7 @@ private:
 
 	/**  Same as Server_RequestGameSettings, but delivers settings from server's to client's version of a character */
 	UFUNCTION(Client, Reliable)
-	void Client_ReportGameSettings(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime);
+	void Client_ReportGameSettings(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InCooldownDuration, float InLevelStartingTime);
 
 	/** Reports the current time to the client, in response to Server_RequestServerTime */
 	UFUNCTION(Client, Reliable)
