@@ -127,17 +127,19 @@ void AShooterCharacterController::Server_RequestGameSettings_Implementation()
 
 	WarmupDuration = GameMode->GetWarmupDuration();
 	MatchDuration = GameMode->GetMatchDuration();
+	CooldownDuration = GameMode->GetCooldownDuration();
 	LevelStartingTime = GameMode->GetLevelStartingTime();
 	MatchState = GameMode->GetMatchState();
 
-	Client_ReportGameSettings(MatchState, WarmupDuration, MatchDuration, LevelStartingTime);
+	Client_ReportGameSettings(MatchState, WarmupDuration, MatchDuration, CooldownDuration, LevelStartingTime);
 }
 
-void AShooterCharacterController::Client_ReportGameSettings_Implementation(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InLevelStartingTime)
+void AShooterCharacterController::Client_ReportGameSettings_Implementation(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InCooldownDuration, float InLevelStartingTime)
 {
 	MatchState = InMatchState;
 	WarmupDuration = InWarmupDuration;
 	MatchDuration = InMatchDuration;
+	CooldownDuration = InCooldownDuration;
 	LevelStartingTime = InLevelStartingTime;
 	OnMatchStateSet(MatchState);
 }
@@ -234,5 +236,10 @@ void AShooterCharacterController::UpdateCountdowns()
 	{
 		float TimeLeft = WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime;
 		GetPlayerHud()->SetMatchCountdown(static_cast<float>(TimeLeft));
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		float TimeLeft = CooldownDuration + WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime + CountdownTimer;
+		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
 	}
 }

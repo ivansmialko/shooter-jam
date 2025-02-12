@@ -95,6 +95,9 @@ public:
 	/** Hides a character overlay widget */
 	void HideCharacterOverlay();
 
+	/** Hides an UAnnouncementWidget::InfoText */
+	void HideAnnouncementInfoText();
+
 //public getters/setters
 public:
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
@@ -109,4 +112,5 @@ public:
 	void SetWeaponAmmoEmpty();
 	void SetMatchCountdown(float InCountdownTime);
 	void SetWarmupCountdown(float InCountDownTime);
+	void SetAnnouncementText(FText InText);
 };
