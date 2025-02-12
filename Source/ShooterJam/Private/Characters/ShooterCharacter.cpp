@@ -87,10 +87,12 @@ void AShooterCharacter::BeginPlay()
 	}
 }
 
-void AShooterCharacter::PossessedBy(AController* NewController)
+void AShooterCharacter::Restart()
 {
+	Super::Restart();
+
 	//Using this, because at BeginPlay stage we have no player controller
-	//And because ShooterCharacterController::OnPossess not called on server
+	//And because ShooterCharacterController::OnPossess not called on client
 	InitInputs();
 }
 
@@ -344,6 +346,9 @@ void AShooterCharacter::PollInit()
 
 void AShooterCharacter::InitInputs()
 {
+	if (bInputInitialized)
+		return;
+
 	APlayerController* ShooterPlayerController = Cast<APlayerController>(GetController());
 	if (!ShooterPlayerController)
 		return;
@@ -351,6 +356,12 @@ void AShooterCharacter::InitInputs()
 	UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(ShooterPlayerController->GetLocalPlayer());
 	if (!Subsystem)
 		return;
+
+	FString LocalRoleString = UEnum::GetDisplayValueAsText<ENetRole>(GetLocalRole()).ToString();
+	FString SysMessage = FString::Printf(TEXT("Player %s, %d, is local: %s."), *LocalRoleString, static_cast<int>(GetNetMode()), (IsLocallyControlled() ? TEXT("true") : TEXT("false")));
+	FString UserMessage = FString::Printf(TEXT("Adding mapping context, i'm %s."), *GetName());
+	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
+
 
 	Subsystem->AddMappingContext(InputMappingContext, 0);
 	bInputInitialized = true;
