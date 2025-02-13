@@ -29,7 +29,7 @@ private:
 	float MatchDuration{ 120.f };
 	/** Duration of after-match cooldown */
 	UPROPERTY(EditDefaultsOnly)
-	float MatchCooldown{ 10.f };
+	float CooldownDuration{ 10.f };
 
 	/** UNIX time when level has been loaded */
 	float LevelStartingTime{ 0.f };
@@ -59,6 +59,6 @@ public:
 	FORCEINLINE float GetCountdownTime() const { return CountdownTime; }
 	FORCEINLINE float GetWarmupDuration() const { return WarmupDuration; }
 	FORCEINLINE float GetMatchDuration() const { return MatchDuration; }
-	FORCEINLINE float GetCooldownDuration() const { return CountdownTime; }
+	FORCEINLINE float GetCooldownDuration() const { return CooldownDuration; }
 	FORCEINLINE float GetLevelStartingTime() const { return LevelStartingTime; }
 };
