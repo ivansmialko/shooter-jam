@@ -264,7 +264,7 @@ void AShooterHUD::SetMatchCountdown(float InCountdownTime)
 	if (!CharacterOverlay->MatchCountdownText)
 		return;
 
-	if (InCountdownTime < 0.f)
+	if (InCountdownTime <= 0.f)
 	{
 		CharacterOverlay->MatchCountdownText->SetText(FText());
 	}

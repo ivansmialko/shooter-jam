@@ -171,6 +171,7 @@ void AShooterCharacterController::HandleMatchState()
 
 		ShooterHud->HideAnnouncementWidget();
 		ShooterHud->AddCharacterOverlay();
+		UpdateCountdowns();
 	}
 
 	if (MatchState == MatchState::Cooldown)
@@ -179,7 +180,11 @@ void AShooterCharacterController::HandleMatchState()
 			return;
 
 		ShooterHud->HideCharacterOverlay();
+
 		ShooterHud->AddAnnouncementWidget();
+		ShooterHud->HideAnnouncementInfoText();
+		ShooterHud->SetAnnouncementText(FText::FromString(FString(TEXT("Waiting for the next match to start.."))));
+		UpdateCountdowns();
 	}
 }
 
@@ -230,12 +235,12 @@ void AShooterCharacterController::UpdateCountdowns()
 	if (MatchState == MatchState::WaitingToStart)
 	{
 		float TimeLeft = WarmupDuration - GetServerTime() + LevelStartingTime;
-		GetPlayerHud()->SetWarmupCountdown(static_cast<float>(TimeLeft));
+		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
 	}
 	else if (MatchState == MatchState::InProgress)
 	{
 		float TimeLeft = WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime;
-		GetPlayerHud()->SetMatchCountdown(static_cast<float>(TimeLeft));
+		GetPlayerHud()->SetMatchCountdown(TimeLeft);
 	}
 	else if (MatchState == MatchState::Cooldown)
 	{
