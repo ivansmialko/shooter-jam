@@ -101,6 +101,9 @@ void AShooterCharacter::OnMove(const FInputActionValue& Value)
 	if (!GetController())
 		return;
 
+	if (!bGameplayEnabled)
+		return;
+
 	FVector2D InputVector{ Value.Get<FVector2D>() };
 	const FRotator Rotation{ GetController()->GetControlRotation() };
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
@@ -124,11 +127,17 @@ void AShooterCharacter::OnLook(const FInputActionValue& Value)
 
 void AShooterCharacter::OnJump(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	Jump();
 }
 
 void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	if (HasAuthority())
 	{
 		ActionEquip();
@@ -142,6 +151,9 @@ void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 
 void AShooterCharacter::OnCrouch(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	if (bIsCrouched)
 	{
 		UnCrouch();
@@ -154,6 +166,9 @@ void AShooterCharacter::OnCrouch(const FInputActionValue& Value)
 
 void AShooterCharacter::OnAimStart(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	ActionAimStart();
 
 	if (!HasAuthority())
@@ -164,6 +179,9 @@ void AShooterCharacter::OnAimStart(const FInputActionValue& Value)
 
 void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	ActionAimEnd();
 
 	if (!HasAuthority())
@@ -174,6 +192,9 @@ void AShooterCharacter::OnAimEnd(const FInputActionValue& Value)
 
 void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	if (!CombatComponent)
 		return;
 
@@ -182,6 +203,9 @@ void AShooterCharacter::OnFireStart(const FInputActionValue& Value)
 
 void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	if (!CombatComponent)
 		return;
 
@@ -207,6 +231,9 @@ void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 
 void AShooterCharacter::OnReload(const FInputActionValue& Value)
 {
+	if (!bGameplayEnabled)
+		return;
+
 	if (HasAuthority())
 	{
 		ActionReload();
@@ -485,7 +512,7 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation()
 	PlayDissolvingEffect();
 	PlayElimbotEffect();
 
-	DisableCharacter();
+	DisableInputs();
 
 	if (!PlayerController)
 		return;
@@ -536,7 +563,7 @@ void AShooterCharacter::ActionReload()
 	CombatComponent->ReloadWeapon();
 }
 
-void AShooterCharacter::DisableCharacter()
+void AShooterCharacter::DisableInputs()
 {
 	//Disable movement
 	GetCharacterMovement()->DisableMovement();
@@ -576,6 +603,15 @@ void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 	{
 		OnRep_OverlappingWeapon(LastWeaponOverlapped);
 	}
+}
+
+void AShooterCharacter::DisableGameplay()
+{
+	bGameplayEnabled = false;
+	CombatComponent->SetIsAiming(false);
+	CombatComponent->SetIsFiring(false);
+	bUseControllerRotationYaw = false;
+	TurningInPlace = ETurningInPlace::TIP_NotTurning;
 }
 
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
@@ -770,7 +806,9 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy && IsLocallyControlled())
+	if (GetLocalRole() > ENetRole::ROLE_SimulatedProxy
+		&& IsLocallyControlled()
+		&& bGameplayEnabled)
 	{
 		CalculateAimOffset(DeltaTime);
 	}
@@ -815,6 +853,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(AShooterCharacter, Health);
+	DOREPLIFETIME(AShooterCharacter, bGameplayEnabled);
 }
 
 void AShooterCharacter::PostInitializeComponents()
