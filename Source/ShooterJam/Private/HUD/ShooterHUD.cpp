@@ -305,6 +305,16 @@ void AShooterHUD::SetAnnouncementText(FText InText)
 	if (!AnnouncementWidget->AnnouncementText)
 		return;
 
-	FString AnnouncementString{ TEXT("Waiting for the new match to start") };
-	AnnouncementWidget->AnnouncementText->SetText(FText::FromString(AnnouncementString));
+	AnnouncementWidget->AnnouncementText->SetText(InText);
+}
+
+void AShooterHUD::SetAnnouncementInfoText(FText InText)
+{
+	if (!AnnouncementWidget)
+		return;
+
+	if (!AnnouncementWidget->InfoText)
+		return;
+
+	AnnouncementWidget->InfoText->SetText(InText);
 }
