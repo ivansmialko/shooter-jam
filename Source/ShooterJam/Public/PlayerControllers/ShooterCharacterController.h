@@ -88,6 +88,16 @@ private:
 	void OnRep_MatchState();
 
 	void DefaultInitHud(AShooterCharacter* ShooterCharacter);
+
+	/** Handle changing match state to "WaitingToStart" */
+	void HandleWaitingToStart();
+
+	/** Handle changing match state to "InProgress" */
+	void HandleInProgress();
+
+	/** Handle changing match state to "Cooldown" */
+	void HandleCooldown();
+
 //protected methods
 protected:
 	//~ Begin AActor Inteface

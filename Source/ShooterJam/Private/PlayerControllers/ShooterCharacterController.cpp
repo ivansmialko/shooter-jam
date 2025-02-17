@@ -12,25 +12,14 @@
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
 
-void AShooterCharacterController::OnPossess(APawn* InPawn)
+bool AShooterCharacterController::CheckInitHud()
 {
-	Super::OnPossess(InPawn);
-
-	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
-	if (!ShooterCharacter)
-		return;
-
-	DefaultInitHud(ShooterCharacter);
-}
-
-void AShooterCharacterController::ReceivedPlayer()
-{
-	Super::ReceivedPlayer();
-
-	if (IsLocalController())
+	if (!ShooterHud)
 	{
-		Server_RequestServerTime(GetWorld()->GetTimeSeconds());
+		ShooterHud = Cast<AShooterHUD>(GetHUD());
 	}
+
+	return ShooterHud != nullptr;
 }
 
 void AShooterCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -81,6 +70,27 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 	}
 }
 
+void AShooterCharacterController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(InPawn);
+	if (!ShooterCharacter)
+		return;
+
+	DefaultInitHud(ShooterCharacter);
+}
+
+void AShooterCharacterController::ReceivedPlayer()
+{
+	Super::ReceivedPlayer();
+
+	if (IsLocalController())
+	{
+		Server_RequestServerTime(GetWorld()->GetTimeSeconds());
+	}
+}
+
 float AShooterCharacterController::GetServerTime()
 {
 	if (HasAuthority())
@@ -101,16 +111,6 @@ AShooterHUD* AShooterCharacterController::GetPlayerHud()
 		return nullptr;
 
 	return ShooterHud;
-}
-
-bool AShooterCharacterController::CheckInitHud()
-{
-	if (!ShooterHud)
-	{
-		ShooterHud = Cast<AShooterHUD>(GetHUD());
-	}
-
-	return ShooterHud != nullptr;
 }
 
 void AShooterCharacterController::Server_RequestServerTime_Implementation(float InTimeOfClientRequest)
@@ -152,39 +152,40 @@ void AShooterCharacterController::Client_ReportServerTime_Implementation(float I
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
 }
 
+void AShooterCharacterController::UpdateCountdowns()
+{
+	if (!GetPlayerHud())
+		return;
+
+	if (MatchState == MatchState::WaitingToStart)
+	{
+		float TimeLeft = WarmupDuration - GetServerTime() + LevelStartingTime;
+		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
+	}
+	else if (MatchState == MatchState::InProgress)
+	{
+		float TimeLeft = WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime;
+		GetPlayerHud()->SetMatchCountdown(TimeLeft);
+	}
+	else if (MatchState == MatchState::Cooldown)
+	{
+		float TimeLeft = CooldownDuration + WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime + CountdownTimer;
+		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
+	}
+}
 void AShooterCharacterController::HandleMatchState()
 {
 	if (MatchState == MatchState::WaitingToStart)
 	{
-		if (!CheckInitHud())
-			return;
-
-		CountdownTimer = CountdownTimerFrequency;
-		ShooterHud->AddAnnouncementWidget();
-		UpdateCountdowns();
+		HandleWaitingToStart();
 	}
-
 	if (MatchState == MatchState::InProgress)
 	{
-		if (!CheckInitHud())
-			return;
-
-		ShooterHud->HideAnnouncementWidget();
-		ShooterHud->AddCharacterOverlay();
-		UpdateCountdowns();
+		HandleInProgress();
 	}
-
 	if (MatchState == MatchState::Cooldown)
 	{
-		if (!CheckInitHud())
-			return;
-
-		ShooterHud->HideCharacterOverlay();
-
-		ShooterHud->AddAnnouncementWidget();
-		ShooterHud->HideAnnouncementInfoText();
-		ShooterHud->SetAnnouncementText(FText::FromString(FString(TEXT("Waiting for the next match to start.."))));
-		UpdateCountdowns();
+		HandleCooldown();
 	}
 }
 
@@ -214,6 +215,44 @@ void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCha
 	UpdateCountdowns();
 }
 
+void AShooterCharacterController::HandleWaitingToStart()
+{
+	if (!CheckInitHud())
+		return;
+
+	CountdownTimer = CountdownTimerFrequency;
+	ShooterHud->AddAnnouncementWidget();
+	UpdateCountdowns();
+}
+
+void AShooterCharacterController::HandleInProgress()
+{
+	if (!CheckInitHud())
+		return;
+
+	ShooterHud->HideAnnouncementWidget();
+	ShooterHud->AddCharacterOverlay();
+	UpdateCountdowns();
+}
+
+void AShooterCharacterController::HandleCooldown()
+{
+	if (CheckInitHud())
+	{
+		ShooterHud->HideCharacterOverlay();
+
+		ShooterHud->AddAnnouncementWidget();
+		ShooterHud->HideAnnouncementInfoText();
+		ShooterHud->SetAnnouncementText(FText::FromString(FString(TEXT("Waiting for the next match to start.."))));
+		UpdateCountdowns();
+	}
+
+	if (AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn()))
+	{
+		ShooterCharacter->DisableGameplay();
+	}
+}
+
 void AShooterCharacterController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -227,24 +266,3 @@ void AShooterCharacterController::BeginPlay()
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
 }
 
-void AShooterCharacterController::UpdateCountdowns()
-{
-	if (!GetPlayerHud())
-		return;
-
-	if (MatchState == MatchState::WaitingToStart)
-	{
-		float TimeLeft = WarmupDuration - GetServerTime() + LevelStartingTime;
-		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
-	}
-	else if (MatchState == MatchState::InProgress)
-	{
-		float TimeLeft = WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime;
-		GetPlayerHud()->SetMatchCountdown(TimeLeft);
-	}
-	else if (MatchState == MatchState::Cooldown)
-	{
-		float TimeLeft = CooldownDuration + WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime + CountdownTimer;
-		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
-	}
-}

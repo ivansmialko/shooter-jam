@@ -99,6 +99,10 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	bool bIsEliminated{ false };
 
+	/** If true - all user inputs are disabled, except for mouse movement */
+	UPROPERTY(VisibleAnywhere, Replicated)
+	bool bGameplayEnabled{ true };
+
 	//User input
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMappingContext;
@@ -203,7 +207,6 @@ private:
 	void ActionReceiveDamage();
 	void ActionReload();
 
-	void DisableCharacter();
 	void DropWeapon();
 
 	void OnMove(const FInputActionValue& Value);
@@ -253,6 +256,8 @@ public:
 	void PlayReloadMontage();
 
 	void InitInputs();
+	void DisableInputs();
+	void DisableGameplay();
 
 	//public getters/setters
 public:
@@ -265,6 +270,10 @@ public:
 	FORCEINLINE bool GetRotateRootBone() const { return bRotateRootBone; };
 	FORCEINLINE bool GetIsEliminated() const { return bIsEliminated; };
 	FORCEINLINE bool GetIsReloading() const { return (CombatComponent && CombatComponent->GetIsReloading()); }
+	FORCEINLINE bool GetIsGameplayEnabled() const { return bGameplayEnabled; }
+	FORCEINLINE bool GetUseFabrik() const { return !GetIsReloading(); }
+	FORCEINLINE bool GetUseAimOffsets() const { return (!GetIsReloading() && bGameplayEnabled); }
+	FORCEINLINE bool GetUseRightHandTransform() const { return (!GetIsReloading() && bGameplayEnabled); }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }
