@@ -113,4 +113,5 @@ public:
 	void SetMatchCountdown(float InCountdownTime);
 	void SetWarmupCountdown(float InCountDownTime);
 	void SetAnnouncementText(FText InText);
+	void SetAnnouncementInfoText(FText InText);
 };

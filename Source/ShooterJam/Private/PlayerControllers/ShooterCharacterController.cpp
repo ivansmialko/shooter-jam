@@ -8,6 +8,7 @@
 #include "Characters/ShooterCharacter.h"
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerState/ShooterPlayerState.h"
+#include "GameStates/ShooterGameState.h"
 
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
@@ -242,9 +243,30 @@ void AShooterCharacterController::HandleCooldown()
 		ShooterHud->HideCharacterOverlay();
 
 		ShooterHud->AddAnnouncementWidget();
-		ShooterHud->HideAnnouncementInfoText();
 		ShooterHud->SetAnnouncementText(FText::FromString(FString(TEXT("Waiting for the next match to start.."))));
 		UpdateCountdowns();
+
+		AShooterGameState* ShooterGameState = Cast<AShooterGameState>(UGameplayStatics::GetGameState(this));
+		AShooterPlayerState* ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+		if (ShooterGameState && ShooterPlayerState)
+		{
+			const TArray<AShooterPlayerState*>& TopScoringPlayers{ ShooterGameState->GetTopScoringPlayers() };
+			FString InfoTextString;
+			if (TopScoringPlayers.IsEmpty())
+			{
+				InfoTextString = FString("There is no winner");
+			}
+			else if(TopScoringPlayers[0] == ShooterPlayerState)
+			{
+				InfoTextString = FString("You are the winner!");
+			}
+			else
+			{
+				InfoTextString = FString::Printf(TEXT("Winner: \n%s"), *TopScoringPlayers[0]->GetPlayerName());
+			}
+
+			ShooterHud->SetAnnouncementInfoText(FText::FromString(InfoTextString));
+		}
 	}
 
 	if (AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn()))

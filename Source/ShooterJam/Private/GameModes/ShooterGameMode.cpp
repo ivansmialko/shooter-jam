@@ -5,6 +5,7 @@
 
 #include "Characters/ShooterCharacter.h"
 #include "PlayerState/ShooterPlayerState.h"
+#include "GameStates/ShooterGameState.h"
 
 #include "Kismet/GameplayStatics.h"
 #include "PlayerControllers/ShooterCharacterController.h"
@@ -55,6 +56,10 @@ void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharact
 	if (!InAttackerController)
 		return;
 
+	AShooterGameState* ShooterGameState = GetGameState<AShooterGameState>();
+	if (!ShooterGameState)
+		return;
+
 	AShooterPlayerState* AttackerPlayerState = InAttackerController->GetPlayerState<AShooterPlayerState>();
 	AShooterPlayerState* EliminatedPlayerState = InElimController->GetPlayerState<AShooterPlayerState>();
 	if ((!AttackerPlayerState || !EliminatedPlayerState)
@@ -63,6 +68,7 @@ void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharact
 
 	AttackerPlayerState->UpdateScore(AttackerPlayerState->GetScore() + 1.f);
 	EliminatedPlayerState->UpdateDefeats(EliminatedPlayerState->GetDefeats() + 1);
+	ShooterGameState->UpdateTopScore(AttackerPlayerState);
 
 	if (!InElimCharacter)
 		return;
