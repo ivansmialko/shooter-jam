@@ -81,6 +81,12 @@ void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewp
 
 void AShooterHUD::AddCharacterOverlay()
 {
+	if (CharacterOverlay && CharacterOverlay->IsInViewport())
+	{
+		CharacterOverlay->SetVisibility(ESlateVisibility::Visible);
+		return;
+	}
+
 	APlayerController* PlayerController = GetOwningPlayerController();
 	if (!PlayerController)
 		return;

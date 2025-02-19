@@ -407,6 +407,7 @@ void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuan
 void UCombatComponent::InitializeCarriedAmmo()
 {
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_AR, StartingArAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_RocketLauncher, StartingRocketAmmo);
 }
 
 void UCombatComponent::UpdateCurrentCarriedAmmo(const EWeaponType WeaponType)
@@ -429,7 +430,7 @@ int32 UCombatComponent::CalculateAmountToReload()
 	int32 AmountCarried{ CarriedAmmoMap[EquippedWeapon->GetWeaponType()] };
 	int32 Least{ FMath::Min(RoomInMag, AmountCarried) };
 	return FMath::Clamp(RoomInMag, 0, Least);
-}
+} 
 
 void UCombatComponent::ReloadAmmo()
 {

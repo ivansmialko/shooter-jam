@@ -82,6 +82,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 StartingArAmmo{ 30 };
 
+	UPROPERTY(EditAnywhere)
+	int32 StartingRocketAmmo{ 0 };
+
 //public methods
 public:
 	UCombatComponent();
