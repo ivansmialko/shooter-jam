@@ -3,7 +3,25 @@
 
 #include "Weaponry/ProjectileRocket.h"
 
+#include "NiagaraFunctionLibrary.h"
 #include "Kismet/GameplayStatics.h"
+
+void AProjectileRocket::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (TrailSystem)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAttached(TrailSystem,
+			GetRootComponent(),
+			FName(),
+			GetActorLocation(),
+			GetActorRotation(),
+			EAttachLocation::KeepWorldPosition,
+			false
+		);
+	}
+}
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
