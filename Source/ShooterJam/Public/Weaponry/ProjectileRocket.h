@@ -8,6 +8,7 @@
 
 class UNiagaraSystem;
 class UNiagaraComponent;
+class URocketMovementComponent;
 
 UCLASS()
 class SHOOTERJAM_API AProjectileRocket : public AProjectile
@@ -37,6 +38,10 @@ private:
 	USoundAttenuation* ProjectileLoopAttenuation;
 
 	FTimerHandle DestroyTimer;
+
+protected:
+	UPROPERTY(VisibleAnywhere)
+	URocketMovementComponent* RocketMovementComponent;
 
 protected:
 	virtual void BeginPlay() override;

@@ -3,6 +3,7 @@
 
 #include "Weaponry/ProjectileBullet.h"
 
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -19,4 +20,11 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
 
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
+}
+
+AProjectileBullet::AProjectileBullet()
+{
+	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
+	ProjectileMovement->bRotationFollowsVelocity = true;
+	ProjectileMovement->SetIsReplicated(true);
 }

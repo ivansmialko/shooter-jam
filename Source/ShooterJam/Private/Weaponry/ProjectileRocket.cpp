@@ -1,7 +1,6 @@
 // Made by smialko
-
-
 #include "Weaponry/ProjectileRocket.h"
+#include "Weaponry/RocketMovementComponent.h"
 
 #include "Sound/SoundCue.h"
 #include "NiagaraSystemInstance.h"
@@ -10,6 +9,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/AudioComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 
 void AProjectileRocket::BeginPlay()
 {
@@ -100,6 +100,10 @@ AProjectileRocket::AProjectileRocket()
 	RocketMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RocketMesh"));
 	RocketMesh->SetupAttachment(RootComponent);
 	RocketMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	RocketMovementComponent = CreateDefaultSubobject<URocketMovementComponent>(TEXT("RocketMovementComponent"));
+	RocketMovementComponent->bRotationFollowsVelocity = true;
+	RocketMovementComponent->SetIsReplicated(true);
 }
 
 void AProjectileRocket::Destroyed()

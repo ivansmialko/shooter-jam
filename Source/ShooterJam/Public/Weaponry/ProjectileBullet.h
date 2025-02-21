@@ -15,5 +15,10 @@ class SHOOTERJAM_API AProjectileBullet : public AProjectile
 	GENERATED_BODY()
 	
 protected:
+	//~ Begin AProjectile Interface
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
+	//~ End AProjectile Interface
+
+public:
+	AProjectileBullet();
 };

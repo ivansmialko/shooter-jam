@@ -19,9 +19,6 @@ class SHOOTERJAM_API AProjectile : public AActor
 	GENERATED_BODY()
 	
 private:
-	UPROPERTY(VisibleAnywhere)
-	UProjectileMovementComponent* ProjectileMovement;
-
 	UPROPERTY(EditAnywhere)
 	UParticleSystem* TracerParticles;
 
@@ -39,6 +36,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* CollisionBox;
+
+	UPROPERTY(VisibleAnywhere)
+	UProjectileMovementComponent* ProjectileMovement;
 
 protected:
 	virtual void BeginPlay() override;
