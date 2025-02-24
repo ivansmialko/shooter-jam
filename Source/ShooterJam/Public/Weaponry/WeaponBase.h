@@ -107,23 +107,8 @@ private:
 
 //protected members
 protected:
-	virtual void BeginPlay() override;
-
-	UFUNCTION()
-	virtual void OnAreaSphereOverlapBegin(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
-
-	UFUNCTION()
-	virtual void OnAreaSphereOverlapEnd(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComponent,
-		int32 OtherBodyIndex);
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float BaseDamage{ 20.f };
 
 //private methods
 private:
@@ -161,6 +146,26 @@ public:
 	virtual void Fire(const FVector& HitTarget);
 
 	void OnDropped();
+
+//protected methods
+protected:
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	virtual void OnAreaSphereOverlapBegin(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
+	UFUNCTION()
+	virtual void OnAreaSphereOverlapEnd(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComponent,
+		int32 OtherBodyIndex);
 
 //public getters
 public:
