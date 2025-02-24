@@ -56,22 +56,22 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if (!FiringController)
 		return;
 
-	if (!HasAuthority())
-		return;
-
-	UGameplayStatics::ApplyRadialDamageWithFalloff(
-		this,						//World context
-		Damage,						//Base damage
-		10.f,						//Minimal damage
-		GetActorLocation(),			//Origin
-		200.f,						//Inner radius
-		500.f,						//Outer radius
-		1.f,						//Falloff
-		UDamageType::StaticClass(),	//Damage type
-		TArray<AActor*>(),			//Actors to ignore
-		this,						//Damage causer
-		FiringController			//Instigator
-	);
+	if (HasAuthority())
+	{
+		UGameplayStatics::ApplyRadialDamageWithFalloff(
+			this,						//World context
+			Damage,						//Base damage
+			10.f,						//Minimal damage
+			GetActorLocation(),			//Origin
+			200.f,						//Inner radius
+			500.f,						//Outer radius
+			1.f,						//Falloff
+			UDamageType::StaticClass(),	//Damage type
+			TArray<AActor*>(),			//Actors to ignore
+			this,						//Damage causer
+			FiringController			//Instigator
+		);
+	}
 
 	GetWorldTimerManager().SetTimer(DestroyTimer, this, &AProjectileRocket::DestroyTimerFinished, DestroyTime);
 	PlayHitFx();
