@@ -7,6 +7,55 @@
 
 #include "Engine/SkeletalMeshSocket.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
+
+void AWeaponHitScan::DealDamage(const FHitResult& HitResult)
+{
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(HitResult.GetActor());
+	if (!ShooterCharacter)
+		return;
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn)
+		return;
+
+	AController* InstigatorController = OwnerPawn->GetController();
+	if (!InstigatorController)
+		return;
+
+	if (HasAuthority())
+	{
+		UGameplayStatics::ApplyDamage(ShooterCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
+	}
+}
+
+void AWeaponHitScan::SpawnBeamParticles(const FVector& Start, const FVector& End)
+{
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	if (!BeamParticles)
+		return;
+
+	UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(World, BeamParticles, Start);
+	if (!Beam)
+		return;
+
+	Beam->SetVectorParameter(FName("Target"), End);
+}
+
+void AWeaponHitScan::SpawnImpactParticles(const FHitResult& HitResult)
+{
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	if (!ImpactParticles)
+		return;
+
+	UGameplayStatics::SpawnEmitterAtLocation(World, ImpactParticles, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
+}
 
 void AWeaponHitScan::Fire(const FVector& HitTarget)
 {
@@ -24,33 +73,22 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 	FVector Start = SocketTransform.GetLocation();
 	FVector End = Start + (HitTarget - Start) * 1.25;
 
-	FHitResult FireHit;
-	
 	UWorld* World = GetWorld();
 	if (!World)
 		return;
 
+	FHitResult FireHit;
 	World->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
 
-	if (!FireHit.bBlockingHit)
-		return;
+	FVector BeamEnd = End;
 
-	UGameplayStatics::SpawnEmitterAtLocation(World, ImpactParticles, FireHit.ImpactPoint, FireHit.ImpactNormal.Rotation());
-
-	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(FireHit.GetActor());
-	if (!ShooterCharacter)
-		return;
-
-	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	if (!OwnerPawn)
-		return;
-
-	AController* InstigatorController = OwnerPawn->GetController();
-	if (!InstigatorController)
-		return;
-
-	if (HasAuthority())
+	if (FireHit.bBlockingHit)
 	{
-		UGameplayStatics::ApplyDamage(ShooterCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
+		SpawnImpactParticles(FireHit);
+		DealDamage(FireHit);
+
+		BeamEnd = FireHit.ImpactPoint;
 	}
+
+	SpawnBeamParticles(SocketTransform.GetLocation(), BeamEnd);
 }

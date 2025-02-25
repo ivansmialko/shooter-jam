@@ -6,6 +6,8 @@
 #include "Weaponry/WeaponBase.h"
 #include "WeaponHitScan.generated.h"
 
+class UParticleSystem;
+
 /**
  * 
  */
@@ -16,8 +18,17 @@ class SHOOTERJAM_API AWeaponHitScan : public AWeaponBase
 	
 //private members
 private:
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	class UParticleSystem* ImpactParticles;
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UParticleSystem* ImpactParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UParticleSystem* BeamParticles;
+
+//private methods
+private:
+	void DealDamage(const FHitResult& HitResult);
+	void SpawnBeamParticles(const FVector& Start, const FVector& End);
+	void SpawnImpactParticles(const FHitResult& HitResult);
 
 //public methods
 public:
