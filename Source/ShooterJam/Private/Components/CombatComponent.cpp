@@ -228,6 +228,20 @@ bool UCombatComponent::CheckCanFire()
 	return true;
 }
 
+bool UCombatComponent::CheckCanReload()
+{
+	if (!EquippedWeapon)
+		return false;
+
+	if (!CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
+		return false;
+
+	if (CarriedAmmoMap[EquippedWeapon->GetWeaponType()] == 0)
+		return false;
+
+	return true;
+}
+
 void UCombatComponent::OnStateReload()
 {
 	Character->PlayReloadMontage();
@@ -437,10 +451,7 @@ void UCombatComponent::ReloadAmmo()
 	if (!EquippedWeapon)
 		return;
 
-	if (!CarriedAmmoMap.Contains(EquippedWeapon->GetWeaponType()))
-		return;
-
-	if (CarriedAmmoMap[EquippedWeapon->GetWeaponType()] == 0)
+	if (!CheckCanReload())
 		return;
 
 	int32 AmountToReload{ CalculateAmountToReload() };
@@ -574,6 +585,9 @@ void UCombatComponent::ReloadWeapon()
 		return;
 
 	if (CombatState == ECombatState::ECS_Reloading)
+		return;
+
+	if (!CheckCanReload())
 		return;
 
 	CombatState = ECombatState::ECS_Reloading;
