@@ -154,6 +154,7 @@ protected:
 	void StartFireTimer();
 	void FireWeapon();
 	bool CheckCanFire();
+	bool CheckCanReload();
 
 	void OnStateReload();
 
