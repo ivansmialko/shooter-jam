@@ -101,7 +101,7 @@ private:
 
 	UPROPERTY()
 	AShooterCharacterController* OwnerController;
-
+	\
 	//Calculated at beginplay, based on FireRate (bullets per minute)
 	float FireDelay{ 0 };
 

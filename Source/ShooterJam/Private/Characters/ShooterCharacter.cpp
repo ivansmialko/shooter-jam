@@ -696,6 +696,12 @@ void AShooterCharacter::PlayReloadMontage()
 	case EWeaponType::EWT_AR:
 		SectionName = FName("Rifle");
 		break;
+	case EWeaponType::EWT_RocketLauncher:
+		SectionName = FName("Rifle");
+		break;
+	case EWeaponType::EWT_Pistol:
+		SectionName = FName("Rifle");
+		break;
 	default:
 		break;
 	}

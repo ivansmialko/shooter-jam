@@ -32,8 +32,10 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 
 	World->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
 
-	if (FireHit.bBlockingHit)
+	if (!FireHit.bBlockingHit)
 		return;
+
+	UGameplayStatics::SpawnEmitterAtLocation(World, ImpactParticles, FireHit.ImpactPoint, FireHit.ImpactNormal.Rotation());
 
 	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(FireHit.GetActor());
 	if (!ShooterCharacter)
@@ -51,5 +53,4 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 	{
 		UGameplayStatics::ApplyDamage(ShooterCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
 	}
-	UGameplayStatics::SpawnEmitterAtLocation(World, ImpactParticles, End, FireHit.ImpactNormal.Rotation());
 }
