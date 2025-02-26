@@ -896,6 +896,8 @@ void AShooterCharacter::OnEliminated()
 
 void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Spent roung, left %d"), InWeapon->GetWeaponAmmo());
+
 	if (!InWeapon)
 		return;
 
@@ -904,6 +906,8 @@ void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
 
 	if (!CombatComponent)
 		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("Setting new hud"));
 
 	PlayerController->GetPlayerHud()->SetWeaponAmmo(InWeapon->GetWeaponAmmo());
 	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());

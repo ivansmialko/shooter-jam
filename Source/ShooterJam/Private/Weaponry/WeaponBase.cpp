@@ -109,11 +109,7 @@ void AWeaponBase::SpawnBulletShell()
 void AWeaponBase::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
-	
-	if (CheckInitOwner() && OwnerCharacter->HasAuthority())
-	{
-		NotifyOwner_Ammo();
-	}
+	NotifyOwner_Ammo();
 }
 
 void AWeaponBase::NotifyOwner_Ammo()
@@ -277,6 +273,9 @@ void AWeaponBase::AddAmmo(int32 AmmoToAdd)
 
 void AWeaponBase::Fire(const FVector& HitTarget)
 {
+	SpawnBulletShell();
+	SpendRound();
+
 	if (!FireAnimation)
 		return;
 
@@ -284,8 +283,5 @@ void AWeaponBase::Fire(const FVector& HitTarget)
 		return;
 
 	WeaponMesh->PlayAnimation(FireAnimation, false);
-
-	SpawnBulletShell();
-	SpendRound();
 }
 
