@@ -384,11 +384,10 @@ void AShooterCharacter::InitInputs()
 	if (!Subsystem)
 		return;
 
-	FString LocalRoleString = UEnum::GetDisplayValueAsText<ENetRole>(GetLocalRole()).ToString();
-	FString SysMessage = FString::Printf(TEXT("Player %s, %d, is local: %s."), *LocalRoleString, static_cast<int>(GetNetMode()), (IsLocallyControlled() ? TEXT("true") : TEXT("false")));
-	FString UserMessage = FString::Printf(TEXT("Adding mapping context, i'm %s."), *GetName());
-	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
-
+	//FString LocalRoleString = UEnum::GetDisplayValueAsText<ENetRole>(GetLocalRole()).ToString();
+	//FString SysMessage = FString::Printf(TEXT("Player %s, %d, is local: %s."), *LocalRoleString, static_cast<int>(GetNetMode()), (IsLocallyControlled() ? TEXT("true") : TEXT("false")));
+	//FString UserMessage = FString::Printf(TEXT("Adding mapping context, i'm %s."), *GetName());
+	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
 
 	Subsystem->AddMappingContext(InputMappingContext, 0);
 	bInputInitialized = true;
