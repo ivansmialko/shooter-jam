@@ -67,6 +67,13 @@ void AWeaponBase::OnStateEquipped()
 	WeaponMesh->SetSimulatePhysics(false);
 	WeaponMesh->SetEnableGravity(false);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (WeaponType == EWeaponType::EWT_SMG)
+	{
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponMesh->SetEnableGravity(true);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
 }
 
 void AWeaponBase::OnStateDropped()
@@ -82,6 +89,9 @@ void AWeaponBase::OnStateDropped()
 		return;
 
 	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+
+	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
+	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 }
 
 void AWeaponBase::SpawnBulletShell()
