@@ -5,9 +5,15 @@
 
 void AWeaponMultiHitScan::Fire(const FVector& HitTarget)
 {
+	AWeaponBase::Fire(HitTarget);
+
 	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
-	FVector End = GetTraceEndWithScatter(Start, HitTarget);
+
+	for (uint32 i = 0; i < HitsNumber; ++i)
+	{
+		FVector End = GetTraceEndWithScatter(Start, HitTarget);
+	}
 
 	//UWorld* World = GetWorld();
 	//if (!World)
