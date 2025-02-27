@@ -8,6 +8,7 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "Net/UnrealNetwork.h"
 #include "Engine/SkeletalMeshSocket.h"
+#include "DrawDebugHelpers.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -190,6 +191,28 @@ void AWeaponBase::OnAreaSphereOverlapEnd(UPrimitiveComponent* OverlappedComponen
 		return;
 
 	ShooterCharacter->SetOverlappingWeapon(nullptr);
+}
+
+FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget)
+{
+	FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
+	FVector SphereCenter = TraceStart + ToTargetNormalized * ScatterSphereDistance;
+
+	DrawDebugSphere(GetWorld(), SphereCenter, ScatterSphereRadius, 12, FColor::Red, true);
+
+	return FVector::ZeroVector;
+}
+
+FTransform AWeaponBase::GetMuzzleTransform() const
+{
+	if (!GetWeaponMesh())
+		return FTransform();
+
+	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
+	if (!MuzzleFlashSocket)
+		return FTransform();
+
+	return MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 }
 
 void AWeaponBase::OnDropped()

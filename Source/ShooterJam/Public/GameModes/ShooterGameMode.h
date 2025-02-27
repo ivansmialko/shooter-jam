@@ -19,6 +19,7 @@ class SHOOTERJAM_API AShooterGameMode : public AGameMode
 {
 	GENERATED_BODY()
 
+//private fields
 private:
 
 	/** Duration of pre-match warmup screen with flying mode */
@@ -34,6 +35,7 @@ private:
 	/** UNIX time when level has been loaded */
 	float LevelStartingTime{ 0.f };
 	float CountdownTime{ -1.0f };
+
 //public methods
 public:
 	AShooterGameMode();

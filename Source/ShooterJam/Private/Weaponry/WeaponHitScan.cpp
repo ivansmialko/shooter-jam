@@ -61,15 +61,7 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 {
 	Super::Fire(HitTarget);
 
-	if (!GetWeaponMesh())
-		return;
-
-	const USkeletalMeshSocket* MuzzleFlashSocket = GetWeaponMesh()->GetSocketByName("MuzzleFlash");
-	if (!MuzzleFlashSocket)
-		return;
-
-	FTransform SocketTransform = MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
-	
+	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
 	FVector End = Start + (HitTarget - Start) * 1.25;
 

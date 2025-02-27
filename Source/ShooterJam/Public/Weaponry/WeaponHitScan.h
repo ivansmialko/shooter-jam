@@ -24,15 +24,13 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Style")
 	UParticleSystem* BeamParticles;
 
-//private methods
-private:
-	void DealDamage(const FHitResult& HitResult);
-	void SpawnBeamParticles(const FVector& Start, const FVector& End);
-	void SpawnImpactParticles(const FHitResult& HitResult);
-
 //public methods
 public:
 	//~ Begin AWeaponBase Interface
 	virtual void Fire(const FVector& HitTarget) override;
 	//~ End AWeaponBase Interface
+
+	void DealDamage(const FHitResult& HitResult);
+	void SpawnBeamParticles(const FVector& Start, const FVector& End);
+	void SpawnImpactParticles(const FHitResult& HitResult);
 };
