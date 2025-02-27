@@ -91,6 +91,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	int32 StartingSmgAmmo{ 0 };
 
+	UPROPERTY(EditAnywhere)
+	int32 StartingShotgunAmmo{ 0 };
+
 //public methods
 public:
 	UCombatComponent();
