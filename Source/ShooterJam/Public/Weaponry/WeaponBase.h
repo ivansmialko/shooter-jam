@@ -55,6 +55,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 MagCapacity;
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bUseScatter{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	float ScatterSphereDistance{ 800.f };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	float ScatterSphereRadius{ 75.f };
+
 	UPROPERTY(EditAnywhere, Category = "Weapon Style")
 	TSubclassOf<ABulletShell> BulletShellClass;
 
@@ -167,6 +176,8 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
+	FVector GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget);
+
 //public getters
 public:
 	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
@@ -185,4 +196,5 @@ public:
 	FORCEINLINE UTexture2D* GetCrosshairsTop() const { return CrosshairsTop; }
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
+	FTransform GetMuzzleTransform() const;
 };

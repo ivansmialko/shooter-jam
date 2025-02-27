@@ -164,7 +164,7 @@ private:
 	AShooterCharacterController* PlayerController{ nullptr };
 	AShooterPlayerState* PlayerState{ nullptr };
 
-//protected members
+//protected methods
 protected:
 
 //~ Begin AActor Interface

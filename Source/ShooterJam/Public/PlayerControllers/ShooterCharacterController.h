@@ -18,9 +18,8 @@ class SHOOTERJAM_API AShooterCharacterController : public APlayerController
 {
 	GENERATED_BODY()
 
-//private variables
+//private fields
 private:
-
 	/** Frequency, controller is requesting servertime with */
 	UPROPERTY(EditAnywhere, Category = Time);
 	float TimeSyncFrequency{ 5.f };
@@ -58,7 +57,6 @@ private:
 
 //private methods
 private:
-
 	/** Sets current match time to HUD */
 	void UpdateCountdowns();
 
