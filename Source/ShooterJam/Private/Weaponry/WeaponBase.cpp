@@ -9,6 +9,7 @@
 #include "Net/UnrealNetwork.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "DrawDebugHelpers.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -198,9 +199,16 @@ FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVe
 	FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
 	FVector SphereCenter = TraceStart + ToTargetNormalized * ScatterSphereDistance;
 
-	DrawDebugSphere(GetWorld(), SphereCenter, ScatterSphereRadius, 12, FColor::Red, true);
+	FVector RandomPoint = UKismetMathLibrary::RandomUnitVector() * FMath::FRandRange(0.f, ScatterSphereRadius);
 
-	return FVector::ZeroVector;
+	FVector EndLocation = SphereCenter + RandomPoint;
+	FVector ToEndLocation = EndLocation - TraceStart;
+
+	DrawDebugSphere(GetWorld(), SphereCenter, ScatterSphereRadius, 12, FColor::Red, true);
+	DrawDebugSphere(GetWorld(), EndLocation, 4.f, 12.f, FColor::Cyan, true);
+	DrawDebugLine(GetWorld(), TraceStart, FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size()), FColor::Green, true);
+
+	return FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size());
 }
 
 FTransform AWeaponBase::GetMuzzleTransform() const
