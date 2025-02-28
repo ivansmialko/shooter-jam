@@ -15,9 +15,13 @@ class SHOOTERJAM_API AWeaponMultiHitScan : public AWeaponHitScan
 	GENERATED_BODY()
 	
 //private fields
-private:
-	UPROPERTY(EditAnywhere)
-	uint32 HitsNumber{ 10 };
+protected:
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	uint32 ScatterHitsNumber{ 10 };
+
+//public methods
+public:
+	AWeaponMultiHitScan();
 
 //protected methods
 protected:

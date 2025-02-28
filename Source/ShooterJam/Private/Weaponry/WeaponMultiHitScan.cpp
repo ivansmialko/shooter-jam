@@ -3,34 +3,33 @@
 
 #include "Weaponry/WeaponMultiHitScan.h"
 
+AWeaponMultiHitScan::AWeaponMultiHitScan()
+{
+	bUseScatter = true;
+}
+
 void AWeaponMultiHitScan::Fire(const FVector& HitTarget)
 {
 	AWeaponBase::Fire(HitTarget);
 
 	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
+	FVector BeamEnd;
 
-	for (uint32 i = 0; i < HitsNumber; ++i)
+	FHitResult FireHit;
+	for (uint32 i = 0; i < ScatterHitsNumber; ++i)
 	{
 		FVector End = GetTraceEndWithScatter(Start, HitTarget);
+		BeamEnd = End;
+		HitScan(FireHit, Start, End);
+
+		if (FireHit.bBlockingHit)
+		{
+			SpawnImpactParticles(FireHit);
+			DealDamage(FireHit);
+			BeamEnd = End;
+		}
+
+		SpawnBeamParticles(Start, BeamEnd);
 	}
-
-	//UWorld* World = GetWorld();
-	//if (!World)
-	//	return;
-
-	//FHitResult FireHit;
-	//World->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
-
-	//FVector BeamEnd = End;
-
-	//if (FireHit.bBlockingHit)
-	//{
-	//	SpawnImpactParticles(FireHit);
-	//	DealDamage(FireHit);
-
-	//	BeamEnd = FireHit.ImpactPoint;
-	//}
-
-	//SpawnBeamParticles(SocketTransform.GetLocation(), BeamEnd);
 }
