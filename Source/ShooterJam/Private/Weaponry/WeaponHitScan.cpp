@@ -63,16 +63,11 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 
 	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
-	FVector End = Start + (HitTarget - Start) * 1.25;
-
-	UWorld* World = GetWorld();
-	if (!World)
-		return;
+	FVector End = (bUseScatter ? GetTraceEndWithScatter(Start, HitTarget) :  GetTraceEnd(Start, HitTarget));
+	FVector BeamEnd = End;
 
 	FHitResult FireHit;
-	World->LineTraceSingleByChannel(FireHit, Start, End, ECollisionChannel::ECC_Visibility);
-
-	FVector BeamEnd = End;
+	HitScan(FireHit, Start, End);
 
 	if (FireHit.bBlockingHit)
 	{
@@ -82,5 +77,5 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 		BeamEnd = FireHit.ImpactPoint;
 	}
 
-	SpawnBeamParticles(SocketTransform.GetLocation(), BeamEnd);
+	SpawnBeamParticles(Start, BeamEnd);
 }

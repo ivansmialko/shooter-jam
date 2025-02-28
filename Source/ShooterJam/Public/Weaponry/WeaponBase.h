@@ -55,15 +55,6 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 MagCapacity;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
-	bool bUseScatter{ false };
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
-	float ScatterSphereDistance{ 800.f };
-
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
-	float ScatterSphereRadius{ 75.f };
-
 	UPROPERTY(EditAnywhere, Category = "Weapon Style")
 	TSubclassOf<ABulletShell> BulletShellClass;
 
@@ -118,6 +109,15 @@ private:
 protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float BaseDamage{ 20.f };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bUseScatter{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	float ScatterSphereDistance{ 800.f };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	float ScatterSphereRadius{ 75.f };
 
 //private methods
 private:
@@ -177,6 +177,8 @@ protected:
 		int32 OtherBodyIndex);
 
 	FVector GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget);
+	FVector GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget);
+	void HitScan(FHitResult& OutHitResult, const FVector& TraceStart, const FVector& TraceEnd);
 
 //public getters
 public:

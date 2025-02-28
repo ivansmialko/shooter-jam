@@ -211,6 +211,21 @@ FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVe
 	return FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size());
 }
 
+FVector AWeaponBase::GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget)
+{
+	return (TraceStart + (HitTarget - TraceStart) * 1.25);
+}
+
+void AWeaponBase::HitScan(FHitResult& OutHitResult, const FVector& TraceStart, const FVector& TraceEnd)
+{
+
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	World->LineTraceSingleByChannel(OutHitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
+}
+
 FTransform AWeaponBase::GetMuzzleTransform() const
 {
 	if (!GetWeaponMesh())
