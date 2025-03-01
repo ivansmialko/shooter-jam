@@ -707,6 +707,9 @@ void AShooterCharacter::PlayReloadMontage()
 	case EWeaponType::EWT_Shotgun:
 		SectionName = FName("Rifle");
 		break;
+	case EWeaponType::EWT_SR:
+		SectionName = FName("Rifle");
+		break;
 	default:
 		break;
 	}
