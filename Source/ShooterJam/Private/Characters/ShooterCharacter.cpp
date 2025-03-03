@@ -123,8 +123,6 @@ void AShooterCharacter::OnLook(const FInputActionValue& Value)
 	FVector2D LookVector = Value.Get<FVector2D>();
 	AddControllerYawInput(LookVector.X);
 	AddControllerPitchInput(LookVector.Y);
-
-	UE_LOG(LogTemp, Warning, TEXT("X: %.6f, Y: %.6f"), LookVector.X, LookVector.Y);
 }
 
 void AShooterCharacter::OnJump(const FInputActionValue& Value)

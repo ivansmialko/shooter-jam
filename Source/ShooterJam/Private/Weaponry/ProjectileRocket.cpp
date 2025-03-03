@@ -48,34 +48,13 @@ void AProjectileRocket::BeginPlay()
 
 void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	APawn* FiringPawn = GetInstigator();
-	if (!FiringPawn)
-		return;
-
-	AController* FiringController = Cast<AController>(FiringPawn->GetController());
-	if (!FiringController)
-		return;
-
-	if (HasAuthority())
-	{
-		UGameplayStatics::ApplyRadialDamageWithFalloff(
-			this,						//World context
-			Damage,						//Base damage
-			10.f,						//Minimal damage
-			GetActorLocation(),			//Origin
-			200.f,						//Inner radius
-			500.f,						//Outer radius
-			1.f,						//Falloff
-			UDamageType::StaticClass(),	//Damage type
-			TArray<AActor*>(),			//Actors to ignore
-			this,						//Damage causer
-			FiringController			//Instigator
-		);
-	}
+	DealExplosionDamage();
 
 	GetWorldTimerManager().SetTimer(DestroyTimer, this, &AProjectileRocket::DestroyTimerFinished, DestroyTime);
+
 	PlayHitFx();
 	RocketMesh->SetVisibility(false);
+
 	if (CollisionBox)
 	{
 		CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);

@@ -46,11 +46,10 @@ void AProjectile::BeginPlay()
 			EAttachLocation::KeepWorldPosition);
 	}
 
-	if (!HasAuthority())
-		return;
-
-	CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
-
+	if (HasAuthority())
+	{
+		CollisionBox->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	}
 }
 
 void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -76,6 +75,34 @@ void AProjectile::PlayHitFx()
 		this,
 		ImpactSound,
 		GetActorLocation());
+}
+
+void AProjectile::DealExplosionDamage()
+{
+	APawn* FiringPawn = GetInstigator();
+	if (!FiringPawn)
+		return;
+
+	AController* FiringController = Cast<AController>(FiringPawn->GetController());
+	if (!FiringController)
+		return;
+
+	if (HasAuthority())
+	{
+		UGameplayStatics::ApplyRadialDamageWithFalloff(
+			this,						//World context
+			Damage,						//Base damage
+			10.f,						//Minimal damage
+			GetActorLocation(),			//Origin
+			200.f,						//Inner radius
+			500.f,						//Outer radius
+			1.f,						//Falloff
+			UDamageType::StaticClass(),	//Damage type
+			TArray<AActor*>(),			//Actors to ignore
+			this,						//Damage causer
+			FiringController			//Instigator
+		);
+	}
 }
 
 // Called every frame
