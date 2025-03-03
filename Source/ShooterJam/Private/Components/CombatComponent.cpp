@@ -320,6 +320,17 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
 {
 	bIsAiming = bInIsAiming;
+
+	if (!EquippedWeapon)
+		return;
+
+	if (!Character || !Character->IsLocallyControlled())
+		return;
+
+	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SR)
+	{
+		Character->ShowSniperScopeWidget(bIsAiming);
+	}
 }
 
 void UCombatComponent::SetIsFiring(bool bInIsFiring)

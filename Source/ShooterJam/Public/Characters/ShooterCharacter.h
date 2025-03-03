@@ -259,6 +259,9 @@ public:
 	void DisableInputs();
 	void DisableGameplay();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void ShowSniperScopeWidget(bool bInShowScope);
+
 	//public getters/setters
 public:
 
