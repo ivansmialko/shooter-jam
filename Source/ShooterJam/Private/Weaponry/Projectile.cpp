@@ -10,6 +10,9 @@
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystem.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraSystemInstance.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -58,7 +61,7 @@ void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimi
 	Destroy();
 }
 
-void AProjectile::PlayHitFx()
+void AProjectile::SpawnHitFx()
 {
 	if (!ImpactParticles)
 		return;
@@ -94,8 +97,8 @@ void AProjectile::DealExplosionDamage()
 			Damage,						//Base damage
 			10.f,						//Minimal damage
 			GetActorLocation(),			//Origin
-			200.f,						//Inner radius
-			500.f,						//Outer radius
+			DamageInnerRadius,						//Inner radius
+			DamageOuterRadius,						//Outer radius
 			1.f,						//Falloff
 			UDamageType::StaticClass(),	//Damage type
 			TArray<AActor*>(),			//Actors to ignore
@@ -105,16 +108,40 @@ void AProjectile::DealExplosionDamage()
 	}
 }
 
+void AProjectile::OnDestroyTimerFinished()
+{
+	Destroy();
+}
+
+void AProjectile::SpawnTrailSystem()
+{
+	if (!TrailSystem)
+		return;
+
+	TrailSystemComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(TrailSystem,
+		GetRootComponent(),
+		FName(),
+		GetActorLocation(),
+		GetActorRotation(),
+		EAttachLocation::KeepWorldPosition,
+		false
+	);
+}
+
+void AProjectile::StartDestroyTimer()
+{
+	GetWorldTimerManager().SetTimer(DestroyTimer, this, &AProjectile::OnDestroyTimerFinished, DestroyTime);
+}
+
 // Called every frame
 void AProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 void AProjectile::Destroyed()
 {
-	PlayHitFx();
+	SpawnHitFx();
 	Super::Destroyed();
 }
 

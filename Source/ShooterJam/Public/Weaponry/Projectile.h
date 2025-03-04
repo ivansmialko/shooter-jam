@@ -12,33 +12,55 @@ class UBoxComponent;
 class UProjectileMovementComponent;
 class UParticleSystem;
 class UParticleSystemComponent;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTERJAM_API AProjectile : public AActor
 {
 	GENERATED_BODY()
-	
-private:
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* TracerParticles;
-
-	class UParticleSystemComponent* TracerComponent;
 
 protected:
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
 	float Damage{ 1.f };
 
-	UPROPERTY(EditAnywhere)
-	UParticleSystem* ImpactParticles;
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	float DestroyTime{ 3.f };
 
-	UPROPERTY(EditAnywhere)
-	USoundCue* ImpactSound;
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	float DamageInnerRadius{ 200.f };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	float DamageOuterRadius{ 500.f };
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
 	UBoxComponent* CollisionBox;
 
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
+	UParticleSystem* TracerParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
+	UParticleSystem* ImpactParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
+	UNiagaraSystem* TrailSystem;
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
+	USoundCue* ImpactSound;
+
+	UPROPERTY(VisibleAnywhere, Category = "Projectile State")
+	UNiagaraComponent* TrailSystemComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Projectile State")
 	UProjectileMovementComponent* ProjectileMovement;
+
+	UPROPERTY(VisibleAnywhere, Category = "Projectile State")
+	UStaticMeshComponent* ProjectileMesh;
+
+	UPROPERTY(VisibleAnywhere, Category = "Projectile State")
+	UParticleSystemComponent* TracerComponent;
+
+	FTimerHandle DestroyTimer;
 
 protected:
 	virtual void BeginPlay() override;
@@ -46,8 +68,13 @@ protected:
 	UFUNCTION()
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
-	void PlayHitFx();
+	void SpawnHitFx();
+	void SpawnTrailSystem();
+
+	void StartDestroyTimer();
 	void DealExplosionDamage();
+
+	void OnDestroyTimerFinished();
 
 public:
 	AProjectile();
