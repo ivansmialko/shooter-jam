@@ -6,8 +6,6 @@
 #include "Weaponry/Projectile.h"
 #include "ProjectileRocket.generated.h"
 
-class UNiagaraSystem;
-class UNiagaraComponent;
 class URocketMovementComponent;
 
 UCLASS()
@@ -16,28 +14,14 @@ class SHOOTERJAM_API AProjectileRocket : public AProjectile
 	GENERATED_BODY()
 
 private:
-	UPROPERTY(EditAnywhere)
-	float DestroyTime{ 3.f };
-
-	UPROPERTY(VisibleAnywhere)
-	UStaticMeshComponent* RocketMesh;
-
-	UPROPERTY(EditAnywhere)
-	UNiagaraSystem* TrailSystem;
-
-	UPROPERTY()
-	UNiagaraComponent* TrailSystemComponent;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
 	USoundCue* ProjectileLoop;
 
-	UPROPERTY()
-	UAudioComponent* ProjectileLoopComponent;
-
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Projectile Style")
 	USoundAttenuation* ProjectileLoopAttenuation;
 
-	FTimerHandle DestroyTimer;
+	UPROPERTY(VisibleAnywhere, Category = "Projectile State")
+	UAudioComponent* ProjectileLoopComponent;
 
 protected:
 	UPROPERTY(VisibleAnywhere)
@@ -47,8 +31,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) override;
-
-	void DestroyTimerFinished();
 
 public:
 	AProjectileRocket();

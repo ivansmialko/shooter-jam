@@ -82,16 +82,16 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Feel")
 	float ZoomInterpSpeed{ 20.f };
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Style")
+	UAnimationAsset* FireAnimation;
+
 	UPROPERTY(VisibleAnywhere, Category = "Weapon State", ReplicatedUsing = OnRep_WeaponState)
 	EWeaponState WeaponState;
 
 	UPROPERTY(VisibleAnywhere, Category = "Weapon State")
 	UWidgetComponent* PickUpWidget;
 
-	UPROPERTY(EditAnywhere, Category = "Weapon State")
-	UAnimationAsset* FireAnimation;
-
-	UPROPERTY(VisibleAnywhere, Category = "Weapon State")
+	UPROPERTY(VisibleAnywhere)
 	USkeletalMeshComponent* WeaponMesh;
 
 //~ End exposed members
