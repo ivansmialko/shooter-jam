@@ -436,6 +436,7 @@ void UCombatComponent::InitializeCarriedAmmo()
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_SMG, StartingSmgAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_Shotgun, StartingShotgunAmmo);
 	CarriedAmmoMap.Emplace(EWeaponType::EWT_SR, StartingSniperAmmo);
+	CarriedAmmoMap.Emplace(EWeaponType::EWT_GranadeLauncher, StartingGranadeLauncherAmmo);
 }
 
 void UCombatComponent::UpdateCurrentCarriedAmmo(const EWeaponType WeaponType)

@@ -710,6 +710,9 @@ void AShooterCharacter::PlayReloadMontage()
 	case EWeaponType::EWT_SR:
 		SectionName = FName("Rifle");
 		break;
+	case EWeaponType::EWT_GranadeLauncher:
+		SectionName = FName("Rifle");
+		break;
 	default:
 		break;
 	}
