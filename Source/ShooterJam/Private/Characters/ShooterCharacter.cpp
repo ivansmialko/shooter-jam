@@ -699,16 +699,16 @@ void AShooterCharacter::PlayReloadMontage()
 		SectionName = FName("RocketLauncher");
 		break;
 	case EWeaponType::EWT_Pistol:
-		SectionName = FName("Rifle");
+		SectionName = FName("Pistol");
 		break;
 	case EWeaponType::EWT_SMG:
-		SectionName = FName("Rifle");
+		SectionName = FName("Pistol");
 		break;
 	case EWeaponType::EWT_Shotgun:
-		SectionName = FName("Rifle");
+		SectionName = FName("Shotgun");
 		break;
 	case EWeaponType::EWT_SR:
-		SectionName = FName("Rifle");
+		SectionName = FName("SR");
 		break;
 	case EWeaponType::EWT_GranadeLauncher:
 		SectionName = FName("Rifle");
