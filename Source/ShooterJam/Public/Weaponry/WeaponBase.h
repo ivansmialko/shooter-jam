@@ -47,6 +47,9 @@ private:
 	bool bIsAutomatic{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bIsReloadInterruptable{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 FireRate{ 30 };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_Ammo)
@@ -183,7 +186,9 @@ protected:
 //public getters
 public:
 	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
+	FORCEINLINE bool IsFull() const { return GetWeaponAmmo() == GetMagCapacity(); }
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
+	FORCEINLINE bool GetIsReloadInterruptable() const { return bIsReloadInterruptable; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }

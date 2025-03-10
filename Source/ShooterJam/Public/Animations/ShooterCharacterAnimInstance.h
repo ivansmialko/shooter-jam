@@ -23,6 +23,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Native_OnReloadFinished();
 
+	UFUNCTION(BlueprintCallable)
+	void Native_OnShellInserted();
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class AShooterCharacter* ShooterCharacter;

@@ -103,3 +103,11 @@ void UShooterCharacterAnimInstance::Native_OnReloadFinished()
 
 	ShooterCharacter->OnReloadFinished();
 }
+
+void UShooterCharacterAnimInstance::Native_OnShellInserted()
+{
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->OnShellInserted();
+}

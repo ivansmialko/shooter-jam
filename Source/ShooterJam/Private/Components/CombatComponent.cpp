@@ -223,7 +223,12 @@ bool UCombatComponent::CheckCanFire()
 		return false;
 
 	if (CombatState != ECombatState::ECS_Unoccupied)
-		return false;
+	{
+		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
+		{
+			return false;
+		}
+	}
 
 	return true;
 }
@@ -237,6 +242,9 @@ bool UCombatComponent::CheckCanReload()
 		return false;
 
 	if (CarriedAmmoMap[EquippedWeapon->GetWeaponType()] == 0)
+		return false;
+
+	if (EquippedWeapon->IsFull())
 		return false;
 
 	return true;
@@ -407,6 +415,23 @@ void UCombatComponent::OnRep_CombatState()
 	}
 }
 
+void UCombatComponent::OnShellInserted()
+{
+	if (!Character)
+		return;
+
+	if (Character->HasAuthority())
+	{
+		ReloadAmmo(1);
+	}
+
+	if (!CheckCanReload())
+	{
+		//Jump to ShotgunEndSection
+		Character->PlayReloadEndMontage();
+	}
+}
+
 void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	Multicast_FireWeapon(TraceHitTarget);
@@ -414,13 +439,17 @@ void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantiz
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (CombatState != ECombatState::ECS_Unoccupied)
-		return;
-
 	if (!EquippedWeapon)
 		return;
 
+	if (CombatState != ECombatState::ECS_Unoccupied)
+	{
+		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
+			return;
+	}
+
 	EquippedWeapon->Fire(TraceHitTarget);
+	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (!Character)
 		return;
@@ -447,7 +476,7 @@ void UCombatComponent::UpdateCurrentCarriedAmmo(const EWeaponType WeaponType)
 	CarriedAmmo = CarriedAmmoMap[WeaponType];
 }
 
-int32 UCombatComponent::CalculateAmountToReload()
+int32 UCombatComponent::CalculateAmountToReload(uint32 InRequestedAmount /*= 0*/)
 {
 	if (!EquippedWeapon)
 		return 0;
@@ -458,10 +487,17 @@ int32 UCombatComponent::CalculateAmountToReload()
 	int32 RoomInMag{ EquippedWeapon->GetMagCapacity() - EquippedWeapon->GetWeaponAmmo() };
 	int32 AmountCarried{ CarriedAmmoMap[EquippedWeapon->GetWeaponType()] };
 	int32 Least{ FMath::Min(RoomInMag, AmountCarried) };
-	return FMath::Clamp(RoomInMag, 0, Least);
+	
+	uint32 ToReload{ static_cast<uint32>(FMath::Clamp(RoomInMag, 0, Least)) };
+	if (InRequestedAmount > 0 && ToReload >= InRequestedAmount)
+	{
+		return InRequestedAmount;
+	}
+
+	return ToReload;
 } 
 
-void UCombatComponent::ReloadAmmo()
+void UCombatComponent::ReloadAmmo(uint32 InBulletsRequested /*= 0*/)
 {
 	if (!EquippedWeapon)
 		return;
@@ -469,7 +505,7 @@ void UCombatComponent::ReloadAmmo()
 	if (!CheckCanReload())
 		return;
 
-	int32 AmountToReload{ CalculateAmountToReload() };
+	int32 AmountToReload{ CalculateAmountToReload(InBulletsRequested) };
 	CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= AmountToReload;
 	CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 

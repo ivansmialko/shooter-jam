@@ -131,6 +131,9 @@ public:
 	void OnRep_CombatState();
 	//~ End Replication Notifies
 
+	void OnShellInserted();
+	void OnReloadFinished();
+
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
 
@@ -142,15 +145,15 @@ public:
 private:
 	void InitializeCarriedAmmo();
 	void UpdateCurrentCarriedAmmo(const EWeaponType WeaponType);
-	void ReloadAmmo();
+
+	/** Replenishes ammo inside of weapon.
+	 * InBulletsRequested - bullets amount to try to load.
+	 * If zero - everything will be calculated automatically
+	 */
+	void ReloadAmmo(uint32 InBulletsRequested = 0);
 	void PlayEquipSound();
 
-	int32 CalculateAmountToReload();
-
-
-//public methods
-public:
-	void OnReloadFinished();
+	int32 CalculateAmountToReload(uint32 InRequestedAmount = 0);
 
 //protected methods
 protected:
