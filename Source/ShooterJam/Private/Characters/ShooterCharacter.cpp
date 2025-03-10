@@ -671,7 +671,7 @@ void AShooterCharacter::PlayEliminationMontage()
 	AnimInstance->Montage_Play(EliminationMontage);
 }
 
-void AShooterCharacter::PlayReloadMontage()
+void AShooterCharacter::PlayReloadMontage(bool bInPlayReloadEnd)
 {
 	if (!CombatComponent)
 		return;
@@ -689,36 +689,51 @@ void AShooterCharacter::PlayReloadMontage()
 	if (!AnimInstance)
 		return;
 
-	FName SectionName;
+	FString SectionName;
 	switch (CombatComponent->GetEquippedWeapon()->GetWeaponType())
 	{
 	case EWeaponType::EWT_AR:
-		SectionName = FName("Rifle");
+		SectionName = TEXT("Rifle");
 		break;
 	case EWeaponType::EWT_RocketLauncher:
-		SectionName = FName("RocketLauncher");
+		SectionName = TEXT("RocketLauncher");
 		break;
 	case EWeaponType::EWT_Pistol:
-		SectionName = FName("Pistol");
+		SectionName = TEXT("Pistol");
 		break;
 	case EWeaponType::EWT_SMG:
-		SectionName = FName("Pistol");
+		SectionName = TEXT("Pistol");
 		break;
 	case EWeaponType::EWT_Shotgun:
-		SectionName = FName("Shotgun");
+		SectionName = TEXT("Shotgun");
 		break;
 	case EWeaponType::EWT_SR:
-		SectionName = FName("SR");
+		SectionName = TEXT("SR");
 		break;
 	case EWeaponType::EWT_GranadeLauncher:
-		SectionName = FName("Rifle");
+		SectionName = TEXT("Rifle");
 		break;
 	default:
 		break;
 	}
 
+	if (bInPlayReloadEnd)
+	{
+		SectionName += "End";
+	}
+
 	AnimInstance->Montage_Play(ReloadMontage);
-	AnimInstance->Montage_JumpToSection(SectionName);
+	AnimInstance->Montage_JumpToSection(FName(SectionName));
+}
+
+void AShooterCharacter::PlayReloadMontage()
+{
+	PlayReloadMontage(false);
+}
+
+void AShooterCharacter::PlayReloadEndMontage()
+{
+	PlayReloadMontage(true);
 }
 
 void AShooterCharacter::OnReloadFinished()
@@ -727,6 +742,14 @@ void AShooterCharacter::OnReloadFinished()
 		return;
 
 	CombatComponent->OnReloadFinished();
+}
+
+void AShooterCharacter::OnShellInserted()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnShellInserted();
 }
 
 void AShooterCharacter::PlayHitReactMontage()

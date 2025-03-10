@@ -234,6 +234,7 @@ private:
 	void PlayHitReactMontage();
 	void PlayDissolvingEffect();
 	void PlayElimbotEffect();
+	void PlayReloadMontage(bool bInPlayReloadEnd);
 
 	AShooterGameMode* GetShooterGameMode() const;
 
@@ -250,10 +251,12 @@ public:
 	virtual void OnEliminated();
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
 	virtual void OnReloadFinished();
+	virtual void OnShellInserted();
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
 	void PlayReloadMontage();
+	void PlayReloadEndMontage();
 
 	void InitInputs();
 	void DisableInputs();
