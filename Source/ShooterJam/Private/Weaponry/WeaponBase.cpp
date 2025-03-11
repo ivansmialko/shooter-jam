@@ -21,6 +21,9 @@ AWeaponBase::AWeaponBase()
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	WeaponMesh->SetCustomDepthStencilValue(CUSTOM_DEPTH_PURPLE);
+	WeaponMesh->MarkRenderStateDirty();
+	EnableCustomDepth(true);
 	SetRootComponent(WeaponMesh);
 
 	AreaSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AreaSphere"));
@@ -62,6 +65,7 @@ void AWeaponBase::OnStateEquipped()
 {
 	ShowPickUpWidget(false);
 	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	EnableCustomDepth(false);
 
 	if (!WeaponMesh)
 		return;
@@ -82,6 +86,8 @@ void AWeaponBase::OnStateDropped()
 {
 	if (!WeaponMesh)
 		return;
+
+	EnableCustomDepth(true);
 
 	WeaponMesh->SetSimulatePhysics(true);
 	WeaponMesh->SetEnableGravity(true);
@@ -130,6 +136,14 @@ void AWeaponBase::NotifyOwner_Ammo()
 		return;
 
 	OwnerCharacter->OnSpendRound(this);
+}
+
+void AWeaponBase::EnableCustomDepth(bool bInEnable)
+{
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->SetRenderCustomDepth(bInEnable);
 }
 
 bool AWeaponBase::CheckInitOwner()
