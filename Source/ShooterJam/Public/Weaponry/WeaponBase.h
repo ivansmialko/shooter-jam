@@ -154,6 +154,7 @@ public:
 	void ChangeWeaponState(EWeaponState InState);
 	void AddAmmo(int32 AmmoToAdd);
 	void NotifyOwner_Ammo();
+	void EnableCustomDepth(bool bInEnable);
 
 	virtual void Fire(const FVector& HitTarget);
 
