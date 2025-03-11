@@ -252,7 +252,18 @@ bool UCombatComponent::CheckCanReload()
 
 void UCombatComponent::OnStateReload()
 {
+	if (!Character)
+		return;
+
 	Character->PlayReloadMontage();
+}
+
+void UCombatComponent::OnStateThrow()
+{
+	if (!Character)
+		return;
+
+	Character->PlayThrowMontage();
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -410,6 +421,10 @@ void UCombatComponent::OnRep_CombatState()
 		OnStateReload();
 	}
 		break;
+	case ECombatState::ECS_Throwing:
+	{
+		OnStateThrow();
+	}
 	default:
 		break;
 	}
@@ -437,11 +452,18 @@ void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantiz
 	Multicast_FireWeapon(TraceHitTarget);
 }
 
+void UCombatComponent::Server_Throw_Implementation()
+{
+	CombatState = ECombatState::ECS_Throwing;
+
+	OnStateThrow();
+}
+
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
 	if (!EquippedWeapon)
 		return;
-
+	 
 	if (CombatState != ECombatState::ECS_Unoccupied)
 	{
 		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
@@ -643,8 +665,19 @@ void UCombatComponent::ReloadWeapon()
 
 	CombatState = ECombatState::ECS_Reloading;
 	if (Character->HasAuthority())
-	{
+	{ 
 		OnStateReload();
+	}
+}
+
+void UCombatComponent::Throw()
+{
+	CombatState = ECombatState::ECS_Throwing;
+	OnStateThrow();
+
+	if (Character && !Character->HasAuthority())
+	{
+		Server_Throw();
 	}
 }
 

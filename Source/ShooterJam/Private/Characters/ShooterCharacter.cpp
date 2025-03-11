@@ -244,6 +244,11 @@ void AShooterCharacter::OnReload(const FInputActionValue& Value)
 	}
 }
 
+void AShooterCharacter::OnThrow(const FInputActionValue& Value)
+{
+	ActionThrow();
+}
+
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
@@ -562,6 +567,14 @@ void AShooterCharacter::ActionReload()
 	CombatComponent->ReloadWeapon();
 }
 
+void AShooterCharacter::ActionThrow()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->Throw();
+}
+
 void AShooterCharacter::DisableInputs()
 {
 	//Disable movement
@@ -736,6 +749,22 @@ void AShooterCharacter::PlayReloadEndMontage()
 	PlayReloadMontage(true);
 }
 
+void AShooterCharacter::PlayThrowMontage()
+{
+	if (!GetMesh())
+		return;
+
+	if (!ThrowMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(ThrowMontage);
+	//AnimInstance->Montage_JumpToSection(FName(SectionName));
+}
+
 void AShooterCharacter::OnReloadFinished()
 {
 	if (!CombatComponent)
@@ -885,6 +914,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnFireEnd);
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnReload);
+	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnThrow);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
