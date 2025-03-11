@@ -117,6 +117,7 @@ public:
 	void DropWeapon();
 	void DropWeaponLaunch();
 	void ReloadWeapon();
+	void Throw();
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	
@@ -136,6 +137,9 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+
+	UFUNCTION(Server, Reliable)
+	void Server_Throw();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
@@ -172,6 +176,7 @@ protected:
 	bool CheckCanReload();
 
 	void OnStateReload();
+	void OnStateThrow();
 
 //public getters/setters
 public:

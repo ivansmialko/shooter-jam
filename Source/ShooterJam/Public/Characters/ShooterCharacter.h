@@ -55,6 +55,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Animations)
 	UAnimMontage* ReloadMontage;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* ThrowMontage;
+
 	/** Float curve that represents dissolving of character's mesh after dying */
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UCurveFloat* DissolveCurve;
@@ -124,6 +127,8 @@ private:
 	UInputAction* DropWeaponAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ReloadAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ThrowAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* CameraBoom;
@@ -206,6 +211,7 @@ private:
 	void ActionAimEnd();
 	void ActionReceiveDamage();
 	void ActionReload();
+	void ActionThrow();
 
 	void DropWeapon();
 
@@ -220,6 +226,7 @@ private:
 	void OnFireEnd(const FInputActionValue& Value);
 	void OnDropWeapon(const FInputActionValue& Value);
 	void OnReload(const FInputActionValue& Value);
+	void OnThrow(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
@@ -257,6 +264,7 @@ public:
 	void PlayEliminationMontage();
 	void PlayReloadMontage();
 	void PlayReloadEndMontage();
+	void PlayThrowMontage();
 
 	void InitInputs();
 	void DisableInputs();
