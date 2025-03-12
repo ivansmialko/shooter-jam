@@ -259,6 +259,7 @@ public:
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
 	virtual void OnReloadFinished();
 	virtual void OnShellInserted();
+	virtual void OnThrowFinished();
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
@@ -284,10 +285,12 @@ public:
 	FORCEINLINE bool GetRotateRootBone() const { return bRotateRootBone; };
 	FORCEINLINE bool GetIsEliminated() const { return bIsEliminated; };
 	FORCEINLINE bool GetIsReloading() const { return (CombatComponent && CombatComponent->GetIsReloading()); }
+	FORCEINLINE bool GetIsThrowing() const { return (CombatComponent && CombatComponent->GetIsThrowing()); }
+	FORCEINLINE bool GetIsUnoccupied() const { return (CombatComponent && CombatComponent->GetIsUnoccupied()); }
 	FORCEINLINE bool GetIsGameplayEnabled() const { return bGameplayEnabled; }
-	FORCEINLINE bool GetUseFabrik() const { return !GetIsReloading(); }
-	FORCEINLINE bool GetUseAimOffsets() const { return (!GetIsReloading() && bGameplayEnabled); }
-	FORCEINLINE bool GetUseRightHandTransform() const { return (!GetIsReloading() && bGameplayEnabled); }
+	FORCEINLINE bool GetUseFabrik() const { return GetIsUnoccupied(); }
+	FORCEINLINE bool GetUseAimOffsets() const { return GetIsUnoccupied(); }
+	FORCEINLINE bool GetUseRightHandTransform() const { return GetIsUnoccupied(); }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }

@@ -197,6 +197,13 @@ void UCombatComponent::OnReloadFinished()
 	}
 }
 
+void UCombatComponent::OnThrowFinished()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Finished anim"));
+
+	CombatState = ECombatState::ECS_Unoccupied;
+}
+
 void UCombatComponent::FireWeapon()
 {
 	if (!CheckCanFire())
@@ -224,6 +231,9 @@ bool UCombatComponent::CheckCanFire()
 
 	if (CombatState != ECombatState::ECS_Unoccupied)
 	{
+
+		UE_LOG(LogTemp, Warning, TEXT("State is %d"), static_cast<UINT32>(CombatState));
+
 		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
 		{
 			return false;
@@ -263,6 +273,9 @@ void UCombatComponent::OnStateThrow()
 	if (!Character)
 		return;
 
+	if (Character->IsLocallyControlled() && !Character->HasAuthority())
+		return;
+
 	Character->PlayThrowMontage();
 }
 
@@ -295,6 +308,9 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 {
+	if (!GetIsUnoccupied())
+		return;
+
 	if (!Character)
 		return;
 
@@ -406,6 +422,8 @@ void UCombatComponent::OnRep_CarriedAmmo()
 
 void UCombatComponent::OnRep_CombatState()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Repping combat state to %d, Is locally controlled: %d"), static_cast<uint32>(CombatState), Character->IsLocallyControlled());
+
 	switch (CombatState)
 	{
 	case ECombatState::ECS_Unoccupied:
@@ -657,7 +675,7 @@ void UCombatComponent::ReloadWeapon()
 	if (!Character)
 		return;
 
-	if (CombatState == ECombatState::ECS_Reloading)
+	if (!GetIsUnoccupied())
 		return;
 
 	if (!CheckCanReload())
@@ -672,6 +690,9 @@ void UCombatComponent::ReloadWeapon()
 
 void UCombatComponent::Throw()
 {
+	if (!GetIsUnoccupied())
+		return;
+
 	CombatState = ECombatState::ECS_Throwing;
 	OnStateThrow();
 

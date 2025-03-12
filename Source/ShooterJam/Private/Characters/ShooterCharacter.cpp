@@ -781,6 +781,14 @@ void AShooterCharacter::OnShellInserted()
 	CombatComponent->OnShellInserted();
 }
 
+void AShooterCharacter::OnThrowFinished()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnThrowFinished();
+}
+
 void AShooterCharacter::PlayHitReactMontage()
 {
 	if (!CombatComponent)
@@ -913,8 +921,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Started, this, &AShooterCharacter::OnFireStart);
 	EnhancedInput->BindAction(FireAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnFireEnd);
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
-	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnReload);
-	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnThrow);
+	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
+	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
