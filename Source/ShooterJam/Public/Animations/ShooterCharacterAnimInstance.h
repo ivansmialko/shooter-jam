@@ -25,6 +25,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Native_OnShellInserted();
+	
+	UFUNCTION(BlueprintCallable)
+	void Native_OnThrowFinished();
 
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))

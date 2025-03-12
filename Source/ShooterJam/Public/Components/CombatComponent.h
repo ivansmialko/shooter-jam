@@ -134,6 +134,7 @@ public:
 
 	void OnShellInserted();
 	void OnReloadFinished();
+	void OnThrowFinished();
 
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
@@ -186,6 +187,8 @@ public:
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }
+	FORCEINLINE bool GetIsThrowing() const { return CombatState == ECombatState::ECS_Throwing; }
+	FORCEINLINE bool GetIsUnoccupied() const { return CombatState == ECombatState::ECS_Unoccupied; }
 
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
