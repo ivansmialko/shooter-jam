@@ -202,6 +202,7 @@ void UCombatComponent::OnThrowFinished()
 	UE_LOG(LogTemp, Warning, TEXT("Finished anim"));
 
 	CombatState = ECombatState::ECS_Unoccupied;
+	AttachActorToRightHand(EquippedWeapon);
 }
 
 void UCombatComponent::FireWeapon()
@@ -283,6 +284,7 @@ void UCombatComponent::OnStateThrow()
 		return;
 
 	Character->PlayThrowMontage();
+	AttachActorToLeftHand(EquippedWeapon);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -323,33 +325,19 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	if (!InWeaponToEquip)
 		return;
 
-	if (EquippedWeapon)
-	{
-		DropWeapon();
-	}
+	DropWeapon();
 
 	EquippedWeapon = InWeaponToEquip;
+	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
 	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
-
-	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("RightHandSocket")) };
-	if (!HandSocket)
-		return;
-
-	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
 	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->NotifyOwner_Ammo();
 
-	//Notify owner character to update "ammo" count if on server. If on client - it will happen in OnRep_Owner, on the line above
-	if (Character->HasAuthority())
-	{
-		EquippedWeapon->NotifyOwner_Ammo();
-	}
-
+	AttachActorToRightHand(EquippedWeapon);
 	PlayEquipSound();
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
-
-	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
 }
 
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
@@ -404,11 +392,7 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	//So we'll also do these thing in this rep notify, just to be sure
 	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 
-	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("RightHandSocket")) };
-	if (!HandSocket)
-		return;
-
-	HandSocket->AttachActor(EquippedWeapon, Character->GetMesh());
+	AttachActorToRightHand(EquippedWeapon);
 	PlayEquipSound();
 }
 
@@ -550,6 +534,52 @@ void UCombatComponent::ReloadAmmo(uint32 InBulletsRequested /*= 0*/)
 	CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 
 	EquippedWeapon->AddAmmo(-AmountToReload);
+}
+
+void UCombatComponent::AttachActorToRightHand(AActor* InActor)
+{
+	if (!InActor)
+		return;
+
+	if (!Character)
+		return;
+
+	if (!Character->GetMesh())
+		return;
+
+	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("RightHandSocket")) };
+	if (!HandSocket)
+		return;
+
+	HandSocket->AttachActor(InActor, Character->GetMesh());
+}
+
+void UCombatComponent::AttachActorToLeftHand(AActor* InActor)
+{
+	if (!InActor)
+		return;
+
+	if (!Character)
+		return;
+
+	if (!Character->GetMesh())
+		return;
+
+	if (!EquippedWeapon)
+		return;
+
+	FName SocketName("LeftHandSocket");
+	if (EquippedWeapon->GetWeaponType() == EWeaponType::EWT_Pistol ||
+		EquippedWeapon->GetWeaponType() == EWeaponType::EWT_SMG)
+	{
+		SocketName = FName("LeftHandPistolSocket");
+	}
+
+	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("LeftHandSocket")) };
+	if (!HandSocket)
+		return;
+
+	HandSocket->AttachActor(InActor, Character->GetMesh());
 }
 
 void UCombatComponent::PlayEquipSound()

@@ -156,6 +156,13 @@ private:
 	 * If zero - everything will be calculated automatically
 	 */
 	void ReloadAmmo(uint32 InBulletsRequested = 0);
+
+	/** Attaches an actor to player's right hand */
+	void AttachActorToRightHand(AActor* InActor);
+
+	/** Attaches an actor to player's left hand */
+	void AttachActorToLeftHand(AActor* InActor);
+
 	void PlayEquipSound();
 
 	int32 CalculateAmountToReload(uint32 InRequestedAmount = 0);
