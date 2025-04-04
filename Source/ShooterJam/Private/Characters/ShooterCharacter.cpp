@@ -73,6 +73,10 @@ AShooterCharacter::AShooterCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
 
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
+
+	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
+	GrenadeMesh->SetupAttachment(GetMesh(), FName("RightHandGrenadeSocket"));
+	GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AShooterCharacter::BeginPlay()

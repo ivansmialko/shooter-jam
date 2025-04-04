@@ -74,6 +74,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Effects)
 	USoundCue* ElimbotSound;
 
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UStaticMeshComponent* GrenadeMesh;
+
 	/** Delay between start of an dissolve animation and actual elimination */
 	UPROPERTY(EditDefaultsOnly)
 	float EliminationDelay{ 3.f };
