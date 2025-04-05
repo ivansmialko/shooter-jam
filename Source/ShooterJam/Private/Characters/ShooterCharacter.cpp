@@ -648,6 +648,11 @@ AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
 	return CombatComponent->GetEquippedWeapon();
 }
 
+UStaticMeshComponent* AShooterCharacter::GetGrenadeMesh() const
+{
+	return GrenadeMesh;
+}
+
 FVector AShooterCharacter::GetHitTarget() const
 {
 	FVector HitTarget;

@@ -3,6 +3,7 @@
 #include "Components/CombatComponent.h"
 
 #include "Weaponry/WeaponBase.h"
+#include "Weaponry/Projectile.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "Characters/ShooterCharacter.h"
 
@@ -207,7 +208,7 @@ void UCombatComponent::OnThrowFinished()
 
 void UCombatComponent::OnThrowLaunched()
 {
-	SetGrenadeVisibility(false);
+	ThrowGrenade();
 }
 
 void UCombatComponent::FireWeapon()
@@ -228,6 +229,36 @@ void UCombatComponent::FireWeapon()
 	Server_FireWeapon(HitTarget);
 
 	StartFireTimer();
+}
+
+void UCombatComponent::ThrowGrenade()
+{
+	SetGrenadeVisibility(false);
+
+	if (!GrenadeProjectileClass)
+		return;
+
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
+	if (!Character->GetGrenadeMesh())
+		return;
+
+	const FVector StartingLocation = Character->GetGrenadeMesh()->GetComponentLocation();
+	FVector Direction = HitTarget - StartingLocation;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Character;
+	SpawnParams.Instigator = Character;
+
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	World->SpawnActor<AProjectile>(GrenadeProjectileClass, StartingLocation, Direction.Rotation(), SpawnParams);
 }
 
 bool UCombatComponent::CheckCanFire()

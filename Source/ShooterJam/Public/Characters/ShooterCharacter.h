@@ -304,5 +304,6 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 
 	AWeaponBase* GetEquippedWeapon() const;
+	UStaticMeshComponent* GetGrenadeMesh() const;
 	FVector GetHitTarget() const;
 };
