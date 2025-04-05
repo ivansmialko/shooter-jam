@@ -16,6 +16,7 @@ class AShooterCharacter;
 class AShooterCharacterController;
 class AShooterHUD;
 class AWeaponBase;
+class AProjectile;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERJAM_API UCombatComponent : public UActorComponent
@@ -57,6 +58,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float ZoomInterpSpeed{ 20.f };
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AProjectile> GrenadeProjectileClass;
 	//~ End Exposed fields
 
 	class AShooterCharacter* Character;
@@ -184,6 +188,8 @@ protected:
 
 	void StartFireTimer();
 	void FireWeapon();
+	void ThrowGrenade();
+
 	bool CheckCanFire();
 	bool CheckCanReload();
 
