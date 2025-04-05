@@ -235,30 +235,13 @@ void UCombatComponent::ThrowGrenade()
 {
 	SetGrenadeVisibility(false);
 
-	if (!GrenadeProjectileClass)
-		return;
-
 	if (!Character)
 		return;
 
-	if (!Character->HasAuthority())
+	if (!Character->IsLocallyControlled())
 		return;
 
-	if (!Character->GetGrenadeMesh())
-		return;
-
-	const FVector StartingLocation = Character->GetGrenadeMesh()->GetComponentLocation();
-	FVector Direction = HitTarget - StartingLocation;
-
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.Owner = Character;
-	SpawnParams.Instigator = Character;
-
-	UWorld* World = GetWorld();
-	if (!World)
-		return;
-
-	World->SpawnActor<AProjectile>(GrenadeProjectileClass, StartingLocation, Direction.Rotation(), SpawnParams);
+	Server_ThrowGrenade(HitTarget);
 }
 
 bool UCombatComponent::CheckCanFire()
@@ -316,7 +299,7 @@ void UCombatComponent::OnStateThrow()
 	if (!Character)
 		return;
 
-	if (Character->IsLocallyControlled() && !Character->HasAuthority())
+	if (!Character->IsLocallyControlled())
 		return;
 
 	Character->PlayThrowMontage();
@@ -496,6 +479,34 @@ void UCombatComponent::Server_Throw_Implementation()
 	CombatState = ECombatState::ECS_Throwing;
 
 	OnStateThrow();
+}
+
+void UCombatComponent::Server_ThrowGrenade_Implementation(const FVector_NetQuantize& Target)
+{
+	if (!GrenadeProjectileClass)
+		return;
+
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
+	if (!Character->GetGrenadeMesh())
+		return;
+
+	const FVector StartingLocation = Character->GetGrenadeMesh()->GetComponentLocation();
+	FVector Direction = Target - StartingLocation;
+
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.Owner = Character;
+	SpawnParams.Instigator = Character;
+
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	World->SpawnActor<AProjectile>(GrenadeProjectileClass, StartingLocation, Direction.Rotation(), SpawnParams);
 }
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
@@ -766,6 +777,9 @@ void UCombatComponent::ReloadWeapon()
 void UCombatComponent::Throw()
 {
 	if (!GetIsUnoccupied())
+		return;
+
+	if (!EquippedWeapon)
 		return;
 
 	CombatState = ECombatState::ECS_Throwing;
