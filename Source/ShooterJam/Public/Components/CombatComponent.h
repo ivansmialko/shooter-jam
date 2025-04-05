@@ -147,6 +147,9 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_Throw();
 
+	UFUNCTION(Server, Reliable)
+	void Server_ThrowGrenade(const FVector_NetQuantize& Target);
+
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
 
