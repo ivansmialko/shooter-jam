@@ -135,6 +135,7 @@ public:
 	void OnShellInserted();
 	void OnReloadFinished();
 	void OnThrowFinished();
+	void OnThrowLaunched();
 
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
@@ -162,6 +163,9 @@ private:
 
 	/** Attaches an actor to player's left hand */
 	void AttachActorToLeftHand(AActor* InActor);
+
+	/** Shows or hides a grenade attached to player's hand */
+	void SetGrenadeVisibility(bool bVisible);
 
 	void PlayEquipSound();
 

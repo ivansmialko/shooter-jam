@@ -263,6 +263,7 @@ public:
 	virtual void OnReloadFinished();
 	virtual void OnShellInserted();
 	virtual void OnThrowFinished();
+	virtual void OnThrowLaunched();
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
@@ -281,6 +282,7 @@ public:
 public:
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
+	void SetGrenadeVisibility(bool bVisible);
 
 	FORCEINLINE bool GetIsWeaponEquipped() const { return (CombatComponent && CombatComponent->GetIsWeaponEquipped()); }
 	FORCEINLINE bool GetIsCrouched() const { return bIsCrouched; }

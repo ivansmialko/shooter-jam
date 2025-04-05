@@ -89,6 +89,8 @@ void AShooterCharacter::BeginPlay()
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
 	}
+
+	SetGrenadeVisibility(false);
 }
 
 void AShooterCharacter::Restart()
@@ -621,6 +623,14 @@ void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 	}
 }
 
+void AShooterCharacter::SetGrenadeVisibility(bool bVisible)
+{
+	if (!GrenadeMesh)
+		return;
+
+	GrenadeMesh->SetVisibility(bVisible);
+}
+
 void AShooterCharacter::DisableGameplay()
 {
 	bGameplayEnabled = false;
@@ -791,6 +801,14 @@ void AShooterCharacter::OnThrowFinished()
 		return;
 
 	CombatComponent->OnThrowFinished();
+}
+
+void AShooterCharacter::OnThrowLaunched()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnThrowLaunched();
 }
 
 void AShooterCharacter::PlayHitReactMontage()

@@ -29,6 +29,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Native_OnThrowFinished();
 
+	UFUNCTION(BlueprintCallable)
+	void Native_OnThrowLaunched();
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class AShooterCharacter* ShooterCharacter;

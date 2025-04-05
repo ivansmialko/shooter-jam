@@ -119,3 +119,11 @@ void UShooterCharacterAnimInstance::Native_OnThrowFinished()
 
 	ShooterCharacter->OnThrowFinished();
 }
+
+void UShooterCharacterAnimInstance::Native_OnThrowLaunched()
+{
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->OnThrowLaunched();
+}

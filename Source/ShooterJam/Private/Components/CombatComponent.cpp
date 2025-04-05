@@ -205,6 +205,11 @@ void UCombatComponent::OnThrowFinished()
 	AttachActorToRightHand(EquippedWeapon);
 }
 
+void UCombatComponent::OnThrowLaunched()
+{
+	SetGrenadeVisibility(false);
+}
+
 void UCombatComponent::FireWeapon()
 {
 	if (EquippedWeapon->IsEmpty())
@@ -285,6 +290,7 @@ void UCombatComponent::OnStateThrow()
 
 	Character->PlayThrowMontage();
 	AttachActorToLeftHand(EquippedWeapon);
+	SetGrenadeVisibility(true);
 }
 
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -580,6 +586,14 @@ void UCombatComponent::AttachActorToLeftHand(AActor* InActor)
 		return;
 
 	HandSocket->AttachActor(InActor, Character->GetMesh());
+}
+
+void UCombatComponent::SetGrenadeVisibility(bool bVisible)
+{
+	if (!Character)
+		return;
+
+	Character->SetGrenadeVisibility(bVisible);
 }
 
 void UCombatComponent::PlayEquipSound()
