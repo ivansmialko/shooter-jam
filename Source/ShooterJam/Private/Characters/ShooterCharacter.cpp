@@ -258,9 +258,12 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
+	if (bIsEliminated)
+		return;
+
 	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
 
-	//That for server to play player-server effects
+	//It's for server to play player-server effects
 	if (HasAuthority())
 	{
 		ActionReceiveDamage();

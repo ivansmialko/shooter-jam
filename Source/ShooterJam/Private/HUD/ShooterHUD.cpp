@@ -324,3 +324,16 @@ void AShooterHUD::SetAnnouncementInfoText(FText InText)
 
 	AnnouncementWidget->InfoText->SetText(InText);
 }
+
+
+void AShooterHUD::SetGrenadesAmount(int32 InGrenades)
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->GrenadesAmountText)
+		return;
+
+	FString GrenadesAmountText{ FString::Printf(TEXT("%d"), InGrenades) };
+	CharacterOverlay->GrenadesAmountText->SetText(FText::FromString(GrenadesAmountText));
+}

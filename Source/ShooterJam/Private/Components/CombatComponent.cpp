@@ -233,6 +233,9 @@ void UCombatComponent::FireWeapon()
 
 void UCombatComponent::ThrowGrenade()
 {
+	if (GrenadesAmount == 0)
+		return;
+
 	SetGrenadeVisibility(false);
 
 	if (!Character)
@@ -331,6 +334,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
 	DOREPLIFETIME(UCombatComponent, bIsAiming);
 	DOREPLIFETIME(UCombatComponent, CombatState);
+	DOREPLIFETIME(UCombatComponent, GrenadesAmount);
 	DOREPLIFETIME_CONDITION(UCombatComponent, CarriedAmmo, COND_OwnerOnly);
 }
 
@@ -452,6 +456,11 @@ void UCombatComponent::OnRep_CombatState()
 	}
 }
 
+void UCombatComponent::OnRep_GrenadesAmount()
+{
+	UpdateHudGrenades();
+}
+
 void UCombatComponent::OnShellInserted()
 {
 	if (!Character)
@@ -476,9 +485,14 @@ void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantiz
 
 void UCombatComponent::Server_Throw_Implementation()
 {
-	CombatState = ECombatState::ECS_Throwing;
+	if (GrenadesAmount == 0)
+		return;
 
+	CombatState = ECombatState::ECS_Throwing;
 	OnStateThrow();
+
+	GrenadesAmount = FMath::Clamp(GrenadesAmount - 1, 0, GrenadesAmountMax);
+	UpdateHudGrenades();
 }
 
 void UCombatComponent::Server_ThrowGrenade_Implementation(const FVector_NetQuantize& Target)
@@ -657,6 +671,18 @@ void UCombatComponent::PlayEquipSound()
 	);
 }
 
+void UCombatComponent::UpdateHudGrenades()
+{
+	if (!Character)
+		return;
+
+	AShooterCharacterController* Controller = Cast<AShooterCharacterController>(Character->GetController());
+	if (!Controller)
+		return;
+
+	Controller->GetPlayerHud()->SetGrenadesAmount(GrenadesAmount);
+}
+
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)
 {
 	if (!GEngine)
@@ -788,6 +814,12 @@ void UCombatComponent::Throw()
 	if (Character && !Character->HasAuthority())
 	{
 		Server_Throw();
+	}
+
+	if (Character && Character->HasAuthority())
+	{
+		GrenadesAmount = FMath::Clamp(GrenadesAmount - 1, 0, GrenadesAmountMax);
+		UpdateHudGrenades();
 	}
 }
 
