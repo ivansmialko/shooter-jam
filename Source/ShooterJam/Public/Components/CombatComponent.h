@@ -83,6 +83,13 @@ private:
 	//Automatic fire
 	bool bIsCanFire{ true };
 
+	//Grenades implementation
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_GrenadesAmount)
+	int32 GrenadesAmount;
+
+	UPROPERTY(EditAnywhere)
+	int32 GrenadesAmountMax;
+
 	UPROPERTY(EditAnywhere)
 	int32 StartingArAmmo{ 30 };
 
@@ -134,6 +141,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_CombatState();
+
+	UFUNCTION()
+	void OnRep_GrenadesAmount();
 	//~ End Replication Notifies
 
 	void OnShellInserted();
@@ -175,6 +185,8 @@ private:
 	void SetGrenadeVisibility(bool bVisible);
 
 	void PlayEquipSound();
+
+	void UpdateHudGrenades();
 
 	int32 CalculateAmountToReload(uint32 InRequestedAmount = 0);
 

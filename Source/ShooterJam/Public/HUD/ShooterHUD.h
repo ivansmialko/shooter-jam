@@ -114,4 +114,5 @@ public:
 	void SetWarmupCountdown(float InCountDownTime);
 	void SetAnnouncementText(FText InText);
 	void SetAnnouncementInfoText(FText InText);
+	void SetGrenadesAmount(int32 InGrenades);
 };
