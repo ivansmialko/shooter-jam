@@ -823,3 +823,20 @@ void UCombatComponent::Throw()
 	}
 }
 
+void UCombatComponent::PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount)
+{
+	if (!CarriedAmmoMap.Contains(InWeaponType))
+		return;
+
+	CarriedAmmoMap[InWeaponType] += InAmmoAmount;
+
+	if (!EquippedWeapon)
+		return;
+
+	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
+
+	if (EquippedWeapon->IsEmpty() && EquippedWeapon->GetWeaponType() == InWeaponType)
+	{
+		ReloadWeapon();
+	}
+}
