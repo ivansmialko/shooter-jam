@@ -302,6 +302,7 @@ public:
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
+	FORCEINLINE UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 
 	AWeaponBase* GetEquippedWeapon() const;
 	UStaticMeshComponent* GetGrenadeMesh() const;

@@ -129,6 +129,7 @@ public:
 	void DropWeaponLaunch();
 	void ReloadWeapon();
 	void Throw();
+	void PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	
