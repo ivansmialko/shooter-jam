@@ -24,8 +24,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* PickupMesh;
 
+	UPROPERTY(EditAnywhere)
+	float BaseTurnRate{ 45.f };
+
 private:
 	void PlayPickupSound();
+	void RotateMesh(float InDeltaTime);
 
 protected:
 	virtual void BeginPlay() override;
