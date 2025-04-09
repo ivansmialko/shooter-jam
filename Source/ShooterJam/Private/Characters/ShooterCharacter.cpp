@@ -6,6 +6,7 @@
 #include "Weaponry/WeaponBase.h"
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
+#include "Components/BuffComponent.h"
 #include "Game/ShooterJam.h"
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerControllers/ShooterCharacterController.h"
@@ -30,6 +31,9 @@
 AShooterCharacter::AShooterCharacter()
 {
 	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
+	NetUpdateFrequency = 66.f;
+	MinNetUpdateFrequency = 33.f;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
 	CameraBoom->SetupAttachment(GetMesh());
@@ -40,43 +44,32 @@ AShooterCharacter::AShooterCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-	bUseControllerRotationYaw = false;
-
 	UCharacterMovementComponent* MovementComponent { GetCharacterMovement() };
-	if(!MovementComponent)
-		return;
-
 	MovementComponent->bOrientRotationToMovement = true;
 
 	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
 	OverheadWidget->SetupAttachment(RootComponent);
 
 	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	if (CombatComponent)
-	{
-		CombatComponent->SetIsReplicated(true);
-	}
+	CombatComponent->SetIsReplicated(true);
+
+	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	BuffComponent->SetIsReplicated(true);
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
+	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
+	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-
-	TurningInPlace = ETurningInPlace::TIP_NotTurning;
-
-	NetUpdateFrequency = 66.f;
-	MinNetUpdateFrequency = 33.f;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
-
-	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
-
 	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
 	GrenadeMesh->SetupAttachment(GetMesh(), FName("RightHandGrenadeSocket"));
 	GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
 }
 
 void AShooterCharacter::BeginPlay()
@@ -967,11 +960,16 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void AShooterCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if (!CombatComponent)
-		return;
+	if (CombatComponent)
+	{
+		CombatComponent->Character = this;
+		CombatComponent->PrimaryComponentTick.bCanEverTick = true;
+	}
 
-	CombatComponent->Character = this;
-	CombatComponent->PrimaryComponentTick.bCanEverTick = true;
+	if (BuffComponent)
+	{
+		BuffComponent->SetCharacter(this);
+	}
 }
 
 void AShooterCharacter::Jump()

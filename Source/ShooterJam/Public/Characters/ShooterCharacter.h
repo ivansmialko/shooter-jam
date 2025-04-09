@@ -25,6 +25,7 @@ class AShooterCharacterController;
 class AShooterPlayerState;
 class AShooterGameMode;
 class AWeaponBase;
+class UBuffComponent;
 
 UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
@@ -138,13 +139,17 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	UCameraComponent* FollowCamera;
 	UPROPERTY(VisibleAnywhere)
-	UCombatComponent* CombatComponent;
-	UPROPERTY(VisibleAnywhere)
 	UTimelineComponent* DissolveTimeline;
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UMaterialInstanceDynamic* DissolveMaterialInstanceDynamic;	//Instance of UMaterialInstance that we create in runtime
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UParticleSystemComponent* ElimbotComponent;					//Instance of Particle system that we spawn in runtime
+
+	UPROPERTY(VisibleAnywhere)
+	UCombatComponent* CombatComponent;
+	UPROPERTY(VisibleAnywhere)
+	UBuffComponent* BuffComponent;
+
 //~ End Exposed members
 
 //~ Begin Replicated members
@@ -164,7 +169,7 @@ private:
 	FRotator ProxyRotationLastFrame;
 	FRotator StartingAimRotation;
 	
-	ETurningInPlace TurningInPlace;
+	ETurningInPlace TurningInPlace{ ETurningInPlace::TIP_NotTurning };
 	
 	FTimerHandle EliminatedTimer;
 	FOnTimelineFloat DissolveTrackDlg;

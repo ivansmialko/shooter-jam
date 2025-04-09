@@ -63,9 +63,9 @@ private:
 	TSubclassOf<AProjectile> GrenadeProjectileClass;
 	//~ End Exposed fields
 
-	class AShooterCharacter* Character;
-	class AShooterCharacterController* CharacterController;
-	class AShooterHUD* ShooterHud;
+	AShooterCharacter* Character;
+	AShooterCharacterController* CharacterController;
+	AShooterHUD* ShooterHud;
 	FTimerHandle FireTimerHandler;
 	TMap<EWeaponType, int32> CarriedAmmoMap;
 	FCrosshairsPackage HudPackage;
