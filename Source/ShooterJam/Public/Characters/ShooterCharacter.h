@@ -193,7 +193,7 @@ private:
 	UFUNCTION()
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 	UFUNCTION()
-	void OnRep_Health();
+	void OnRep_Health(float LastHealth);
 	virtual void OnRep_ReplicatedMovement() override;
 
 	UFUNCTION()
@@ -308,6 +308,9 @@ public:
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return CombatComponent; }
+	FORCEINLINE UBuffComponent* GetBuffComponent() const { return BuffComponent; }
+
+	FORCEINLINE void SetHealth(const float InHealth) { Health = InHealth; }
 
 	AWeaponBase* GetEquippedWeapon() const;
 	UStaticMeshComponent* GetGrenadeMesh() const;
