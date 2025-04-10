@@ -476,9 +476,13 @@ void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapo
 	}
 }
 
-void AShooterCharacter::OnRep_Health()
+void AShooterCharacter::OnRep_Health(float LastHealth)
 {
-	ActionReceiveDamage();
+	if (Health < LastHealth)
+	{
+		ActionReceiveDamage();
+	}
+	HudUpdateHealth();
 }
 
 void AShooterCharacter::OnRep_ReplicatedMovement()
@@ -558,7 +562,6 @@ void AShooterCharacter::ActionAimEnd()
 void AShooterCharacter::ActionReceiveDamage()
 {
 	PlayHitReactMontage();
-	HudUpdateHealth();
 }
 
 void AShooterCharacter::ActionReload()
