@@ -63,6 +63,9 @@ private:
 	TSubclassOf<AProjectile> GrenadeProjectileClass;
 	//~ End Exposed fields
 
+	UPROPERTY(EditAnywhere)
+	float HitTargetOffset{ 100.f };
+
 	AShooterCharacter* Character;
 	AShooterCharacterController* CharacterController;
 	AShooterHUD* ShooterHud;

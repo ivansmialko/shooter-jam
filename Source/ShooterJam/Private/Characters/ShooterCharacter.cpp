@@ -926,7 +926,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 		CalculateAimPitch();
 	}
 
-	CheckHidePlayerIfCameraClose();
+	//CheckHidePlayerIfCameraClose();
 	PollInit();
 }
 
