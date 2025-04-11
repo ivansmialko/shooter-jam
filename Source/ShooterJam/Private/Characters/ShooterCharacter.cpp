@@ -260,6 +260,7 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	if (HasAuthority())
 	{
 		ActionReceiveDamage();
+		HudUpdateHealth();
 	}
 
 	if (Health > 0.f)

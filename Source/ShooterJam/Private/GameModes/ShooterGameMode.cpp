@@ -51,9 +51,12 @@ void AShooterGameMode::Tick(float DeltaSeconds)
 	}
 }
 
-void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
+void AShooterGameMode::OnPlayerEliminated(AShooterCharacter* InElimCharacter, AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
 {
 	if (!InAttackerController)
+		return;
+
+	if (!InElimController)
 		return;
 
 	AShooterGameState* ShooterGameState = GetGameState<AShooterGameState>();
@@ -62,8 +65,7 @@ void AShooterGameMode::OnPlayerEliminated(class AShooterCharacter* InElimCharact
 
 	AShooterPlayerState* AttackerPlayerState = InAttackerController->GetPlayerState<AShooterPlayerState>();
 	AShooterPlayerState* EliminatedPlayerState = InElimController->GetPlayerState<AShooterPlayerState>();
-	if ((!AttackerPlayerState || !EliminatedPlayerState)
-		|| AttackerPlayerState == EliminatedPlayerState)
+	if (!AttackerPlayerState || !EliminatedPlayerState)
 		return;
 
 	AttackerPlayerState->UpdateScore(AttackerPlayerState->GetScore() + 1.f);

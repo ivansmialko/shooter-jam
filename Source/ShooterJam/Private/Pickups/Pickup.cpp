@@ -74,8 +74,7 @@ void APickup::Tick(float DeltaTime)
 
 void APickup::Destroyed()
 {
+	PlayPickupSound();
 	Super::Destroyed();
-	
-	
 }
 

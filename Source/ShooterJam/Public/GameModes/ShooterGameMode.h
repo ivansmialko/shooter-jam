@@ -11,9 +11,9 @@ namespace MatchState
 	extern SHOOTERJAM_API const FName Cooldown; //Match duration has been reached. Display winner and begin cooldown timer
 };
 
-/**
- * 
- */
+class AShooterCharacter;
+class AShooterCharacterController;
+
 UCLASS()
 class SHOOTERJAM_API AShooterGameMode : public AGameMode
 {
@@ -42,7 +42,7 @@ public:
 	
 	virtual void Tick(float DeltaSeconds);
 
-	virtual void OnPlayerEliminated(class AShooterCharacter* InElimCharacter, class AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
+	virtual void OnPlayerEliminated(AShooterCharacter* InElimCharacter, AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
 	virtual void RequestRespawn(ACharacter* InCharacter, AController* InController);
 
 //protected methods

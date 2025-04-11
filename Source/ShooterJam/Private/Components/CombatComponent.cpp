@@ -158,10 +158,10 @@ void UCombatComponent::StartFireTimer()
 
 void UCombatComponent::OnFireTimerFinished()
 {
+	bIsCanFire = true;
+
 	if (!EquippedWeapon)
 		return;
-
-	bIsCanFire = true;
 
 	if (!bIsFiring)
 		return;

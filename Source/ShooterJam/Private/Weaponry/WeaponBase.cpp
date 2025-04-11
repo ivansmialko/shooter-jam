@@ -218,9 +218,9 @@ FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVe
 	FVector EndLocation = SphereCenter + RandomPoint;
 	FVector ToEndLocation = EndLocation - TraceStart;
 
-	DrawDebugSphere(GetWorld(), SphereCenter, ScatterSphereRadius, 12, FColor::Red, true);
-	DrawDebugSphere(GetWorld(), EndLocation, 4.f, 12.f, FColor::Cyan, true);
-	DrawDebugLine(GetWorld(), TraceStart, FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size()), FColor::Green, true);
+	//DrawDebugSphere(GetWorld(), SphereCenter, ScatterSphereRadius, 12, FColor::Red, true);
+	//DrawDebugSphere(GetWorld(), EndLocation, 4.f, 12.f, FColor::Cyan, true);
+	//DrawDebugLine(GetWorld(), TraceStart, FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size()), FColor::Green, true);
 
 	return FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size());
 }
