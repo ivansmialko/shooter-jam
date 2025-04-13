@@ -191,6 +191,7 @@ private:
 	void PlayEquipSound();
 
 	void UpdateHudGrenades();
+	void UpdateHudCrosshairs(float DeltaTime);
 
 	int32 CalculateAmountToReload(uint32 InRequestedAmount = 0);
 
@@ -200,7 +201,6 @@ protected:
 	virtual void BeginPlay() override;
 	//~ End UActorComponent Interface
 
-	void SetHUDCrosshairs(float DeltaTime);
 	void InterpFov(float DeltaTime);
 
 	void OnFireTimerFinished();
@@ -221,6 +221,7 @@ public:
 	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
 	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return (EquippedWeapon ? EquippedWeapon->GetWeaponAmmo() : 0); }
+	FORCEINLINE int32 GetGrenadesAmount() const { return GrenadesAmount; }
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }
