@@ -244,6 +244,7 @@ private:
 
 	void PollInit();
 	void HudUpdateHealth();
+	void HudUpdateAmmo();
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
