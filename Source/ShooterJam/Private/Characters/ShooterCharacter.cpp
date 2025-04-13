@@ -396,6 +396,9 @@ void AShooterCharacter::PollInitPlayerHud()
 	if (!PlayerController->GetPlayerHud())
 		return;
 
+	if (!PlayerController->GetPlayerHud()->IsOverlayInitialized())
+		return;
+
 	bHudInitialized = true;
 
 	HudUpdate();

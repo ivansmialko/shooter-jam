@@ -100,6 +100,7 @@ public:
 
 //public getters/setters
 public:
+	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
 
 	void SetCrosshairsPackage(FCrosshairsPackage& InHUDPackage);
