@@ -83,7 +83,6 @@ void AShooterGameMode::RequestRespawn(ACharacter* InCharacter, AController* InCo
 	if (!InCharacter)
 		return;
 
-
 	InCharacter->Reset();
 	InCharacter->Destroy();
 

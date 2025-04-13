@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 
+#include "Weaponry/WeaponBase.h"
 #include "Weaponry/WeaponTypes.h"
 #include "Weaponry/CombatState.h"
 #include "HUD/ShooterHUD.h"
@@ -15,7 +16,6 @@
 class AShooterCharacter;
 class AShooterCharacterController;
 class AShooterHUD;
-class AWeaponBase;
 class AProjectile;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -220,6 +220,7 @@ public:
 	FORCEINLINE bool GetIsWeaponEquipped() const { return EquippedWeapon != nullptr; }
 	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
 	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
+	FORCEINLINE int32 GetWeaponAmmo() const { return (EquippedWeapon ? EquippedWeapon->GetWeaponAmmo() : 0); }
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }

@@ -78,6 +78,7 @@ void AShooterCharacter::BeginPlay()
 
 	HudUpdateHealth();
 
+
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
@@ -893,6 +894,33 @@ void AShooterCharacter::HudUpdateHealth()
 	PlayerController->GetPlayerHud()->SetHealth(Health, MaxHealth);
 }
 
+void AShooterCharacter::HudUpdateAmmo()
+{
+	if (!PlayerController)
+	{
+		PlayerController = Cast<AShooterCharacterController>(GetController());
+	}
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetEquippedWeapon())
+	{
+		PlayerController->GetPlayerHud()->SetWeaponAmmoEmpty();
+		PlayerController->GetPlayerHud()->SetCarriedAmmoEmpty();
+		return;
+	}
+
+	PlayerController->GetPlayerHud()->SetWeaponAmmo(CombatComponent->GetWeaponAmmo());
+	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
+}
+
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
 {
 	if (!DissolveMaterialInstanceDynamic)
@@ -998,21 +1026,7 @@ void AShooterCharacter::OnEliminated()
 
 void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Spent roung, left %d"), InWeapon->GetWeaponAmmo());
-
-	if (!InWeapon)
-		return;
-
-	if (!PlayerController)
-		return;
-
-	if (!CombatComponent)
-		return;
-
-	UE_LOG(LogTemp, Warning, TEXT("Setting new hud"));
-
-	PlayerController->GetPlayerHud()->SetWeaponAmmo(InWeapon->GetWeaponAmmo());
-	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
+	HudUpdateAmmo();
 }
 
 void AShooterCharacter::Destroyed()
