@@ -76,9 +76,6 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	HudUpdateHealth();
-
-
 	if (HasAuthority())
 	{
 		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
@@ -367,7 +364,7 @@ float AShooterCharacter::CalculateSpeed() const
 	return static_cast<float>(CharacterVelocity.Size());
 }
 
-void AShooterCharacter::PollInit()
+void AShooterCharacter::PollInitPlayerState()
 {
 	if (PlayerState)
 		return;
@@ -378,6 +375,30 @@ void AShooterCharacter::PollInit()
 
 	PlayerState->UpdateScoreHud();
 	PlayerState->UpdateDefeatsHud();
+}
+
+void AShooterCharacter::PollInitPlayerController()
+{
+	if (PlayerController)
+		return;
+
+	PlayerController = GetController<AShooterCharacterController>();
+}
+
+void AShooterCharacter::PollInitPlayerHud()
+{
+	if (bHudInitialized)
+		return;
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	bHudInitialized = true;
+
+	HudUpdate();
 }
 
 void AShooterCharacter::InitInputs()
@@ -639,6 +660,20 @@ void AShooterCharacter::DisableGameplay()
 	CombatComponent->SetIsFiring(false);
 	bUseControllerRotationYaw = false;
 	TurningInPlace = ETurningInPlace::TIP_NotTurning;
+}
+
+void AShooterCharacter::HudUpdate()
+{
+	ENetRole LocalNetRole = GetLocalRole();
+	if (LocalNetRole == ROLE_AutonomousProxy)
+	{
+		int A = 10;
+		A = 10;
+	}
+
+	HudUpdateAmmo();
+	HudUpdateHealth();
+	HudUpdateGrenades();
 }
 
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
@@ -921,6 +956,25 @@ void AShooterCharacter::HudUpdateAmmo()
 	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
 }
 
+void AShooterCharacter::HudUpdateGrenades()
+{
+	if (!PlayerController)
+	{
+		PlayerController = Cast<AShooterCharacterController>(GetController());
+	}
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	if (!CombatComponent)
+		return;
+
+	PlayerController->GetPlayerHud()->SetGrenadesAmount(CombatComponent->GetGrenadesAmount());
+}
+
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
 {
 	if (!DissolveMaterialInstanceDynamic)
@@ -955,7 +1009,9 @@ void AShooterCharacter::Tick(float DeltaTime)
 	}
 
 	//CheckHidePlayerIfCameraClose();
-	PollInit();
+	PollInitPlayerState();
+	PollInitPlayerController();
+	PollInitPlayerHud();
 }
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

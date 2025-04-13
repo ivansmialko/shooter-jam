@@ -41,7 +41,7 @@ void UCombatComponent::BeginPlay()
 }
 
 
-void UCombatComponent::SetHUDCrosshairs(float DeltaTime)
+void UCombatComponent::UpdateHudCrosshairs(float DeltaTime)
 {
 	if (!Character)
 		return;
@@ -317,7 +317,7 @@ void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 
 	if (Character && Character->IsLocallyControlled())
 	{
-		SetHUDCrosshairs(DeltaTime);
+		UpdateHudCrosshairs(DeltaTime);
 
 		FHitResult HitResult;
 		TraceUnderCrosshairs(HitResult);
@@ -676,11 +676,7 @@ void UCombatComponent::UpdateHudGrenades()
 	if (!Character)
 		return;
 
-	AShooterCharacterController* Controller = Cast<AShooterCharacterController>(Character->GetController());
-	if (!Controller)
-		return;
-
-	Controller->GetPlayerHud()->SetGrenadesAmount(GrenadesAmount);
+	Character->HudUpdateGrenades();
 }
 
 void UCombatComponent::TraceUnderCrosshairs(FHitResult& TraceHitResult)

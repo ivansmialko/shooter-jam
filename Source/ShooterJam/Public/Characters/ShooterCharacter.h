@@ -159,6 +159,7 @@ private:
 
 	bool bRotateRootBone;
 	bool bInputInitialized{ false };
+	bool bHudInitialized{ false };
 	float AO_Yaw;
 	float AO_Pitch;
 	float Root_AO_Yaw;
@@ -242,9 +243,9 @@ private:
 	void CalculateTurningInPlace(float DeltaTime);
 	float CalculateSpeed() const;
 
-	void PollInit();
-	void HudUpdateHealth();
-	void HudUpdateAmmo();
+	void PollInitPlayerState();
+	void PollInitPlayerController();
+	void PollInitPlayerHud();
 
 	void CheckHidePlayerIfCameraClose();
 	void PlayHitReactMontage();
@@ -280,6 +281,11 @@ public:
 	void InitInputs();
 	void DisableInputs();
 	void DisableGameplay();
+
+	void HudUpdate();
+	void HudUpdateHealth();
+	void HudUpdateAmmo();
+	void HudUpdateGrenades();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bInShowScope);
