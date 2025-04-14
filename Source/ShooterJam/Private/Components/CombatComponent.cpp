@@ -302,9 +302,6 @@ void UCombatComponent::OnStateThrow()
 	if (!Character)
 		return;
 
-	if (!Character->IsLocallyControlled())
-		return;
-
 	Character->PlayThrowMontage();
 	AttachActorToLeftHand(EquippedWeapon);
 	SetGrenadeVisibility(true);
