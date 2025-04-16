@@ -29,6 +29,7 @@ void UBuffComponent::UpdateHealth(float InDeltaTime)
 
 	const float HealThisFrame = HealingRate * InDeltaTime;
 	Character->SetHealth(FMath::Clamp(Character->GetHealth() + HealThisFrame, 0, Character->GetMaxHealth()));
+	Character->HudUpdateHealth();
 
 	HealingTarget -= HealThisFrame;
 
