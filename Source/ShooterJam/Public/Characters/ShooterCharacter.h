@@ -253,7 +253,8 @@ private:
 	void PlayElimbotEffect();
 	void PlayReloadMontage(bool bInPlayReloadEnd);
 
-	AShooterGameMode* GetShooterGameMode() const;
+	void PostInitializeCombatComponent();
+	void PostInitializeBuffComponent();
 
 //public methods
 public:
@@ -295,6 +296,8 @@ public:
 
 	void SetOverlappingWeapon(AWeaponBase* Weapon);
 	void SetGrenadeVisibility(bool bVisible);
+	void SetWalkSpeed(const float InWalkSpeed);
+	void SetCrouchSpeed(const float InCrouchSpeed);
 
 	FORCEINLINE bool GetIsWeaponEquipped() const { return (CombatComponent && CombatComponent->GetIsWeaponEquipped()); }
 	FORCEINLINE bool GetIsCrouched() const { return bIsCrouched; }
@@ -321,5 +324,6 @@ public:
 
 	AWeaponBase* GetEquippedWeapon() const;
 	UStaticMeshComponent* GetGrenadeMesh() const;
+	AShooterGameMode* GetShooterGameMode() const;
 	FVector GetHitTarget() const;
 };

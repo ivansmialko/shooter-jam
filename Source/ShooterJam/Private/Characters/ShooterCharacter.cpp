@@ -656,6 +656,22 @@ void AShooterCharacter::SetGrenadeVisibility(bool bVisible)
 	GrenadeMesh->SetVisibility(bVisible);
 }
 
+void AShooterCharacter::SetWalkSpeed(const float InWalkSpeed)
+{
+	if (!GetCharacterMovement())
+		return;
+
+	GetCharacterMovement()->MaxWalkSpeed = InWalkSpeed;
+}
+
+void AShooterCharacter::SetCrouchSpeed(const float InCrouchSpeed)
+{
+	if (!GetCharacterMovement())
+		return;
+
+	GetCharacterMovement()->MaxWalkSpeedCrouched = InCrouchSpeed;
+}
+
 void AShooterCharacter::DisableGameplay()
 {
 	bGameplayEnabled = false;
@@ -800,6 +816,29 @@ void AShooterCharacter::PlayReloadMontage(bool bInPlayReloadEnd)
 void AShooterCharacter::PlayReloadMontage()
 {
 	PlayReloadMontage(false);
+}
+
+void AShooterCharacter::PostInitializeCombatComponent()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->Character = this;
+	CombatComponent->PrimaryComponentTick.bCanEverTick = true;
+}
+
+void AShooterCharacter::PostInitializeBuffComponent()
+{
+	if (!BuffComponent)
+		return;
+
+	BuffComponent->SetCharacter(this); 
+
+	if (auto Movement = GetCharacterMovement())
+	{
+		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeed);
+		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeedCrouched);
+	}
 }
 
 void AShooterCharacter::PlayReloadEndMontage()
@@ -1051,16 +1090,9 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 void AShooterCharacter::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	if (CombatComponent)
-	{
-		CombatComponent->Character = this;
-		CombatComponent->PrimaryComponentTick.bCanEverTick = true;
-	}
-
-	if (BuffComponent)
-	{
-		BuffComponent->SetCharacter(this);
-	}
+	
+	PostInitializeCombatComponent();
+	PostInitializeBuffComponent();
 }
 
 void AShooterCharacter::Jump()

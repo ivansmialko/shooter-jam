@@ -1,11 +1,11 @@
 // Made by smialko
 
 
-#include "Pickups/HealthPickup.h"
+#include "Pickups/SpeedPickup.h"
 #include "Characters/ShooterCharacter.h"
 #include "Components/BuffComponent.h"
 
-void AHealthPickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void ASpeedPickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	Super::OnSphereOverlapBegin(OverlappedComponent, OtherActor, OtherComponent, OtherBodyIndex, bFromSweep, SweepResult);
 
@@ -17,7 +17,7 @@ void AHealthPickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponen
 	if (!BuffComponent)
 		return;
 
-	BuffComponent->AddHealth(HealAmount, HealTime);
+	BuffComponent->AddSpeed(BaseSpeedBuff, CrouchSpeedBuff, Duration);
 
 	Destroy();
 }
