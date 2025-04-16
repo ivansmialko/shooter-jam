@@ -4,22 +4,25 @@
 
 #include "CoreMinimal.h"
 #include "Pickups/Pickup.h"
-#include "HealthPickup.generated.h"
+#include "SpeedPickup.generated.h"
 
-class UNiagaraComponent;
-class UNiagaraSystem;
-
+/**
+ * 
+ */
 UCLASS()
-class SHOOTERJAM_API AHealthPickup : public APickup
+class SHOOTERJAM_API ASpeedPickup : public APickup
 {
 	GENERATED_BODY()
 	
 private:
 	UPROPERTY(EditAnywhere)
-	float HealAmount{ 100.f };
+	float BaseSpeedBuff { 1600.f };
 
 	UPROPERTY(EditAnywhere)
-	float HealTime{ 5.f };
+	float CrouchSpeedBuff{ 850.f };
+
+	UPROPERTY(EditAnywhere)
+	float Duration{ 30.f };
 
 protected:
 	void OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent,
@@ -28,5 +31,4 @@ protected:
 		int32 OtherBodyIndex,
 		bool bFromSweep,
 		const FHitResult& SweepResult) override;
-
 };

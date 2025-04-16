@@ -8,6 +8,8 @@
 
 class USphereComponent;
 class USoundCue;
+class UNiagaraSystem;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTERJAM_API APickup : public AActor
@@ -27,12 +29,21 @@ private:
 	UPROPERTY(EditAnywhere)
 	float BaseTurnRate{ 45.f };
 
+protected:
+	UPROPERTY(EditAnywhere)
+	UNiagaraSystem* PickupEffect;
+
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* PickupEffectComponent;
+
 private:
 	void PlayPickupSound();
 	void RotateMesh(float InDeltaTime);
 
 protected:
 	virtual void BeginPlay() override;
+
+	void PlayPickupFx();
 
 	UFUNCTION()
 	virtual void OnSphereOverlapBegin(

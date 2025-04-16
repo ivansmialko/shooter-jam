@@ -4,6 +4,23 @@
 #include "Components/BuffComponent.h"
 #include "Characters/ShooterCharacter.h"
 
+void UBuffComponent::OnSpeedBuffTimerFinished()
+{
+	Character->SetWalkSpeed(InitialBaseSpeed);
+	Character->SetCrouchSpeed(InitialCrouchSpeed);
+
+	Multicast_AddSpeed(InitialBaseSpeed, InitialCrouchSpeed);
+}
+
+void UBuffComponent::Multicast_AddSpeed_Implementation(float InBaseSpeed, float InCrouchSpeed)
+{
+	if (!Character)
+		return;
+
+	Character->SetWalkSpeed(InBaseSpeed);
+	Character->SetCrouchSpeed(InCrouchSpeed);
+}
+
 UBuffComponent::UBuffComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -46,6 +63,16 @@ void UBuffComponent::SetCharacter(AShooterCharacter* InCharacter)
 	Character = InCharacter;
 }
 
+void UBuffComponent::SetInitialBaseSpeed(float InBaseSpeed)
+{
+	InitialBaseSpeed = InBaseSpeed;
+}
+
+void UBuffComponent::SetInitialCrouchSpeed(float InBaseCrouchSpeed)
+{
+	InitialCrouchSpeed = InBaseCrouchSpeed;
+}
+
 void UBuffComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -59,4 +86,15 @@ void UBuffComponent::AddHealth(float InHealth, float InHealTime /*= 0.f*/)
 	HealingRate = InHealth / InHealTime;
 
 	HealingTarget += InHealth;
+}
+
+void UBuffComponent::AddSpeed(float InBaseSpeed, float InCrouchSpeed, float InDuration)
+{
+	if (!Character)
+		return;
+
+	Character->GetWorldTimerManager().SetTimer(SpeedBuffTimer, this, &UBuffComponent::OnSpeedBuffTimerFinished, InDuration);
+	Character->SetWalkSpeed(InBaseSpeed);
+	Character->SetCrouchSpeed(InCrouchSpeed);
+	Multicast_AddSpeed(InBaseSpeed, InCrouchSpeed);
 }
