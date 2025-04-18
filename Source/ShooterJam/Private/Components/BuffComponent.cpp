@@ -12,6 +12,11 @@ void UBuffComponent::OnSpeedBuffTimerFinished()
 	Multicast_AddSpeed(InitialBaseSpeed, InitialCrouchSpeed);
 }
 
+void UBuffComponent::OnJumpBuffTimerFinished()
+{
+
+}
+
 void UBuffComponent::Multicast_AddSpeed_Implementation(float InBaseSpeed, float InCrouchSpeed)
 {
 	if (!Character)
@@ -73,6 +78,11 @@ void UBuffComponent::SetInitialCrouchSpeed(float InBaseCrouchSpeed)
 	InitialCrouchSpeed = InBaseCrouchSpeed;
 }
 
+void UBuffComponent::SetInitialJumpVelocity(float InBaseJumpVelocity)
+{
+	InitialJumpVelocity = InBaseJumpVelocity;
+}
+
 void UBuffComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -97,4 +107,10 @@ void UBuffComponent::AddSpeed(float InBaseSpeed, float InCrouchSpeed, float InDu
 	Character->SetWalkSpeed(InBaseSpeed);
 	Character->SetCrouchSpeed(InCrouchSpeed);
 	Multicast_AddSpeed(InBaseSpeed, InCrouchSpeed);
+}
+
+void UBuffComponent::AddJump(float InJumpVelocityBoost, float InDuration)
+{
+	if (!Character)
+		return;
 }

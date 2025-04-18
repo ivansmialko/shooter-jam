@@ -30,16 +30,26 @@ private:
 	FTimerHandle SpeedBuffTimer;
 
 	UPROPERTY(VisibleAnywhere)
+	FTimerHandle JumpBuffTimer;
+
+	UPROPERTY(VisibleAnywhere)
 	float InitialBaseSpeed;
 
 	UPROPERTY(VisibleAnywhere)
 	float InitialCrouchSpeed;
 
+	UPROPERTY(VisibleAnywhere)
+	float InitialJumpVelocity;
+
 private:
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_AddSpeed(float InBaseSpeed, float InCrouchSpeed);
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_AddJump(float InJumpVelocityBoost);
+
 	void OnSpeedBuffTimerFinished();
+	void OnJumpBuffTimerFinished();
 
 public:
 	UBuffComponent();
@@ -48,6 +58,7 @@ public:
 
 	void AddHealth(float InHealth, float InHealTime = 0.f);
 	void AddSpeed(float InBaseSpeed, float InCrouchSpeed, float InDuration);
+	void AddJump(float InJumpVelocityBoost, float InDuration);
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,4 +69,5 @@ public:
 	void SetCharacter(AShooterCharacter* InCharacter);
 	void SetInitialBaseSpeed(float InBaseSpeed);
 	void SetInitialCrouchSpeed(float InBaseCrouchSpeed);
+	void SetInitialJumpVelocity(float InBaseJumpVelocity);
 };
