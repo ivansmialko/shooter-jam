@@ -16,7 +16,7 @@ void AHealthPickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponen
 	UBuffComponent* BuffComponent = Character->GetBuffComponent();
 	if (!BuffComponent)
 		return;
-
+	 
 	BuffComponent->AddHealth(HealAmount, HealTime);
 
 	Destroy();
