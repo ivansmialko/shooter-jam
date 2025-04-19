@@ -26,6 +26,14 @@ void UBuffComponent::Multicast_AddSpeed_Implementation(float InBaseSpeed, float 
 	Character->SetCrouchSpeed(InCrouchSpeed);
 }
 
+void UBuffComponent::Multicast_AddJump_Implementation(float InJumpVelocityBoost)
+{
+	if (!Character)
+		return;
+
+	Character->SetWalkSpeed(InJumpVelocityBoost);
+}
+
 UBuffComponent::UBuffComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -98,19 +106,24 @@ void UBuffComponent::AddHealth(float InHealth, float InHealTime /*= 0.f*/)
 	HealingTarget += InHealth;
 }
 
-void UBuffComponent::AddSpeed(float InBaseSpeed, float InCrouchSpeed, float InDuration)
+void UBuffComponent::AddSpeed(float InWalkSpeed, float InCrouchSpeed, float InDuration)
 {
 	if (!Character)
 		return;
 
 	Character->GetWorldTimerManager().SetTimer(SpeedBuffTimer, this, &UBuffComponent::OnSpeedBuffTimerFinished, InDuration);
-	Character->SetWalkSpeed(InBaseSpeed);
+	Character->SetWalkSpeed(InWalkSpeed);
 	Character->SetCrouchSpeed(InCrouchSpeed);
-	Multicast_AddSpeed(InBaseSpeed, InCrouchSpeed);
+	Multicast_AddSpeed(InWalkSpeed, InCrouchSpeed);
 }
 
 void UBuffComponent::AddJump(float InJumpVelocityBoost, float InDuration)
 {
 	if (!Character)
 		return;
+
+	Character->GetWorldTimerManager().SetTimer(JumpBuffTimer, this, &UBuffComponent::OnSpeedBuffTimerFinished, InDuration);
+	Character->SetJumpVelocity(InJumpVelocityBoost);
+	Multicast_AddJump_Implementation(InJumpVelocityBoost);
+	
 }

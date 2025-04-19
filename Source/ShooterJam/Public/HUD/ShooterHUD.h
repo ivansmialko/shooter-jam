@@ -105,6 +105,7 @@ public:
 
 	void SetCrosshairsPackage(FCrosshairsPackage& InHUDPackage);
 	void SetHealth(float InHealth, float InMaxHealth);
+	void SetShield(float InShield, float InMaxShield);
 	void SetScore(float InScore);
 	void SetDefeats(int32 InDefeats);
 	void SetWeaponAmmo(int32 InAmmo);
