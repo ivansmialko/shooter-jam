@@ -252,13 +252,29 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	if (bIsEliminated)
 		return;
 
-	Health = FMath::Clamp(Health - Damage, 0.f, MaxHealth);
+	float DamageToHealth = Damage;
+	if (Shield > 0.f)
+	{
+		if (Shield >= Damage)
+		{
+			Shield = FMath::Clamp(Shield - Damage, 0, MaxShield);
+			DamageToHealth = 0.f;
+		}
+		else
+		{
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0, Damage);
+			Shield = 0.f;
+		}
+	}
+
+	Health = FMath::Clamp(Health - DamageToHealth, 0.f, MaxHealth);
 
 	//It's for server to play player-server effects
 	if (HasAuthority())
 	{
 		ActionReceiveDamage();
 		HudUpdateHealth();
+		HudUpdateShield();
 	}
 
 	if (Health > 0.f)
@@ -709,6 +725,7 @@ void AShooterCharacter::HudUpdate()
 
 	HudUpdateAmmo();
 	HudUpdateHealth();
+	HudUpdateShield();
 	HudUpdateGrenades();
 }
 
