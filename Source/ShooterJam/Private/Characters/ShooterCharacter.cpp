@@ -531,9 +531,10 @@ void AShooterCharacter::OnRep_Shield(float LastShield)
 {
 	if (Shield < LastShield)
 	{
+		ActionReceiveDamage();
 	}
 
-	PlayHitReactMontage();
+	HudUpdateShield();
 }
 
 void AShooterCharacter::OnRep_ReplicatedMovement()
@@ -1018,7 +1019,7 @@ void AShooterCharacter::HudUpdateShield()
 	if (!PlayerController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetHealth(Shield, MaxShield);
+	PlayerController->GetPlayerHud()->SetShield(Shield, MaxShield);
 }
 
 void AShooterCharacter::HudUpdateAmmo()
