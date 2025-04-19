@@ -189,6 +189,9 @@ void AShooterHUD::SetShield(float InShield, float InMaxShield)
 		!CharacterOverlay->ShieldBar)
 		return;
 
+	CharacterOverlay->ShieldBar->SetVisibility(InShield > 0.f ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+	CharacterOverlay->ShieldText->SetVisibility(InShield > 0.f ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+
 	const float ShieldPercent{ InShield / InMaxShield };
 	CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
 
