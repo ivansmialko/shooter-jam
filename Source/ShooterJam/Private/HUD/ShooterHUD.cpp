@@ -180,6 +180,22 @@ void AShooterHUD::SetHealth(float InHealth, float InMaxHealth)
 	CharacterOverlay->HealthText->SetText(FText::FromString(HealthString));
 }
 
+void AShooterHUD::SetShield(float InShield, float InMaxShield)
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->ShieldText ||
+		!CharacterOverlay->ShieldBar)
+		return;
+
+	const float ShieldPercent{ InShield / InMaxShield };
+	CharacterOverlay->ShieldBar->SetPercent(ShieldPercent);
+
+	FString ShieldString{ FString::Printf(TEXT("%d/%d"), FMath::CeilToInt(InShield), FMath::CeilToInt(InMaxShield)) };
+	CharacterOverlay->ShieldText->SetText(FText::FromString(ShieldString));
+}
+
 void AShooterHUD::SetScore(float InScore)
 {
 	//Cache value

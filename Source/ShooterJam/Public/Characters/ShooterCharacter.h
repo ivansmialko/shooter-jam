@@ -98,9 +98,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Player Stats")
 	float MaxHealth{ 100.f };
 
+	/** Maximum possible amount of shield. Used to calculate width of a progress bar */
+	UPROPERTY(EditAnywhere, Category = "Player Stats")
+	float MaxShield{ 100.f };
+
 	/** Current value of player's health */
 	UPROPERTY(ReplicatedUsing = OnRep_Health, VisibleAnywhere, Category = "Player Stats")
 	float Health{ MaxHealth };
+
+	/** Current value of player's shield */
+	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
+	float Shield{ MaxShield };
 
 	/** Is user currently eliminated */
 	UPROPERTY(VisibleAnywhere)
@@ -195,6 +203,8 @@ private:
 	void OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon); //LastOverlappedWeapon is the last value of replicated variable, before it will be set
 	UFUNCTION()
 	void OnRep_Health(float LastHealth);
+	UFUNCTION()
+	void OnRep_Shield(float LastShield);
 	virtual void OnRep_ReplicatedMovement() override;
 
 	UFUNCTION()
@@ -285,6 +295,7 @@ public:
 
 	void HudUpdate();
 	void HudUpdateHealth();
+	void HudUpdateShield();
 	void HudUpdateAmmo();
 	void HudUpdateGrenades();
 
@@ -298,6 +309,7 @@ public:
 	void SetGrenadeVisibility(bool bVisible);
 	void SetWalkSpeed(const float InWalkSpeed);
 	void SetCrouchSpeed(const float InCrouchSpeed);
+	void SetJumpVelocity(const float InJumpVelocity);
 
 	FORCEINLINE bool GetIsWeaponEquipped() const { return (CombatComponent && CombatComponent->GetIsWeaponEquipped()); }
 	FORCEINLINE bool GetIsCrouched() const { return bIsCrouched; }

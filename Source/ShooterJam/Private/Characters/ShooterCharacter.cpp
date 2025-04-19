@@ -511,6 +511,15 @@ void AShooterCharacter::OnRep_Health(float LastHealth)
 	HudUpdateHealth();
 }
 
+void AShooterCharacter::OnRep_Shield(float LastShield)
+{
+	if (Shield < LastShield)
+	{
+	}
+
+	PlayHitReactMontage();
+}
+
 void AShooterCharacter::OnRep_ReplicatedMovement()
 {
 	Super::OnRep_ReplicatedMovement();
@@ -670,6 +679,14 @@ void AShooterCharacter::SetCrouchSpeed(const float InCrouchSpeed)
 		return;
 
 	GetCharacterMovement()->MaxWalkSpeedCrouched = InCrouchSpeed;
+}
+
+void AShooterCharacter::SetJumpVelocity(const float InJumpVelocity)
+{
+	if (!GetCharacterMovement())
+		return;
+
+	GetCharacterMovement()->JumpZVelocity = InJumpVelocity;
 }
 
 void AShooterCharacter::DisableGameplay()
@@ -971,6 +988,22 @@ void AShooterCharacter::HudUpdateHealth()
 	PlayerController->GetPlayerHud()->SetHealth(Health, MaxHealth);
 }
 
+void AShooterCharacter::HudUpdateShield()
+{
+	if (!PlayerController)
+	{
+		PlayerController = Cast<AShooterCharacterController>(GetController());
+	}
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->SetHealth(Shield, MaxShield);
+}
+
 void AShooterCharacter::HudUpdateAmmo()
 {
 	if (!PlayerController)
@@ -1084,6 +1117,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 
 	DOREPLIFETIME_CONDITION(AShooterCharacter, OverlappingWeapon, COND_OwnerOnly);
 	DOREPLIFETIME(AShooterCharacter, Health);
+	DOREPLIFETIME(AShooterCharacter, Shield);
 	DOREPLIFETIME(AShooterCharacter, bGameplayEnabled);
 }
 

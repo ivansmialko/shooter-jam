@@ -8,6 +8,7 @@
 
 class UProgressBar;
 class UTextBlock;
+class UStackBox;
 
 /**
  * C++ base for W_CharacterOverlay. Collection of widgets that represents user's HUD
@@ -35,4 +36,8 @@ public:
 	UTextBlock* MatchCountdownText;
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* GrenadesAmountText;
+	UPROPERTY(meta = (BindWidget))
+	UProgressBar* ShieldBar;
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* ShieldText;
 };
