@@ -307,6 +307,30 @@ void UCombatComponent::OnStateThrow()
 	SetGrenadeVisibility(true);
 }
 
+void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip)
+{
+	DropWeapon();
+
+	EquippedWeapon = InWeaponToEquip;
+	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
+	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
+	EquippedWeapon->SetOwner(Character);
+	EquippedWeapon->NotifyOwner_Ammo();
+
+	AttachActorToRightHand(EquippedWeapon);
+	PlayEquipSound(EquippedWeapon);
+}
+
+void UCombatComponent::EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip)
+{
+	SecondaryWeapon = InWeaponToEquip;
+	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
+	SecondaryWeapon->SetOwner(Character);
+
+	AttachActorToBackpack(InWeaponToEquip);
+	PlayEquipSound(SecondaryWeapon);
+}
+
 void UCombatComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -329,6 +353,7 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(UCombatComponent, EquippedWeapon);
+	DOREPLIFETIME(UCombatComponent, SecondaryWeapon);
 	DOREPLIFETIME(UCombatComponent, bIsAiming);
 	DOREPLIFETIME(UCombatComponent, CombatState);
 	DOREPLIFETIME(UCombatComponent, GrenadesAmount);
@@ -346,16 +371,14 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	if (!InWeaponToEquip)
 		return;
 
-	DropWeapon();
-
-	EquippedWeapon = InWeaponToEquip;
-	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
-	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
-	EquippedWeapon->SetOwner(Character);
-	EquippedWeapon->NotifyOwner_Ammo();
-
-	AttachActorToRightHand(EquippedWeapon);
-	PlayEquipSound();
+	if (EquippedWeapon && !SecondaryWeapon)
+	{
+		EquipSecondaryWeapon(InWeaponToEquip);
+	}
+	else
+	{
+		EquipPrimaryWeapon(InWeaponToEquip);
+	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
@@ -399,14 +422,14 @@ void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
 
 void UCombatComponent::OnRep_EquippedWeapon()
 {
-	if (!EquippedWeapon)
-		return;
-
 	if (!Character)
 		return;
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+
+	if (!EquippedWeapon)
+		return;
 
 	//Equipped weapon is replicated, just as attaching an actor in Equip function.
 	//There's no guarantee that EquippedWeapon will replicate earlier than attaching weapon to character.
@@ -414,7 +437,27 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	EquippedWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 
 	AttachActorToRightHand(EquippedWeapon);
-	PlayEquipSound();
+	PlayEquipSound(EquippedWeapon);
+}
+
+void UCombatComponent::OnRep_SecondaryWeapon()
+{
+	if (!Character)
+		return;
+
+	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
+	Character->bUseControllerRotationYaw = true;
+
+	if (!SecondaryWeapon)
+		return;
+
+	//Secondary weapon is replicated, just as attaching an actor in Equip function.
+	//There's no guarantee that SecondaryWeapon will replicate earlier than attaching weapon to character.
+	//So we'll also do these thing in this rep notify, just to be sure
+	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
+
+	AttachActorToRightHand(SecondaryWeapon);
+	PlayEquipSound(SecondaryWeapon);
 }
 
 void UCombatComponent::OnRep_CarriedAmmo()
@@ -634,11 +677,29 @@ void UCombatComponent::AttachActorToLeftHand(AActor* InActor)
 		SocketName = FName("LeftHandPistolSocket");
 	}
 
-	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(FName("LeftHandSocket")) };
+	const USkeletalMeshSocket* HandSocket{ Character->GetMesh()->GetSocketByName(SocketName) };
 	if (!HandSocket)
 		return;
 
 	HandSocket->AttachActor(InActor, Character->GetMesh());
+}
+
+void UCombatComponent::AttachActorToBackpack(AActor* InActor)
+{
+	if (!InActor)
+		return;
+
+	if (!Character)
+		return;
+
+	if (!Character->GetMesh())
+		return;
+
+	const USkeletalMeshSocket* BackpackSocket{ Character->GetMesh()->GetSocketByName(FName("BackpackSocket")) };
+	if (!BackpackSocket)
+		return;
+
+	BackpackSocket->AttachActor(InActor, Character->GetMesh());
 }
 
 void UCombatComponent::SetGrenadeVisibility(bool bVisible)
@@ -649,21 +710,15 @@ void UCombatComponent::SetGrenadeVisibility(bool bVisible)
 	Character->SetGrenadeVisibility(bVisible);
 }
 
-void UCombatComponent::PlayEquipSound()
+void UCombatComponent::PlayEquipSound(AWeaponBase* WeaponToEquip)
 {
 	if (!Character)
-		return;
-
-	if (!EquippedWeapon)
-		return;
-
-	if (!EquippedWeapon->GetEquipSound())
 		return;
 
 	UGameplayStatics::PlaySoundAtLocation
 	(
 		this,
-		EquippedWeapon->GetEquipSound(),
+		WeaponToEquip->GetEquipSound(),
 		Character->GetActorLocation()
 	);
 }
