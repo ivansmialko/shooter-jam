@@ -584,7 +584,14 @@ void AShooterCharacter::ActionEquip()
 	if (!CombatComponent)
 		return;
 
-	CombatComponent->EquipWeapon(OverlappingWeapon);
+	if (OverlappingWeapon)
+	{
+		CombatComponent->EquipWeapon(OverlappingWeapon);
+	}
+	else if (CombatComponent->GetIsShouldSwapWeapons())
+	{
+		CombatComponent->SwapWeapons();
+	}
 }
 
 void AShooterCharacter::ActionAimStart()

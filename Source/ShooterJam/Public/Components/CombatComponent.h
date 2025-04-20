@@ -131,6 +131,7 @@ public:
 	//~ End UObject Interface
 
 	void EquipWeapon(AWeaponBase* InWeaponToEquip);
+	void SwapWeapons();
 	void DropWeapon();
 	void DropWeaponLaunch();
 	void ReloadWeapon();
@@ -224,21 +225,23 @@ protected:
 	void OnStateReload();
 	void OnStateThrow();
 
-	void EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip);
+	void EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious = false);
 	void EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip);
 
 //public getters/setters
 public:
 	FORCEINLINE bool GetIsWeaponEquipped() const { return EquippedWeapon != nullptr; }
 	FORCEINLINE bool GetIsAiming() const { return bIsAiming; }
+	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }
+	FORCEINLINE bool GetIsThrowing() const { return CombatState == ECombatState::ECS_Throwing; }
+	FORCEINLINE bool GetIsUnoccupied() const { return CombatState == ECombatState::ECS_Unoccupied; }
+	FORCEINLINE bool GetIsShouldSwapWeapons() const { return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr); }
 	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return (EquippedWeapon ? EquippedWeapon->GetWeaponAmmo() : 0); }
 	FORCEINLINE int32 GetGrenadesAmount() const { return GrenadesAmount; }
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
-	FORCEINLINE bool GetIsReloading() const { return CombatState == ECombatState::ECS_Reloading; }
-	FORCEINLINE bool GetIsThrowing() const { return CombatState == ECombatState::ECS_Throwing; }
-	FORCEINLINE bool GetIsUnoccupied() const { return CombatState == ECombatState::ECS_Unoccupied; }
+
 
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);

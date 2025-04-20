@@ -23,6 +23,7 @@ enum class EWeaponState : uint8
 {
 	EWS_Initial UMETA(DisplayName = "Initial state"),
 	EWS_Equipped UMETA(DisplayName = "Equipped"),
+	EWS_EquippedSecondary UMETA(DisplayName = "Equipped Secondary"),
 	EWS_Dropped UMETA(DisplayName = "Dropped"),
 
 	EWS_MAX UMETA(DisplayName = "DefaultMAX")
@@ -134,6 +135,7 @@ private:
 
 	void OnStateEquipped();
 	void OnStateDropped();
+	void OnStateEquippedSecondary();
 
 	void SpawnBulletShell();
 	void SpendRound();
