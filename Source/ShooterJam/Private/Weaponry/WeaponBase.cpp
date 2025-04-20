@@ -39,8 +39,6 @@ void AWeaponBase::OnRep_WeaponState()
 {
 	switch (WeaponState)
 	{
-	case EWeaponState::EWS_Initial:
-		break;
 	case EWeaponState::EWS_Equipped:
 	{
 		OnStateEquipped();
@@ -49,8 +47,10 @@ void AWeaponBase::OnRep_WeaponState()
 	{
 		OnStateDropped();
 	} break;
-	case EWeaponState::EWS_MAX:
-		break;
+	case EWeaponState::EWS_EquippedSecondary:
+	{
+		OnStateEquippedSecondary();
+	} break;
 	default:
 		break;
 	}
@@ -100,6 +100,27 @@ void AWeaponBase::OnStateDropped()
 
 	WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Block);
 	WeaponMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+}
+
+void AWeaponBase::OnStateEquippedSecondary()
+{
+	ShowPickUpWidget(false);
+	GetAreaSphere()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	EnableCustomDepth(false);
+
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->SetSimulatePhysics(false);
+	WeaponMesh->SetEnableGravity(false);
+	WeaponMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (WeaponType == EWeaponType::EWT_SMG)
+	{
+		WeaponMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		WeaponMesh->SetEnableGravity(true);
+		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
 }
 
 void AWeaponBase::SpawnBulletShell()
@@ -312,24 +333,10 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 {
 	WeaponState = InState;
 
-	switch (WeaponState)
-	{
-	case EWeaponState::EWS_Initial:
-		break;
-	case EWeaponState::EWS_Equipped:
-	{
-		OnStateEquipped();
-	} break;
-	case EWeaponState::EWS_Dropped:
-	{
-		OnStateDropped();
-	} break;
-	case EWeaponState::EWS_MAX:
-		break;
-	default:
-		break;
-	}
+	if (!HasAuthority())
+		return;
 
+	OnRep_WeaponState();
 }
 
 void AWeaponBase::AddAmmo(int32 AmmoToAdd)

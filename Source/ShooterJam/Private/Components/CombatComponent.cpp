@@ -307,9 +307,12 @@ void UCombatComponent::OnStateThrow()
 	SetGrenadeVisibility(true);
 }
 
-void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip)
+void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
-	DropWeapon();
+	if (bInDropPrevious)
+	{
+		DropWeapon();
+	}
 
 	EquippedWeapon = InWeaponToEquip;
 	UpdateCurrentCarriedAmmo(EquippedWeapon->GetWeaponType());
@@ -324,7 +327,7 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip)
 void UCombatComponent::EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip)
 {
 	SecondaryWeapon = InWeaponToEquip;
-	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
+	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_EquippedSecondary);
 	SecondaryWeapon->SetOwner(Character);
 
 	AttachActorToBackpack(InWeaponToEquip);
@@ -377,11 +380,18 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 	}
 	else
 	{
-		EquipPrimaryWeapon(InWeaponToEquip);
+		EquipPrimaryWeapon(InWeaponToEquip, true);
 	}
 
 	Character->GetCharacterMovement()->bOrientRotationToMovement = false;
 	Character->bUseControllerRotationYaw = true;
+}
+
+void UCombatComponent::SwapWeapons()
+{
+	AWeaponBase* TempWeapon = EquippedWeapon;
+	EquipPrimaryWeapon(SecondaryWeapon);
+	EquipSecondaryWeapon(TempWeapon);
 }
 
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
