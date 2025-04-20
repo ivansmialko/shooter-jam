@@ -82,7 +82,7 @@ void UBuffComponent::UpdateShield(float InDeltaTime)
 	if (Character->GetIsEliminated())
 		return;
 
-	const float ShieldThisFrame = HealingRate * InDeltaTime;
+	const float ShieldThisFrame = ShieldingRate * InDeltaTime;
 	Character->SetShield(FMath::Clamp(Character->GetShield() + ShieldThisFrame, 0, Character->GetMaxShield()));
 	Character->HudUpdateShield();
 
