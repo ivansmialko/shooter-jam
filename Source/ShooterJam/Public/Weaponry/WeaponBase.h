@@ -50,6 +50,9 @@ private:
 	bool bIsReloadInterruptable{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bIsDestroyAfterDeath{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 FireRate{ 30 };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_Ammo)
@@ -190,6 +193,7 @@ public:
 	FORCEINLINE bool IsFull() const { return GetWeaponAmmo() == GetMagCapacity(); }
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
 	FORCEINLINE bool GetIsReloadInterruptable() const { return bIsReloadInterruptable; }
+	FORCEINLINE bool GetIsDestroyAfterDeath() const { return bIsDestroyAfterDeath; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
@@ -205,4 +209,6 @@ public:
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
 	FTransform GetMuzzleTransform() const;
+
+	void SetIsDestroyAfterDeath(bool bInIsDestroy);
 };

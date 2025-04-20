@@ -252,6 +252,11 @@ FTransform AWeaponBase::GetMuzzleTransform() const
 	return MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 }
 
+void AWeaponBase::SetIsDestroyAfterDeath(bool bInIsDestroy)
+{
+	bIsDestroyAfterDeath = bInIsDestroy;
+}
+
 void AWeaponBase::OnDropped()
 {
 	ChangeWeaponState(EWeaponState::EWS_Dropped);

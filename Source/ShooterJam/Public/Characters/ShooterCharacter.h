@@ -78,6 +78,9 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UStaticMeshComponent* GrenadeMesh;
 
+	UPROPERTY(EditAnywhere, Category = Combat)
+	TSubclassOf<AWeaponBase> DefaultWeaponClass;
+
 	/** Delay between start of an dissolve animation and actual elimination */
 	UPROPERTY(EditDefaultsOnly)
 	float EliminationDelay{ 3.f };
@@ -265,6 +268,8 @@ private:
 
 	void PostInitializeCombatComponent();
 	void PostInitializeBuffComponent();
+
+	void SpawnDefaultWeapon();
 
 //public methods
 public:

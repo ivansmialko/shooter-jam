@@ -60,6 +60,8 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
+	void OnBindOverlapTimerFinished();
+
 public:	
 	APickup();
 
