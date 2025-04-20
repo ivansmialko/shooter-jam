@@ -29,6 +29,12 @@ private:
 	UPROPERTY(EditAnywhere)
 	float BaseTurnRate{ 45.f };
 
+	UPROPERTY(VisibleAnywhere)
+	float BindOverlapTime{ 0.25f };
+
+	UPROPERTY(VisibleAnywhere)
+	FTimerHandle BindOverlapTimer;
+
 protected:
 	UPROPERTY(EditAnywhere)
 	UNiagaraSystem* PickupEffect;

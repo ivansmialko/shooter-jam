@@ -66,16 +66,21 @@ void APickup::RotateMesh(float InDeltaTime)
 void APickup::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	if (HasAuthority())
-	{
-		OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlapBegin);
-	}
+
+	if (!HasAuthority())
+		return;
+
+	GetWorldTimerManager().SetTimer(BindOverlapTimer, this, &APickup::OnBindOverlapTimerFinished, BindOverlapTime);
 }
 
 void APickup::OnSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
+}
+
+void APickup::OnBindOverlapTimerFinished()
+{
+	OverlapSphere->OnComponentBeginOverlap.AddDynamic(this, &APickup::OnSphereOverlapBegin);
 }
 
 void APickup::Tick(float DeltaTime)
