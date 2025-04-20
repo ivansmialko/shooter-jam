@@ -39,6 +39,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponBase* EquippedWeapon;
 
+	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
+	AWeaponBase* SecondaryWeapon;
+
 	/**
 	 * Ammo carried for the currently equipped weapon
 	 * Using thing because TMap<EWeaponType, int32> cannot be replicated
@@ -141,6 +144,9 @@ public:
 	void OnRep_EquippedWeapon();
 
 	UFUNCTION()
+	void OnRep_SecondaryWeapon();
+
+	UFUNCTION()
 	void OnRep_CarriedAmmo();
 
 	UFUNCTION()
@@ -185,10 +191,13 @@ private:
 	/** Attaches an actor to player's left hand */
 	void AttachActorToLeftHand(AActor* InActor);
 
+	/** Attaches an actor to player's backpack slot */
+	void AttachActorToBackpack(AActor* InActor);
+
 	/** Shows or hides a grenade attached to player's hand */
 	void SetGrenadeVisibility(bool bVisible);
 
-	void PlayEquipSound();
+	void PlayEquipSound(AWeaponBase* WeaponToEquip);
 
 	void UpdateHudGrenades();
 	void UpdateHudCrosshairs(float DeltaTime);
@@ -214,6 +223,9 @@ protected:
 
 	void OnStateReload();
 	void OnStateThrow();
+
+	void EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip);
+	void EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip);
 
 //public getters/setters
 public:

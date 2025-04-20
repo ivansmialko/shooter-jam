@@ -136,14 +136,7 @@ void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 	if (!bGameplayEnabled)
 		return;
 
-	if (HasAuthority())
-	{
-		ActionEquip();
-	}
-	else
-	{
-		Server_OnEquip();
-	}
+	Server_OnEquip();
 }
 
 
