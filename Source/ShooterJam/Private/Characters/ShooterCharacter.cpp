@@ -76,12 +76,13 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (HasAuthority())
-	{
-		OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
-	}
-
 	SetGrenadeVisibility(false);
+	SpawnDefaultWeapon();
+	
+	if (!HasAuthority())
+		return;
+
+	OnTakeAnyDamage.AddDynamic(this, &AShooterCharacter::OnReceiveDamage);
 }
 
 void AShooterCharacter::Restart()
@@ -655,6 +656,12 @@ void AShooterCharacter::DropWeapon()
 	if (!CombatComponent->GetEquippedWeapon())
 		return;
 
+	if (CombatComponent->GetEquippedWeapon()->GetIsDestroyAfterDeath())
+	{
+		CombatComponent->GetEquippedWeapon()->Destroy();
+		return;
+	}
+
 	CombatComponent->GetEquippedWeapon()->OnDropped();
 }
 
@@ -717,13 +724,6 @@ void AShooterCharacter::DisableGameplay()
 
 void AShooterCharacter::HudUpdate()
 {
-	ENetRole LocalNetRole = GetLocalRole();
-	if (LocalNetRole == ROLE_AutonomousProxy)
-	{
-		int A = 10;
-		A = 10;
-	}
-
 	HudUpdateAmmo();
 	HudUpdateHealth();
 	HudUpdateShield();
@@ -874,6 +874,35 @@ void AShooterCharacter::PostInitializeBuffComponent()
 		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeed);
 		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeedCrouched);
 	}
+}
+
+void AShooterCharacter::SpawnDefaultWeapon()
+{
+	if (bIsEliminated)
+		return;
+
+	if (!DefaultWeaponClass)
+		return;
+
+	AShooterGameMode* GameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
+	if (!GameMode)
+		return;
+
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	AWeaponBase* StartingWeapon = World->SpawnActor<AWeaponBase>(DefaultWeaponClass);
+	if (!StartingWeapon)
+		return;
+
+	StartingWeapon->SetIsDestroyAfterDeath(true);
+
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->EquipWeapon(StartingWeapon);
+
 }
 
 void AShooterCharacter::PlayReloadEndMontage()
