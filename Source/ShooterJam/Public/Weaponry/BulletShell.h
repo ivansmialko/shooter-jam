@@ -28,7 +28,10 @@ private:
 	UStaticMeshComponent* BulletShellMesh;
 
 	UPROPERTY(EditAnywhere)
-	float ShellEjectionImpulse;
+	float ShellEjectionImpulse{ 5.f };
+
+	UPROPERTY(EditAnywhere)
+	float ShellLifetime{ 30.f };
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* ShellSound;

@@ -26,8 +26,7 @@ void ABulletShell::BeginPlay()
 	
 	AddOnHit();
 	LaunchShell();
-
-	SetLifeSpan(5.f);
+	SetLifeSpan(ShellLifetime);
 }
 
 void ABulletShell::LaunchShell()
