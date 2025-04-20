@@ -107,7 +107,7 @@ private:
 	float Health{ MaxHealth };
 
 	/** Current value of player's shield */
-	UPROPERTY(ReplicatedUsing = OnRep_Shield, VisibleAnywhere, Category = "Player Stats")
+	UPROPERTY(ReplicatedUsing = OnRep_Shield, EditAnywhere, Category = "Player Stats")
 	float Shield{ MaxShield };
 
 	/** Is user currently eliminated */
@@ -327,12 +327,15 @@ public:
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }
 	FORCEINLINE float GetMaxHealth() const { return MaxHealth; }
+	FORCEINLINE float GetShield() const { return Shield; }
+	FORCEINLINE float GetMaxShield() const { return MaxShield; }
 	FORCEINLINE ETurningInPlace GetTurningInPlace() const { return TurningInPlace; }
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 	FORCEINLINE UBuffComponent* GetBuffComponent() const { return BuffComponent; }
 
 	FORCEINLINE void SetHealth(const float InHealth) { Health = InHealth; }
+	FORCEINLINE void SetShield(const float InShield) { Shield = InShield; }
 
 	AWeaponBase* GetEquippedWeapon() const;
 	UStaticMeshComponent* GetGrenadeMesh() const;

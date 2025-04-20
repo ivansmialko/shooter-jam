@@ -71,6 +71,31 @@ void UBuffComponent::UpdateHealth(float InDeltaTime)
 	}
 }
 
+void UBuffComponent::UpdateShield(float InDeltaTime)
+{
+	if (!bIsShielding)
+		return;
+
+	if (!Character)
+		return;
+
+	if (Character->GetIsEliminated())
+		return;
+
+	const float ShieldThisFrame = HealingRate * InDeltaTime;
+	Character->SetShield(FMath::Clamp(Character->GetShield() + ShieldThisFrame, 0, Character->GetMaxShield()));
+	Character->HudUpdateShield();
+
+	ShieldingTarget -= ShieldThisFrame;
+
+	if (ShieldingTarget <= 0.f
+		|| Character->GetShield() >= Character->GetMaxShield())
+	{
+		bIsShielding = false;
+		ShieldingTarget = 0.f;
+	}
+}
+
 void UBuffComponent::SetCharacter(AShooterCharacter* InCharacter)
 {
 	Character = InCharacter;
@@ -96,6 +121,7 @@ void UBuffComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorC
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	UpdateHealth(DeltaTime);
+	UpdateShield(DeltaTime);
 }
 
 void UBuffComponent::AddHealth(float InHealth, float InHealTime /*= 0.f*/)
@@ -126,4 +152,12 @@ void UBuffComponent::AddJump(float InJumpVelocityBoost, float InDuration)
 	Character->SetJumpVelocity(InJumpVelocityBoost);
 	Multicast_AddJump_Implementation(InJumpVelocityBoost);
 	
+}
+
+void UBuffComponent::AddShield(float InShield, float InShieldTime /*= 0.f*/)
+{
+	bIsShielding = true;
+	ShieldingRate = InShield / InShieldTime;
+
+	ShieldingTarget += InShield;
 }

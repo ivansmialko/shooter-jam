@@ -27,6 +27,15 @@ private:
 	float HealingTarget{ 0.f };
 
 	UPROPERTY(VisibleAnywhere)
+	bool bIsShielding{ false };
+
+	UPROPERTY(VisibleAnywhere)
+	float ShieldingRate{ 0.f };
+
+	UPROPERTY(VisibleAnywhere)
+	float ShieldingTarget{ 0.f };
+
+	UPROPERTY(VisibleAnywhere)
 	FTimerHandle SpeedBuffTimer;
 
 	UPROPERTY(VisibleAnywhere)
@@ -59,11 +68,13 @@ public:
 	void AddHealth(float InHealth, float InHealTime = 0.f);
 	void AddSpeed(float InBaseSpeed, float InCrouchSpeed, float InDuration);
 	void AddJump(float InJumpVelocityBoost, float InDuration);
+	void AddShield(float InShield, float InShieldTime = 0.f);
 
 protected:
 	virtual void BeginPlay() override;
 
 	void UpdateHealth(float InDeltaTime);
+	void UpdateShield(float InDeltaTime);
 
 public:
 	void SetCharacter(AShooterCharacter* InCharacter);
