@@ -833,7 +833,7 @@ void UCombatComponent::DropWeaponLaunch()
 		return;
 
 	EquippedWeapon->OnDropped();
-	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * 1000);
+	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * WeaponDropImpulse);
 	EquippedWeapon = nullptr;
 }
 
