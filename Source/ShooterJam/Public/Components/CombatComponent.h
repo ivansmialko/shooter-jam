@@ -26,7 +26,7 @@ class SHOOTERJAM_API UCombatComponent : public UActorComponent
 //private fields
 private:
 
-	//~ Begin Replicated fields
+//~ Begin Replicated fields
 	/** True if player holding aim button */
 	UPROPERTY(Replicated)
 	bool bIsAiming;
@@ -38,7 +38,8 @@ private:
 	/** A weapon, player currently equipped with. Replicates to all machines */
 	UPROPERTY(ReplicatedUsing = OnRep_EquippedWeapon)
 	AWeaponBase* EquippedWeapon;
-
+	
+	/** A weapon, player currently carries on backpack. Replicates to all machines */
 	UPROPERTY(ReplicatedUsing = OnRep_SecondaryWeapon)
 	AWeaponBase* SecondaryWeapon;
 
@@ -53,21 +54,52 @@ private:
 	/** Current state of player's combat, e.g. whether it reloading, or just hanging around, or something else */
 	UPROPERTY(ReplicatedUsing = OnRep_CombatState)
 	ECombatState CombatState{ ECombatState::ECS_Unoccupied };
-	//~ End Replicated fields
+//~ End Replicated fields
 
-	//~ Begin Exposed fields
+//~ Begin Exposed fields
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float FovZoomed{ 30.f };
 
 	UPROPERTY(EditAnywhere, Category = Zoom)
 	float ZoomInterpSpeed{ 20.f };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = Grenades)
 	TSubclassOf<AProjectile> GrenadeProjectileClass;
-	//~ End Exposed fields
+
+	//Grenades implementation
+	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_GrenadesAmount, Category = Grenades)
+	int32 GrenadesAmount;
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 GrenadesAmountMax;
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingArAmmo{ 30 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingRocketAmmo{ 0 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingPistolAmmo{ 0 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingSmgAmmo{ 0 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingShotgunAmmo{ 0 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingSniperAmmo{ 0 };
+
+	UPROPERTY(EditAnywhere, Category = "Starting ammo")
+	int32 StartingGranadeLauncherAmmo{ 0 };
 
 	UPROPERTY(EditAnywhere)
 	float HitTargetOffset{ 100.f };
+
+	UPROPERTY(EditAnywhere)
+	float WeaponDropImpulse{ 500.f };
+//~ End Exposed fields
 
 	AShooterCharacter* Character;
 	AShooterCharacterController* CharacterController;
@@ -88,34 +120,6 @@ private:
 
 	//Automatic fire
 	bool bIsCanFire{ true };
-
-	//Grenades implementation
-	UPROPERTY(EditAnywhere, ReplicatedUsing = OnRep_GrenadesAmount)
-	int32 GrenadesAmount;
-
-	UPROPERTY(EditAnywhere)
-	int32 GrenadesAmountMax;
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingArAmmo{ 30 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingRocketAmmo{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingPistolAmmo{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingSmgAmmo{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingShotgunAmmo{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingSniperAmmo{ 0 };
-
-	UPROPERTY(EditAnywhere)
-	int32 StartingGranadeLauncherAmmo{ 0 };
 
 //public methods
 public:
@@ -241,6 +245,7 @@ public:
 	FORCEINLINE int32 GetGrenadesAmount() const { return GrenadesAmount; }
 	FORCEINLINE FVector GetHitTarget() const { return HitTarget; }
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
+	FORCEINLINE AWeaponBase* GetSecondaryWeapon() const { return SecondaryWeapon; }
 
 
 	void SetIsAiming(bool bInIsAiming);

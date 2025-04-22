@@ -236,6 +236,7 @@ private:
 	void ActionThrow();
 
 	void DropWeapon();
+	void DropSecondaryWeapon();
 
 	void OnMove(const FInputActionValue& Value);
 	void OnLook(const FInputActionValue& Value);

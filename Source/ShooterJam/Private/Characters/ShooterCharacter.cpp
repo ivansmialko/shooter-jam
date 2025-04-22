@@ -665,6 +665,23 @@ void AShooterCharacter::DropWeapon()
 	CombatComponent->GetEquippedWeapon()->OnDropped();
 }
 
+void AShooterCharacter::DropSecondaryWeapon()
+{
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetSecondaryWeapon())
+		return;
+
+	if (CombatComponent->GetSecondaryWeapon()->GetIsDestroyAfterDeath())
+	{
+		CombatComponent->GetSecondaryWeapon()->Destroy();
+		return;
+	}
+
+	CombatComponent->GetSecondaryWeapon()->OnDropped();
+}
+
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)
 {
 	//Save the last overlapped weapon, to call local function with this value
@@ -1191,7 +1208,9 @@ void AShooterCharacter::Jump()
 void AShooterCharacter::OnEliminated()
 {
 	Multicast_OnEliminated();
+
 	DropWeapon();
+	DropSecondaryWeapon();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 }
