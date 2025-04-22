@@ -98,6 +98,13 @@ public:
 	/** Hides an UAnnouncementWidget::InfoText */
 	void HideAnnouncementInfoText();
 
+	/** Shows a ping animation (blinking wifi icon) */
+	void ShowPingAnimation();
+
+	/** Hides a ping animation */
+	void HidePingAnimation();
+
+
 //public getters/setters
 public:
 	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }

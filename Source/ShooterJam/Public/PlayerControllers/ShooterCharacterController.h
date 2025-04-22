@@ -46,12 +46,30 @@ private:
 	/** CountdownTimer length*/
 	float CountdownTimerFrequency{ 1.0f };
 	
-	/** Timer to poll-check when hud becomes available */
+	/** Timer to poll-check when HUD becomes available */
 	float PollInitHudTimer{ -1.0f };
 	/** PollInitHudTimer length */
 	float PollInitHudTimerFrequency{ 0.1f };
 
-	//Current match state, syncronized with ShooterGameMode's match state
+	/** Timer to show Wifi(high ping) image for a limited time */
+	float CheckPingTimer{ -1.0f };
+
+	/** How often ping should be checked (20 seconds) */
+	UPROPERTY(EditAnywhere)
+	float CheckPingTime{ 20.f };
+
+	/** Timer to hide high ping warning after expiring */
+	float PingWarningTimer{ -1.f };
+
+	/** Duration Wifi(high ping) image will be showed at */
+	UPROPERTY(EditAnywhere)
+	float PingWarningDuration{ 5.f };
+
+	/** Limit of acceptable ping */
+	UPROPERTY(EditAnywhere)
+	float HighPingTreshold{ 50.f };
+
+	//Current match state, synchronized with ShooterGameMode's match state
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
 
@@ -60,8 +78,14 @@ private:
 	/** Sets current match time to HUD */
 	void UpdateCountdowns();
 
+	/** Checks if it's the time to hide warning timer */
+	void UpdatePingWarning(float InDeltaTime);
+
 	/** Initialized hud variables */
 	bool CheckInitHud();
+
+	/** Update ping check timer, check an actual ping, show warning */
+	void CheckPing(float InDeltaTime);
 
 	/** Requests the current server time, passing in the client's time when the request was sent */
 	UFUNCTION(Server, Reliable)
