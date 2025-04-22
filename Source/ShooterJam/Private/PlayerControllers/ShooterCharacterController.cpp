@@ -23,6 +23,38 @@ bool AShooterCharacterController::CheckInitHud()
 	return ShooterHud != nullptr;
 }
 
+void AShooterCharacterController::CheckPing(float InDeltaTime)
+{
+	if (CheckPingTimer <= 0.f)
+		return;
+
+	CheckPingTimer -= InDeltaTime;
+
+	if (CheckPingTimer > 0.f)
+		return;
+
+	if (!PlayerState)
+	{
+		PlayerState = GetPlayerState<APlayerState>();
+		if (!PlayerState)
+			return;
+	}
+
+	if (PlayerState->GetPingInMilliseconds() >= HighPingTreshold)
+	{
+		PingWarningTimer = PingWarningDuration;
+		return;
+	}
+
+	if (!GetPlayerHud())
+		return;
+
+	GetPlayerHud()->ShowPingAnimation();
+
+	PingWarningTimer = PingWarningDuration;
+	CheckPingTimer = CheckPingTime;
+}
+
 void AShooterCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -69,6 +101,9 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 			}
 		}
 	}
+
+	CheckPing(DeltaSeconds);
+	UpdatePingWarning(DeltaSeconds);
 }
 
 void AShooterCharacterController::OnPossess(APawn* InPawn)
@@ -174,6 +209,23 @@ void AShooterCharacterController::UpdateCountdowns()
 		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
 	}
 }
+
+void AShooterCharacterController::UpdatePingWarning(float InDeltaTime)
+{
+	if (PingWarningTimer <= 0.f)
+		return;
+
+	PingWarningTimer -= InDeltaTime;
+
+	if (PingWarningTimer > 0.f)
+		return;
+
+	if (!GetPlayerHud())
+		return;
+
+	GetPlayerHud()->HidePingAnimation();
+}
+
 void AShooterCharacterController::HandleMatchState()
 {
 	if (MatchState == MatchState::WaitingToStart)
@@ -280,6 +332,8 @@ void AShooterCharacterController::BeginPlay()
 	Super::BeginPlay();
 
 	PollInitHudTimer = PollInitHudTimerFrequency;
+	CheckPingTimer = CheckPingTime;
+
 	Server_RequestGameSettings();
 
 	//FString LocalRoleString = UEnum::GetDisplayValueAsText<ENetRole>(GetLocalRole()).ToString();

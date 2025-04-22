@@ -7,6 +7,7 @@
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 #include "GameFramework/PlayerController.h"
 
 void AShooterHUD::DrawHUD()
@@ -153,6 +154,40 @@ void AShooterHUD::HideAnnouncementInfoText()
 void AShooterHUD::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void AShooterHUD::ShowPingAnimation()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->WifiImage)
+		return;
+
+	if (!CharacterOverlay->WifiBlinkAnimation)
+		return;
+
+	CharacterOverlay->WifiImage->SetOpacity(1.0f);
+	CharacterOverlay->PlayAnimation(CharacterOverlay->WifiBlinkAnimation, 0.f, 5);
+}
+
+void AShooterHUD::HidePingAnimation()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->WifiImage)
+		return;
+
+	if (!CharacterOverlay->WifiBlinkAnimation)
+		return;
+
+	CharacterOverlay->WifiImage->SetOpacity(0.f);
+
+	if (CharacterOverlay->IsAnimationPlaying(CharacterOverlay->WifiBlinkAnimation))
+	{
+		CharacterOverlay->StopAnimation(CharacterOverlay->WifiBlinkAnimation);
+	}
 }
 
 void AShooterHUD::SetCrosshairsPackage(FCrosshairsPackage& InCrosshairsPackage)
