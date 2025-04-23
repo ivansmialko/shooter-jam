@@ -170,7 +170,7 @@ void UCombatComponent::OnFireTimerFinished()
 		return;
 
 	//If firing button is still pressed, and weapon is automatic - shoot again automatically
-	FireWeapon();
+	RequestFire();
 
 	if (!EquippedWeapon->IsEmpty())
 		return;
@@ -193,7 +193,7 @@ void UCombatComponent::OnReloadFinished()
 		//For the client, OnRep_CombatState is the case
 		if (bIsFiring)
 		{
-			FireWeapon();
+			RequestFire();
 		}
 	}
 }
@@ -208,10 +208,10 @@ void UCombatComponent::OnThrowFinished()
 
 void UCombatComponent::OnThrowLaunched()
 {
-	ThrowGrenade();
+	RequestThrow();
 }
 
-void UCombatComponent::FireWeapon()
+void UCombatComponent::RequestFire()
 {
 	if (EquippedWeapon->IsEmpty())
 	{
@@ -227,11 +227,32 @@ void UCombatComponent::FireWeapon()
 
 	//Send fire event from client to server
 	Server_FireWeapon(HitTarget);
+	ActionFire(HitTarget);
 
 	StartFireTimer();
 }
 
-void UCombatComponent::ThrowGrenade()
+void UCombatComponent::ActionFire(const FVector_NetQuantize& TraceHitTarget)
+{
+	if (!EquippedWeapon)
+		return;
+
+	if (CombatState != ECombatState::ECS_Unoccupied)
+	{
+		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
+			return;
+	}
+
+	EquippedWeapon->Fire(TraceHitTarget);
+	CombatState = ECombatState::ECS_Unoccupied;
+
+	if (!Character)
+		return;
+
+	Character->PlayFireMontage(bIsAiming);
+}
+
+void UCombatComponent::RequestThrow()
 {
 	if (GrenadesAmount == 0)
 		return;
@@ -389,6 +410,9 @@ void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 
 void UCombatComponent::SwapWeapons()
 {
+	if (CombatState != ECombatState::ECS_Unoccupied)
+		return;
+
 	AWeaponBase* TempWeapon = EquippedWeapon;
 	EquipPrimaryWeapon(SecondaryWeapon);
 	EquipSecondaryWeapon(TempWeapon);
@@ -422,7 +446,7 @@ void UCombatComponent::SetIsFiring(bool bInIsFiring)
 	if (!EquippedWeapon)
 		return;
 
-	FireWeapon();
+	RequestFire();
 }
 
 void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
@@ -488,7 +512,7 @@ void UCombatComponent::OnRep_CombatState()
 	{
 		if (bIsFiring)
 		{
-			FireWeapon();
+			RequestFire();
 		}
 	}
 		break;
@@ -575,22 +599,10 @@ void UCombatComponent::Server_ThrowGrenade_Implementation(const FVector_NetQuant
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
 {
-	if (!EquippedWeapon)
-		return;
-	 
-	if (CombatState != ECombatState::ECS_Unoccupied)
-	{
-		if (!(EquippedWeapon->GetIsReloadInterruptable() && CombatState == ECombatState::ECS_Reloading))
-			return;
-	}
-
-	EquippedWeapon->Fire(TraceHitTarget);
-	CombatState = ECombatState::ECS_Unoccupied;
-
-	if (!Character)
+	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority())
 		return;
 
-	Character->PlayFireMontage(bIsAiming);
+	ActionFire(TraceHitTarget);
 }
 
 void UCombatComponent::InitializeCarriedAmmo()

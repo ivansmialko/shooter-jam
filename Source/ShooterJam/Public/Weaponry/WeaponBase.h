@@ -140,6 +140,8 @@ private:
 	void SpawnBulletShell();
 	void SpendRound();
 
+	void PlayFireAnimation();
+
 	bool CheckInitOwner();
 
 //public methods

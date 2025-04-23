@@ -233,7 +233,7 @@ private:
 	void ActionAimEnd();
 	void ActionReceiveDamage();
 	void ActionReload();
-	void ActionThrow();
+	void RequestThrow();
 
 	void DropWeapon();
 	void DropSecondaryWeapon();

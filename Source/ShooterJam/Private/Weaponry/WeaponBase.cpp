@@ -151,6 +151,17 @@ void AWeaponBase::SpendRound()
 	NotifyOwner_Ammo();
 }
 
+void AWeaponBase::PlayFireAnimation()
+{
+	if (!FireAnimation)
+		return;
+
+	if (!WeaponMesh)
+		return;
+
+	WeaponMesh->PlayAnimation(FireAnimation, false);
+}
+
 void AWeaponBase::NotifyOwner_Ammo()
 {
 	if (!CheckInitOwner())
@@ -356,14 +367,11 @@ void AWeaponBase::AddAmmo(int32 AmmoToAdd)
 void AWeaponBase::Fire(const FVector& HitTarget)
 {
 	SpawnBulletShell();
+	PlayFireAnimation();
+
+	if (!HasAuthority())
+		return;
+
 	SpendRound();
-
-	if (!FireAnimation)
-		return;
-
-	if (!WeaponMesh)
-		return;
-
-	WeaponMesh->PlayAnimation(FireAnimation, false);
 }
 

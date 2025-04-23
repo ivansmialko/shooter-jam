@@ -237,7 +237,7 @@ void AShooterCharacter::OnReload(const FInputActionValue& Value)
 
 void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 {
-	ActionThrow();
+	RequestThrow();
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -625,7 +625,7 @@ void AShooterCharacter::ActionReload()
 	CombatComponent->ReloadWeapon();
 }
 
-void AShooterCharacter::ActionThrow()
+void AShooterCharacter::RequestThrow()
 {
 	if (!CombatComponent)
 		return;
