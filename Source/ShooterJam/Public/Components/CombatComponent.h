@@ -217,11 +217,12 @@ protected:
 
 	void InterpFov(float DeltaTime);
 
+	void StartFireTimer();
 	void OnFireTimerFinished();
 
-	void StartFireTimer();
-	void FireWeapon();
-	void ThrowGrenade();
+	void RequestFire();
+	void ActionFire(const FVector_NetQuantize& TraceHitTarget);
+	void RequestThrow();
 
 	bool CheckCanFire();
 	bool CheckCanReload();
