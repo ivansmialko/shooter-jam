@@ -40,9 +40,9 @@ void AShooterCharacterController::CheckPing(float InDeltaTime)
 			return;
 	}
 
-	if (PlayerState->GetPingInMilliseconds() >= HighPingTreshold)
+	if (PlayerState->GetPingInMilliseconds() < HighPingTreshold)
 	{
-		PingWarningTimer = PingWarningDuration;
+		CheckPingTimer = CheckPingTime;
 		return;
 	}
 
@@ -224,6 +224,8 @@ void AShooterCharacterController::UpdatePingWarning(float InDeltaTime)
 		return;
 
 	GetPlayerHud()->HidePingAnimation();
+
+	PingWarningTimer = -1.0f;
 }
 
 void AShooterCharacterController::HandleMatchState()
