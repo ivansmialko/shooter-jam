@@ -2,6 +2,7 @@
 
 
 #include "Weaponry/WeaponMultiHitScan.h"
+#include "DrawDebugHelpers.h"
 
 AWeaponMultiHitScan::AWeaponMultiHitScan()
 {
@@ -29,6 +30,8 @@ void AWeaponMultiHitScan::Fire(const FVector& HitTarget)
 			DealDamage(FireHit);
 			BeamEnd = End;
 		}
+
+		DrawDebugSphere(GetWorld(), BeamEnd, 16.f, 12, FColor::Orange, true);
 
 		SpawnBeamParticles(Start, BeamEnd);
 	}

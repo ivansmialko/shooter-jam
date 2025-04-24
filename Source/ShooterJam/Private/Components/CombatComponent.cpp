@@ -227,7 +227,11 @@ void UCombatComponent::RequestFire()
 
 	//Send fire event from client to server
 	Server_FireWeapon(HitTarget);
-	ActionFire(HitTarget);
+
+	if (Character && !Character->HasAuthority())
+	{
+		ActionFire(HitTarget);
+	}
 
 	StartFireTimer();
 }
