@@ -27,7 +27,7 @@ private:
 //public methods
 public:
 	//~ Begin AWeaponBase Interface
-	virtual void Fire(const FVector& HitTarget) override;
+	virtual void Fire() override;
 	//~ End AWeaponBase Interface
 
 	void DealDamage(const FHitResult& HitResult);

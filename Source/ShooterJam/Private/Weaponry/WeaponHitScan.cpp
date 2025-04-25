@@ -57,13 +57,14 @@ void AWeaponHitScan::SpawnImpactParticles(const FHitResult& HitResult)
 	UGameplayStatics::SpawnEmitterAtLocation(World, ImpactParticles, HitResult.ImpactPoint, HitResult.ImpactNormal.Rotation());
 }
 
-void AWeaponHitScan::Fire(const FVector& HitTarget)
+void AWeaponHitScan::Fire()
 {
-	Super::Fire(HitTarget);
-
+	if (HitTargets.IsEmpty())
+		return;
+	
 	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
-	FVector End = (bUseScatter ? GetTraceEndWithScatter(Start, HitTarget) :  GetTraceEnd(Start, HitTarget));
+	FVector End = GetTraceEnd(Start, HitTargets[0]);
 	FVector BeamEnd = End;
 
 	FHitResult FireHit;
@@ -80,4 +81,6 @@ void AWeaponHitScan::Fire(const FVector& HitTarget)
 	DrawDebugSphere(GetWorld(), BeamEnd, 16.f, 12, FColor::Orange, true);
 
 	SpawnBeamParticles(Start, BeamEnd);
+
+	Super::Fire();
 }

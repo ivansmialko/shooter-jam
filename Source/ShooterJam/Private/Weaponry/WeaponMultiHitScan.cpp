@@ -9,18 +9,16 @@ AWeaponMultiHitScan::AWeaponMultiHitScan()
 	bUseScatter = true;
 }
 
-void AWeaponMultiHitScan::Fire(const FVector& HitTarget)
+void AWeaponMultiHitScan::Fire()
 {
-	AWeaponBase::Fire(HitTarget);
-
 	FTransform SocketTransform = GetMuzzleTransform();
 	FVector Start = SocketTransform.GetLocation();
 	FVector BeamEnd;
 
 	FHitResult FireHit;
-	for (uint32 i = 0; i < ScatterHitsNumber; ++i)
+	for (int32 i = 0; i < HitTargets.Num(); ++i)
 	{
-		FVector End = GetTraceEndWithScatter(Start, HitTarget);
+		FVector End = GetTraceEnd(Start, HitTargets[i]);
 		BeamEnd = End;
 		HitScan(FireHit, Start, End);
 
@@ -35,4 +33,6 @@ void AWeaponMultiHitScan::Fire(const FVector& HitTarget)
 
 		SpawnBeamParticles(Start, BeamEnd);
 	}
+
+	AWeaponBase::Fire();
 }

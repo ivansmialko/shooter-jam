@@ -200,6 +200,11 @@ bool AWeaponBase::CheckInitOwner()
 	return true;
 }
 
+void AWeaponBase::ClearHitTargets()
+{
+	HitTargets.Empty();
+}
+
 void AWeaponBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -236,7 +241,7 @@ void AWeaponBase::OnAreaSphereOverlapEnd(UPrimitiveComponent* OverlappedComponen
 	ShooterCharacter->SetOverlappingWeapon(nullptr);
 }
 
-FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget)
+FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget) const
 {
 	FVector ToTargetNormalized = (HitTarget - TraceStart).GetSafeNormal();
 	FVector SphereCenter = TraceStart + ToTargetNormalized * ScatterSphereDistance;
@@ -253,7 +258,7 @@ FVector AWeaponBase::GetTraceEndWithScatter(const FVector& TraceStart, const FVe
 	return FVector(TraceStart + ToEndLocation * TRACE_LENGTH / ToEndLocation.Size());
 }
 
-FVector AWeaponBase::GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget)
+FVector AWeaponBase::GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget) const
 {
 	return (TraceStart + (HitTarget - TraceStart) * 1.25);
 }
@@ -280,9 +285,65 @@ FTransform AWeaponBase::GetMuzzleTransform() const
 	return MuzzleFlashSocket->GetSocketTransform(GetWeaponMesh());
 }
 
+TArray<FVector> AWeaponBase::GetHitTargets(const FVector& InTraceStart, const FVector& InDirection) const
+{
+	TArray<FVector> CurrHitTargets;
+
+	if (bUseScatter)
+	{
+		for (uint32 i = 0; i < ScatterHitsNumber; ++i)
+		{
+			CurrHitTargets.Add(GetTraceEndWithScatter(InTraceStart, InDirection));
+		}
+	}
+	else
+	{
+		CurrHitTargets.Add(GetTraceEnd(InTraceStart, InDirection));
+	}
+
+	return CurrHitTargets;
+}
+
+TArray<FVector_NetQuantize> AWeaponBase::GetHitTargetsNet(const FVector InTraceStart, const FVector InDirection) const
+{
+	TArray<FVector_NetQuantize> CurrHitTargets;
+
+	if (bUseScatter)
+	{
+		for (uint32 i = 0; i < ScatterHitsNumber; ++i)
+		{
+			CurrHitTargets.Add(GetTraceEndWithScatter(InTraceStart, InDirection));
+		}
+	}
+	else
+	{
+		CurrHitTargets.Add(GetTraceEnd(InTraceStart, InDirection));
+	}
+
+	return CurrHitTargets;
+}
+
 void AWeaponBase::SetIsDestroyAfterDeath(bool bInIsDestroy)
 {
 	bIsDestroyAfterDeath = bInIsDestroy;
+}
+
+void AWeaponBase::AddHitTarget(const FVector& InHitTarget)
+{
+	HitTargets.Add(InHitTarget);
+}
+
+void AWeaponBase::AddHitTarget(const FVector_NetQuantize& InHitTarget)
+{
+	HitTargets.Add(InHitTarget);
+}
+
+void AWeaponBase::AddHitTarget(const TArray<FVector_NetQuantize>& InHitTargets)
+{
+	for (int32 i = 0; i < InHitTargets.Num(); ++i)
+	{
+		HitTargets.Add(InHitTargets[i]);
+	}
 }
 
 void AWeaponBase::OnDropped()
@@ -360,10 +421,11 @@ void AWeaponBase::AddAmmo(int32 AmmoToAdd)
 	NotifyOwner_Ammo();
 }
 
-void AWeaponBase::Fire(const FVector& HitTarget)
+void AWeaponBase::Fire()
 {
 	SpawnBulletShell();
 	PlayFireAnimation();
+	ClearHitTargets();
 
 	if (!HasAuthority())
 		return;

@@ -3,9 +3,10 @@
 #include "Weaponry/Projectile.h"
 #include "Engine/SkeletalMeshSocket.h"
 
-void AProjectileWeapon::Fire(const FVector& HitTarget)
+void AProjectileWeapon::Fire()
 {
-	Super::Fire(HitTarget);
+	if (HitTargets.IsEmpty())
+		return;
 
 	if (!HasAuthority())
 		return;
@@ -22,7 +23,7 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 		return;
 
 	FTransform MuzzleTransform{ MuzzleSocket->GetSocketTransform(Mesh) };
-	FVector ToTarget{ HitTarget - MuzzleTransform.GetLocation() }; //Find vector (direction) from barrel to hit target
+	FVector ToTarget{ HitTargets[0] - MuzzleTransform.GetLocation()}; //Find vector (direction) from barrel to hit target
 	FRotator TargetRotation{ ToTarget.Rotation() };				   //Rotation that represents ToTarget's direction
 
 	UWorld* World{ GetWorld() };
@@ -38,4 +39,6 @@ void AProjectileWeapon::Fire(const FVector& HitTarget)
 	BulletSpawnParameters.Instigator = InstigatorPawn;
 
 	World->SpawnActor<AProjectile>(ProjectileClass, MuzzleTransform.GetLocation(), TargetRotation, BulletSpawnParameters);
+
+	Super::Fire();
 }

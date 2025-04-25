@@ -167,7 +167,7 @@ public:
 	void OnThrowLaunched();
 
 	UFUNCTION(Server, Reliable)
-	void Server_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+	void Server_FireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 	UFUNCTION(Server, Reliable)
 	void Server_Throw();
@@ -176,7 +176,7 @@ public:
 	void Server_ThrowGrenade(const FVector_NetQuantize& Target);
 
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_FireWeapon(const FVector_NetQuantize& TraceHitTarget);
+	void Multicast_FireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
 
 
 //private methods
@@ -209,6 +209,11 @@ private:
 
 	int32 CalculateAmountToReload(uint32 InRequestedAmount = 0);
 
+
+	void FireProjectile();
+	void FireHitScan();
+	void FireMultiHitScan();
+
 //protected methods
 protected:
 	//~ Begin UActorComponent Interface
@@ -221,7 +226,7 @@ protected:
 	void OnFireTimerFinished();
 
 	void RequestFire();
-	void ActionFire(const FVector_NetQuantize& TraceHitTarget);
+	void ActionFire(const TArray<FVector_NetQuantize>& TraceHitTargets);
 	void RequestThrow();
 
 	bool CheckCanFire();
