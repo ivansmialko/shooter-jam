@@ -226,17 +226,18 @@ void UCombatComponent::RequestFire()
 	CrosshairShootingFactor = .75f;
 
 	//Send fire event from client to server
-	Server_FireWeapon(HitTarget);
-
+	FVector Origin{ EquippedWeapon->GetMuzzleTransform().GetLocation() };
+	TArray<FVector_NetQuantize> HitTargets{ EquippedWeapon->GetHitTargetsNet(Origin, HitTarget) };
+	Server_FireWeapon(HitTargets);
 	if (Character && !Character->HasAuthority())
 	{
-		ActionFire(HitTarget);
+		ActionFire(HitTargets);
 	}
 
 	StartFireTimer();
 }
 
-void UCombatComponent::ActionFire(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::ActionFire(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
 	if (!EquippedWeapon)
 		return;
@@ -247,7 +248,8 @@ void UCombatComponent::ActionFire(const FVector_NetQuantize& TraceHitTarget)
 			return;
 	}
 
-	EquippedWeapon->Fire(TraceHitTarget);
+	EquippedWeapon->AddHitTarget(TraceHitTargets);
+	EquippedWeapon->Fire();
 	CombatState = ECombatState::ECS_Unoccupied;
 
 	if (!Character)
@@ -556,9 +558,9 @@ void UCombatComponent::OnShellInserted()
 	}
 }
 
-void UCombatComponent::Server_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::Server_FireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
-	Multicast_FireWeapon(TraceHitTarget);
+	Multicast_FireWeapon(TraceHitTargets);
 }
 
 void UCombatComponent::Server_Throw_Implementation()
@@ -601,12 +603,12 @@ void UCombatComponent::Server_ThrowGrenade_Implementation(const FVector_NetQuant
 	World->SpawnActor<AProjectile>(GrenadeProjectileClass, StartingLocation, Direction.Rotation(), SpawnParams);
 }
 
-void UCombatComponent::Multicast_FireWeapon_Implementation(const FVector_NetQuantize& TraceHitTarget)
+void UCombatComponent::Multicast_FireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
 {
 	if (Character && Character->IsLocallyControlled() && !Character->HasAuthority())
 		return;
 
-	ActionFire(TraceHitTarget);
+	ActionFire(TraceHitTargets);
 }
 
 void UCombatComponent::InitializeCarriedAmmo()
@@ -648,6 +650,21 @@ int32 UCombatComponent::CalculateAmountToReload(uint32 InRequestedAmount /*= 0*/
 
 	return ToReload;
 } 
+
+void UCombatComponent::FireProjectile()
+{
+
+}
+
+void UCombatComponent::FireHitScan()
+{
+
+}
+
+void UCombatComponent::FireMultiHitScan()
+{
+
+}
 
 void UCombatComponent::ReloadAmmo(uint32 InBulletsRequested /*= 0*/)
 {

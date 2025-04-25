@@ -14,11 +14,6 @@ class SHOOTERJAM_API AWeaponMultiHitScan : public AWeaponHitScan
 {
 	GENERATED_BODY()
 	
-//private fields
-protected:
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
-	uint32 ScatterHitsNumber{ 10 };
-
 //public methods
 public:
 	AWeaponMultiHitScan();
@@ -26,6 +21,8 @@ public:
 //protected methods
 protected:
 	//~ Begin AWeaponBase Interface
-	virtual void Fire(const FVector& HitTarget) override;
+
+	virtual void Fire() override;
+
 	//~ End AWeaponBase Interface
 };

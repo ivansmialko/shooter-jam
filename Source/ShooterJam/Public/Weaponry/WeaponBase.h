@@ -121,10 +121,16 @@ protected:
 	bool bUseScatter{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
+	uint32 ScatterHitsNumber{ 10 };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
 	float ScatterSphereDistance{ 800.f };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties", meta = (EditCondition = "bUseScatter"))
 	float ScatterSphereRadius{ 75.f };
+
+	/** Array of points in world, weapons should fire into */
+	TArray<FVector> HitTargets;
 
 //private methods
 private:
@@ -143,6 +149,8 @@ private:
 	void PlayFireAnimation();
 
 	bool CheckInitOwner();
+
+	void ClearHitTargets();
 
 //public methods
 public:
@@ -163,7 +171,10 @@ public:
 	void NotifyOwner_Ammo();
 	void EnableCustomDepth(bool bInEnable);
 
-	virtual void Fire(const FVector& HitTarget);
+	/**
+	 * Base method to fire weapon. Plays animation and spends bullets. Child classes are responsible for projectile/hit-scan spawning, etc.
+	 */
+	virtual void Fire();
 
 	void OnDropped();
 
@@ -187,8 +198,8 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
-	FVector GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget);
-	FVector GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget);
+	FVector GetTraceEndWithScatter(const FVector& TraceStart, const FVector& HitTarget) const;
+	FVector GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget) const;
 	void HitScan(FHitResult& OutHitResult, const FVector& TraceStart, const FVector& TraceEnd);
 
 //public getters
@@ -198,8 +209,10 @@ public:
 	FORCEINLINE bool GetIsAutomatic() const { return bIsAutomatic; }
 	FORCEINLINE bool GetIsReloadInterruptable() const { return bIsReloadInterruptable; }
 	FORCEINLINE bool GetIsDestroyAfterDeath() const { return bIsDestroyAfterDeath; }
+	FORCEINLINE bool GetIsUsingScatter() const { return bUseScatter; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
+	FORCEINLINE int32 GetScatterHitsNumber() const { return ScatterHitsNumber; }
 	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
 	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
@@ -213,6 +226,11 @@ public:
 	FORCEINLINE UTexture2D* GetCrosshairsBottom() const { return CrosshairsBottom; }
 	FORCEINLINE USoundCue* GetEquipSound() const { return EquipSound; }
 	FTransform GetMuzzleTransform() const;
+	TArray<FVector> GetHitTargets(const FVector& InTraceStart, const FVector& InDirection) const;
+	TArray<FVector_NetQuantize> GetHitTargetsNet(const FVector InTraceStart, const FVector InDirection) const;
 
 	void SetIsDestroyAfterDeath(bool bInIsDestroy);
+	void AddHitTarget(const FVector& InHitTarget);
+	void AddHitTarget(const FVector_NetQuantize& InHitTarget);
+	void AddHitTarget(const TArray<FVector_NetQuantize>& InHitTarget);
 };
