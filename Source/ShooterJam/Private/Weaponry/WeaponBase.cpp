@@ -56,8 +56,25 @@ void AWeaponBase::OnRep_WeaponState()
 	}
 }
 
-void AWeaponBase::OnRep_Ammo()
+void AWeaponBase::Client_UpdateAmmo_Implementation(int32 ServerAmmo)
 {
+	if (HasAuthority())
+		return;
+
+	Ammo = ServerAmmo;
+	--Sequence;
+	Ammo -= Sequence; //Client reconciliation
+
+	NotifyOwner_Ammo();
+}
+
+void AWeaponBase::Client_AddAmmo_Implementation(int32 AmmoToAdd)
+{
+	if (HasAuthority())
+		return;
+
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+
 	NotifyOwner_Ammo();
 }
 
@@ -149,6 +166,15 @@ void AWeaponBase::SpendRound()
 {
 	Ammo = FMath::Clamp(Ammo - 1, 0, MagCapacity);
 	NotifyOwner_Ammo();
+
+	if (HasAuthority())
+	{
+		Client_UpdateAmmo(Ammo);
+	}
+	else
+	{
+		++Sequence;
+	}
 }
 
 void AWeaponBase::PlayFireAnimation()
@@ -386,7 +412,6 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeaponBase, WeaponState);
-	DOREPLIFETIME(AWeaponBase, Ammo);
 }
 
 void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
@@ -409,7 +434,8 @@ void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 
 void AWeaponBase::AddAmmo(int32 AmmoToAdd)
 {
-	Ammo = FMath::Clamp(Ammo - AmmoToAdd, 0, MagCapacity);
+	Ammo = FMath::Clamp(Ammo + AmmoToAdd, 0, MagCapacity);
+	Client_AddAmmo(AmmoToAdd);
 
 	if (!CheckInitOwner())
 		return;
@@ -426,9 +452,6 @@ void AWeaponBase::Fire()
 	SpawnBulletShell();
 	PlayFireAnimation();
 	ClearHitTargets();
-
-	if (!HasAuthority())
-		return;
 
 	SpendRound();
 }

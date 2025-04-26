@@ -678,7 +678,7 @@ void UCombatComponent::ReloadAmmo(uint32 InBulletsRequested /*= 0*/)
 	CarriedAmmoMap[EquippedWeapon->GetWeaponType()] -= AmountToReload;
 	CarriedAmmo = CarriedAmmoMap[EquippedWeapon->GetWeaponType()];
 
-	EquippedWeapon->AddAmmo(-AmountToReload);
+	EquippedWeapon->AddAmmo(AmountToReload);
 }
 
 void UCombatComponent::AttachActorToRightHand(AActor* InActor)

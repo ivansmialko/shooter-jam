@@ -56,7 +56,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 FireRate{ 30 };
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties", ReplicatedUsing = OnRep_Ammo)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	int32 Ammo;
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
@@ -132,12 +132,19 @@ protected:
 	/** Array of points in world, weapons should fire into */
 	TArray<FVector> HitTargets;
 
+	/** The number of unprocessed server requests for Ammo. Incremented in SpendRound, decremented in Client_UpdateAmmo */
+	int32 Sequence{ 0 };
+
 //private methods
 private:
 	UFUNCTION()
 	void OnRep_WeaponState();
-	UFUNCTION()
-	void OnRep_Ammo();
+
+	UFUNCTION(Client, Reliable)
+	void Client_UpdateAmmo(int32 ServerAmmo);
+
+	UFUNCTION(Client, Reliable)
+	void Client_AddAmmo(int32 AmmoToAdd);
 
 	void OnStateEquipped();
 	void OnStateDropped();
