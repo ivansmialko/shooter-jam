@@ -438,6 +438,8 @@ void UCombatComponent::SetIsAiming(bool bInIsAiming)
 	{
 		Character->ShowSniperScopeWidget(bIsAiming);
 	}
+
+	bIsAimingPressed = bInIsAiming;
 }
 
 void UCombatComponent::SetIsFiring(bool bInIsFiring)
@@ -539,6 +541,14 @@ void UCombatComponent::OnRep_CombatState()
 void UCombatComponent::OnRep_GrenadesAmount()
 {
 	UpdateHudGrenades();
+}
+
+void UCombatComponent::OnRep_IsAiming()
+{
+	if (!Character || !Character->IsLocallyControlled())
+		return;
+
+	bIsAiming = bIsAimingPressed;
 }
 
 void UCombatComponent::OnShellInserted()
