@@ -28,7 +28,7 @@ private:
 
 //~ Begin Replicated fields
 	/** True if player holding aim button */
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_IsAiming)
 	bool bIsAiming;
 
 	/** True if player holding fire button */
@@ -121,6 +121,8 @@ private:
 	//Automatic fire
 	bool bIsCanFire{ true };
 
+	bool bIsAimingPressed{ false };
+
 //public methods
 public:
 	UCombatComponent();
@@ -159,6 +161,9 @@ public:
 
 	UFUNCTION()
 	void OnRep_GrenadesAmount();
+
+	UFUNCTION()
+	void OnRep_IsAiming();
 	//~ End Replication Notifies
 
 	void OnShellInserted();
