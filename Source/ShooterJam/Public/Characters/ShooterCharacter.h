@@ -26,6 +26,7 @@ class AShooterPlayerState;
 class AShooterGameMode;
 class AWeaponBase;
 class UBuffComponent;
+class UBoxComponent;
 
 UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
@@ -188,6 +189,44 @@ private:
 
 	AShooterCharacterController* PlayerController{ nullptr };
 	AShooterPlayerState* PlayerState{ nullptr };
+
+	/** Hit boxes for server-side rewind */
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrHead;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrPelvis;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrSpine02;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrSpine03;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrUpperArmL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrUpperArmR;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrLowerArmL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrLowerArmR;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrHandL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrHandR;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrBackpack;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrBackpackBlanket;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrThighL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrThighR;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrCalfL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrCalrR;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrFootL;
+	UPROPERTY(EditAnywhere, Category = "Server side rewind")
+	UBoxComponent* SsrFootR;
 
 //protected methods
 protected:

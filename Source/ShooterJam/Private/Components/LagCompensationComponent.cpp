@@ -15,6 +15,7 @@ void ULagCompensationComponent::BeginPlay()
 }
 
 
+void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
