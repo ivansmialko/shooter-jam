@@ -7,6 +7,7 @@
 #include "Animations/ShooterCharacterAnimInstance.h"
 #include "Components/CombatComponent.h"
 #include "Components/BuffComponent.h"
+#include "Components/LagCompensationComponent.h"
 #include "Game/ShooterJam.h"
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerControllers/ShooterCharacterController.h"
@@ -56,6 +57,8 @@ AShooterCharacter::AShooterCharacter()
 
 	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
 	BuffComponent->SetIsReplicated(true);
+
+	LagCompensationComponent = CreateDefaultSubobject<ULagCompensationComponent>(TEXT("LagCompensationComponent"));
 
 	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
 	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
@@ -966,6 +969,15 @@ void AShooterCharacter::PostInitializeBuffComponent()
 		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeed);
 		BuffComponent->SetInitialBaseSpeed(Movement->MaxWalkSpeedCrouched);
 	}
+}
+
+void AShooterCharacter::PostInitializeLagCompensationComponent()
+{
+	if (!LagCompensationComponent)
+		return;
+
+	LagCompensationComponent->SetCharacter(this);
+	LagCompensationComponent->SetController(Cast<AShooterCharacterController>(GetController()));
 }
 
 void AShooterCharacter::SpawnDefaultWeapon()

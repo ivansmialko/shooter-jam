@@ -20,13 +20,14 @@ class UAnimMontage;
 class USoundCue;
 class UInputMappingContext;
 class UInputAction;
+class UBoxComponent;
 
 class AShooterCharacterController;
 class AShooterPlayerState;
 class AShooterGameMode;
 class AWeaponBase;
 class UBuffComponent;
-class UBoxComponent;
+class ULagCompensationComponent;
 
 UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
@@ -161,6 +162,8 @@ private:
 	UCombatComponent* CombatComponent;
 	UPROPERTY(VisibleAnywhere)
 	UBuffComponent* BuffComponent;
+	UPROPERTY(VisibleAnywhere)
+	ULagCompensationComponent* LagCompensationComponent;
 
 //~ End Exposed members
 
@@ -308,6 +311,7 @@ private:
 
 	void PostInitializeCombatComponent();
 	void PostInitializeBuffComponent();
+	void PostInitializeLagCompensationComponent();
 
 	void SpawnDefaultWeapon();
 

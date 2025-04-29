@@ -15,6 +15,16 @@ void ULagCompensationComponent::BeginPlay()
 }
 
 
+void ULagCompensationComponent::SetCharacter(AShooterCharacter* InCharacter)
+{
+	Character = InCharacter;
+}
+
+void ULagCompensationComponent::SetController(AShooterCharacterController* InController)
+{
+	Controller = InController;
+}
+
 void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
