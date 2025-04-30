@@ -310,6 +310,7 @@ private:
 	void InitializeMovementComponent();
 	void InitializeMesh();
 	void InitializeGrenadeMesh();
+	void InitializeCharacter();
 
 	void PollInitPlayerState();
 	void PollInitPlayerController();
@@ -394,6 +395,7 @@ public:
 	FORCEINLINE UCameraComponent* GetFollowCamera() const { return FollowCamera; };
 	FORCEINLINE UCombatComponent* GetCombatComponent() const { return CombatComponent; }
 	FORCEINLINE UBuffComponent* GetBuffComponent() const { return BuffComponent; }
+	FORCEINLINE TMap<FName, UBoxComponent*>& GetSsrCollisionBoxes() { return SsrCollisionBoxes; }
 
 	FORCEINLINE void SetHealth(const float InHealth) { Health = InHealth; }
 	FORCEINLINE void SetShield(const float InShield) { Shield = InShield; }
