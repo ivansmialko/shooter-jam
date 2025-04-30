@@ -54,7 +54,8 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
-
+	
+	void SaveFramePackage(FFramePackage& InPack);
 
 public:
 	void SetCharacter(AShooterCharacter* InCharacter);

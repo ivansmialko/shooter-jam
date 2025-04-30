@@ -32,122 +32,21 @@
 
 AShooterCharacter::AShooterCharacter()
 {
-	PrimaryActorTick.bCanEverTick = true;
-	bUseControllerRotationYaw = false;
-	NetUpdateFrequency = 66.f;
-	MinNetUpdateFrequency = 33.f;
-
-	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
-	CameraBoom->SetupAttachment(GetMesh());
-	CameraBoom->TargetArmLength = 600;
-	CameraBoom->bUsePawnControlRotation = true;
-
-	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
-	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
-	FollowCamera->bUsePawnControlRotation = false;
-
-	UCharacterMovementComponent* MovementComponent { GetCharacterMovement() };
-	MovementComponent->bOrientRotationToMovement = true;
-
-	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
-	OverheadWidget->SetupAttachment(RootComponent);
-
-	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
-	CombatComponent->SetIsReplicated(true);
-
-	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
-	BuffComponent->SetIsReplicated(true);
-
-	LagCompensationComponent = CreateDefaultSubobject<ULagCompensationComponent>(TEXT("LagCompensationComponent"));
-
-	GetCharacterMovement()->NavAgentProps.bCanCrouch = true;
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
-	GetCharacterMovement()->RotationRate = FRotator(0.f, 0.f, 720.f);
+	InitializeCharacter();
+	InitializeCameraBoom();
+	InitializeFollowCamera();
+	InitializeOverheadWidget();
+	InitializeCombatComponent();
+	InitializeBuffComponent();
+	InitializeLagCompensationComponent();
+	InitializeMovementComponent();
+	InitializeMesh();
+	InitializeGrenadeMesh();
+	InitializeSsrHitBoxes();
 
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionObjectType(ECC_SkeletalMesh);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
-	GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
-
-	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
-	GrenadeMesh->SetupAttachment(GetMesh(), FName("RightHandGrenadeSocket"));
-	GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	DissolveTimeline = CreateDefaultSubobject<UTimelineComponent>(TEXT("DissolveTimelineComponent"));
-
-	/** Hit boxes for server-side rewind */
-
-	SsrHead = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Head"));
-	SsrHead->SetupAttachment(GetMesh(), FName("head"));
-	SsrHead->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrPelvis = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Pelvis"));
-	SsrPelvis->SetupAttachment(GetMesh(), FName("pelvis"));
-	SsrPelvis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrSpine02 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine02"));
-	SsrSpine02->SetupAttachment(GetMesh(), FName("spine_02"));
-	SsrSpine02->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrSpine03 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine03"));
-	SsrSpine03->SetupAttachment(GetMesh(), FName("spine_03"));
-	SsrSpine03->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrUpperArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmL"));
-	SsrUpperArmL->SetupAttachment(GetMesh(), FName("upperarm_l"));
-	SsrUpperArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrUpperArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmR"));
-	SsrUpperArmR->SetupAttachment(GetMesh(), FName("upperarm_r"));
-	SsrUpperArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrLowerArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmL"));
-	SsrLowerArmL->SetupAttachment(GetMesh(), FName("lowerarm_l"));
-	SsrLowerArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrLowerArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmR"));
-	SsrLowerArmR->SetupAttachment(GetMesh(), FName("lowerarm_r"));
-	SsrLowerArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrHandL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandL"));
-	SsrHandL->SetupAttachment(GetMesh(), FName("hand_l"));
-	SsrHandL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrHandR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandR"));
-	SsrHandR->SetupAttachment(GetMesh(), FName("hand_r"));
-	SsrHandR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrBackpack = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Backpack"));
-	SsrBackpack->SetupAttachment(GetMesh(), FName("backpack"));
-	SsrBackpack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrBackpackBlanket = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_BackpackBlanket"));
-	SsrBackpackBlanket->SetupAttachment(GetMesh(), FName("blanket"));
-	SsrBackpackBlanket->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrThighL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighL"));
-	SsrThighL->SetupAttachment(GetMesh(), FName("thigh_l"));
-	SsrThighL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrThighR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighR"));
-	SsrThighR->SetupAttachment(GetMesh(), FName("thigh_r"));
-	SsrThighR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrCalfL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfL"));
-	SsrCalfL->SetupAttachment(GetMesh(), FName("calf_l"));
-	SsrCalfL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrCalrR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfR"));
-	SsrCalrR->SetupAttachment(GetMesh(), FName("calf_r"));
-	SsrCalrR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrFootL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootL"));
-	SsrFootL->SetupAttachment(GetMesh(), FName("foot_l"));
-	SsrFootL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	SsrFootR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootR"));
-	SsrFootR->SetupAttachment(GetMesh(), FName("foot_r"));
-	SsrFootR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void AShooterCharacter::BeginPlay()
@@ -450,6 +349,194 @@ float AShooterCharacter::CalculateSpeed() const
 	FVector CharacterVelocity{ GetVelocity() };
 	CharacterVelocity.Z = 0.f;
 	return static_cast<float>(CharacterVelocity.Size());
+}
+
+void AShooterCharacter::InitializeSsrHitBoxes()
+{
+	/** Hit boxes for server-side rewind */
+	SsrHead = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Head"));
+	SsrHead->SetupAttachment(GetMesh(), FName("head"));
+	SsrHead->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("head"), SsrHead);
+
+	SsrPelvis = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Pelvis"));
+	SsrPelvis->SetupAttachment(GetMesh(), FName("pelvis"));
+	SsrPelvis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("pelvis"), SsrPelvis);
+
+	SsrSpine02 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine02"));
+	SsrSpine02->SetupAttachment(GetMesh(), FName("spine_02"));
+	SsrSpine02->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("spine_02"), SsrSpine02);
+
+	SsrSpine03 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine03"));
+	SsrSpine03->SetupAttachment(GetMesh(), FName("spine_03"));
+	SsrSpine03->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("spine_03"), SsrSpine03);
+
+	SsrUpperArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmL"));
+	SsrUpperArmL->SetupAttachment(GetMesh(), FName("upperarm_l"));
+	SsrUpperArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("upperarm_l"), SsrUpperArmL);
+
+	SsrUpperArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmR"));
+	SsrUpperArmR->SetupAttachment(GetMesh(), FName("upperarm_r"));
+	SsrUpperArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("upperarm_r"), SsrUpperArmR);
+
+	SsrLowerArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmL"));
+	SsrLowerArmL->SetupAttachment(GetMesh(), FName("lowerarm_l"));
+	SsrLowerArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("lowerarm_l"), SsrLowerArmL);
+
+	SsrLowerArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmR"));
+	SsrLowerArmR->SetupAttachment(GetMesh(), FName("lowerarm_r"));
+	SsrLowerArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("lowerarm_r"), SsrLowerArmR);
+
+	SsrHandL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandL"));
+	SsrHandL->SetupAttachment(GetMesh(), FName("hand_l"));
+	SsrHandL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("hand_l"), SsrHandL);
+
+	SsrHandR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandR"));
+	SsrHandR->SetupAttachment(GetMesh(), FName("hand_r"));
+	SsrHandR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("hand_r"), SsrHandR);
+
+	SsrBackpack = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Backpack"));
+	SsrBackpack->SetupAttachment(GetMesh(), FName("backpack"));
+	SsrBackpack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("backpack"), SsrBackpack);
+
+	SsrBackpackBlanket = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_BackpackBlanket"));
+	SsrBackpackBlanket->SetupAttachment(GetMesh(), FName("blanket"));
+	SsrBackpackBlanket->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("blanket"), SsrBackpackBlanket);
+
+	SsrThighL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighL"));
+	SsrThighL->SetupAttachment(GetMesh(), FName("thigh_l"));
+	SsrThighL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("thigh_l"), SsrThighL);
+
+	SsrThighR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighR"));
+	SsrThighR->SetupAttachment(GetMesh(), FName("thigh_r"));
+	SsrThighR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("thigh_r"), SsrThighR);
+
+	SsrCalfL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfL"));
+	SsrCalfL->SetupAttachment(GetMesh(), FName("calf_l"));
+	SsrCalfL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("calf_l"), SsrCalfL);
+
+	SsrCalrR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfR"));
+	SsrCalrR->SetupAttachment(GetMesh(), FName("calf_r"));
+	SsrCalrR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("calf_r"), SsrCalrR);
+
+	SsrFootL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootL"));
+	SsrFootL->SetupAttachment(GetMesh(), FName("foot_l"));
+	SsrFootL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("foot_l"), SsrFootL);
+
+	SsrFootR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootR"));
+	SsrFootR->SetupAttachment(GetMesh(), FName("foot_r"));
+	SsrFootR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	SsrCollisionBoxes.Add(FName("foot_r"), SsrFootR);
+}
+
+void AShooterCharacter::InitializeCameraBoom()
+{
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
+	if (!CameraBoom)
+		return;
+
+	CameraBoom->SetupAttachment(GetMesh());
+	CameraBoom->TargetArmLength = 600;
+	CameraBoom->bUsePawnControlRotation = true;
+}
+
+void AShooterCharacter::InitializeFollowCamera()
+{
+	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
+	if (!FollowCamera)
+		return;
+
+	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	FollowCamera->bUsePawnControlRotation = false;
+}
+
+void AShooterCharacter::InitializeOverheadWidget()
+{
+	OverheadWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("OverheadWidget"));
+	if (!OverheadWidget)
+		return;
+
+	OverheadWidget->SetupAttachment(RootComponent);
+}
+
+void AShooterCharacter::InitializeCombatComponent()
+{
+	CombatComponent = CreateDefaultSubobject<UCombatComponent>(TEXT("CombatComponent"));
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetIsReplicated(true);
+}
+
+void AShooterCharacter::InitializeBuffComponent()
+{
+	BuffComponent = CreateDefaultSubobject<UBuffComponent>(TEXT("BuffComponent"));
+	if (!BuffComponent)
+		return;
+
+	BuffComponent->SetIsReplicated(true);
+}
+
+void AShooterCharacter::InitializeLagCompensationComponent()
+{
+	LagCompensationComponent = CreateDefaultSubobject<ULagCompensationComponent>(TEXT("LagCompensationComponent"));
+}
+
+void AShooterCharacter::InitializeMovementComponent()
+{
+	UCharacterMovementComponent* MovementComponent{ GetCharacterMovement() };
+	if (!MovementComponent)
+		return;
+
+	MovementComponent->bOrientRotationToMovement = true;
+	MovementComponent->NavAgentProps.bCanCrouch = true;
+	MovementComponent->MaxWalkSpeed = BaseWalkSpeed;
+	MovementComponent->RotationRate = FRotator(0.f, 0.f, 720.f);
+}
+
+void AShooterCharacter::InitializeMesh()
+{
+	USkeletalMeshComponent* SkeletalMesh{ GetMesh() };
+	if (!SkeletalMesh)
+		return;
+
+	SkeletalMesh->SetCollisionObjectType(ECC_SkeletalMesh);
+	SkeletalMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+	SkeletalMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+}
+
+void AShooterCharacter::InitializeGrenadeMesh()
+{
+	GrenadeMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GrenadeMesh"));
+	if (!GrenadeMesh)
+		return;
+
+	GrenadeMesh->SetupAttachment(GetMesh(), FName("RightHandGrenadeSocket"));
+	GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AShooterCharacter::InitializeCharacter()
+{
+	PrimaryActorTick.bCanEverTick = true;
+	bUseControllerRotationYaw = false;
+	NetUpdateFrequency = 66.f;
+	MinNetUpdateFrequency = 33.f;
 }
 
 void AShooterCharacter::PollInitPlayerState()

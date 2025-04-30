@@ -3,6 +3,8 @@
 
 #include "Components/LagCompensationComponent.h"
 
+#include "Characters/ShooterCharacter.h"
+
 ULagCompensationComponent::ULagCompensationComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -14,6 +16,14 @@ void ULagCompensationComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+
+void ULagCompensationComponent::SaveFramePackage(FFramePackage& InPack)
+{
+	if (!Character)
+		return;
+
+
+}
 
 void ULagCompensationComponent::SetCharacter(AShooterCharacter* InCharacter)
 {
