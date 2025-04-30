@@ -231,6 +231,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Server side rewind")
 	UBoxComponent* SsrFootR;
 
+	TMap<FName, UBoxComponent*> SsrCollisionBoxes;
 //protected methods
 protected:
 
@@ -298,6 +299,17 @@ private:
 	void CalculateAimPitch();
 	void CalculateTurningInPlace(float DeltaTime);
 	float CalculateSpeed() const;
+
+	void InitializeSsrHitBoxes();
+	void InitializeCameraBoom();
+	void InitializeFollowCamera();
+	void InitializeOverheadWidget();
+	void InitializeCombatComponent();
+	void InitializeBuffComponent();
+	void InitializeLagCompensationComponent();
+	void InitializeMovementComponent();
+	void InitializeMesh();
+	void InitializeGrenadeMesh();
 
 	void PollInitPlayerState();
 	void PollInitPlayerController();
