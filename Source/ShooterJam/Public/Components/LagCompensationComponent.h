@@ -57,6 +57,7 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime);
 
 protected:
 	virtual void BeginPlay() override;
@@ -68,4 +69,6 @@ protected:
 public:
 	void SetCharacter(AShooterCharacter* InCharacter);
 	void SetController(AShooterCharacterController* InController);
+
+	FORCEINLINE TDoubleLinkedList<FFramePackage>& GetFrameHistory() const { return FrameHistory; }
 };
