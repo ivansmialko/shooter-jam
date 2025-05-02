@@ -12,65 +12,6 @@ ULagCompensationComponent::ULagCompensationComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-
-void ULagCompensationComponent::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-
-void ULagCompensationComponent::GetFramePackage(FFramePackage& InPack)
-{
-	if (!Character)
-		return;
-
-	for (const auto& [HitBoxName, HitBoxComponent] : Character->GetSsrCollisionBoxes())
-	{
-		FBoxInformation BoxInformation;
-		BoxInformation.Location = HitBoxComponent->GetComponentLocation();
-		BoxInformation.Rotation = HitBoxComponent->GetComponentRotation();
-		BoxInformation.BoxExtent = HitBoxComponent->GetScaledBoxExtent();
-		InPack.HitBoxInfo.Add(HitBoxName, BoxInformation);
-	}
-
-	InPack.Time = GetWorld()->GetTimeSeconds();
-}
-
-void ULagCompensationComponent::SaveFrame()
-{
-	if (FrameHistory.Num() <= 1)
-	{
-		FFramePackage ThisFrame;
-		GetFramePackage(ThisFrame);
-		FrameHistory.AddHead(ThisFrame);
-	}
-	else
-	{
-		float HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
-		while (HistoryLength > MaxRecordTime)
-		{
-			FrameHistory.RemoveNode(FrameHistory.GetTail());
-			HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
-		}
-
-		FFramePackage ThisFrame;
-		GetFramePackage(ThisFrame);
-		FrameHistory.AddHead(ThisFrame);
-
-		ShowFramePackage(ThisFrame, FColor::Red);
-	}
-}
-
-void ULagCompensationComponent::SetCharacter(AShooterCharacter* InCharacter)
-{
-	Character = InCharacter;
-}
-
-void ULagCompensationComponent::SetController(AShooterCharacterController* InController)
-{
-	Controller = InController;
-}
-
 void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
@@ -136,6 +77,11 @@ void ULagCompensationComponent::ServerSideRewind(AShooterCharacter* InHitCharact
 	}
 }
 
+void ULagCompensationComponent::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 void ULagCompensationComponent::ShowFramePackage(const FFramePackage& InPackage, FColor InColor)
 {
 	for (const auto& [HitBoxName, HitBoxInformation] : InPackage.HitBoxInfo)
@@ -144,3 +90,71 @@ void ULagCompensationComponent::ShowFramePackage(const FFramePackage& InPackage,
 	}
 }
 
+void ULagCompensationComponent::GetFramePackage(FFramePackage& InPack)
+{
+	if (!Character)
+		return;
+
+	for (const auto& [HitBoxName, HitBoxComponent] : Character->GetSsrCollisionBoxes())
+	{
+		FBoxInformation BoxInformation;
+		BoxInformation.Location = HitBoxComponent->GetComponentLocation();
+		BoxInformation.Rotation = HitBoxComponent->GetComponentRotation();
+		BoxInformation.BoxExtent = HitBoxComponent->GetScaledBoxExtent();
+		InPack.HitBoxInfo.Add(HitBoxName, BoxInformation);
+	}
+
+	InPack.Time = GetWorld()->GetTimeSeconds();
+}
+
+void ULagCompensationComponent::SaveFrame()
+{
+	if (FrameHistory.Num() <= 1)
+	{
+		FFramePackage ThisFrame;
+		GetFramePackage(ThisFrame);
+		FrameHistory.AddHead(ThisFrame);
+	}
+	else
+	{
+		float HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
+		while (HistoryLength > MaxRecordTime)
+		{
+			FrameHistory.RemoveNode(FrameHistory.GetTail());
+			HistoryLength = FrameHistory.GetHead()->GetValue().Time - FrameHistory.GetTail()->GetValue().Time;
+		}
+
+		FFramePackage ThisFrame;
+		GetFramePackage(ThisFrame);
+		FrameHistory.AddHead(ThisFrame);
+
+		ShowFramePackage(ThisFrame, FColor::Red);
+	}
+}
+
+FFramePackage ULagCompensationComponent::InterpolateBetweenFrames(const FFramePackage& InOlderFrame, const FFramePackage& InYoungerFrame, float InHitTime)
+{
+	const float Distance{ InYoungerFrame.Time - InOlderFrame.Time };
+	const float InterpFraction{ FMath::Clamp((InHitTime - InOlderFrame.Time) / Distance, 0.f, 1.f) };
+
+	FFramePackage InterpFramePackage;
+	InterpFramePackage.Time = InHitTime;
+
+	for (const auto& [YoungerName, YoungerBoxInfo] : InYoungerFrame.HitBoxInfo)
+	{
+		const FBoxInformation& OlderBoxInfo = InOlderFrame.HitBoxInfo[YoungerName];
+
+		FBoxInformation InterpBoxInfo;
+		InterpBoxInfo.Location = FMath::VInterpTo(OlderBox.Location, YoungerBoxInfo.Location)
+	}
+}
+
+void ULagCompensationComponent::SetCharacter(AShooterCharacter* InCharacter)
+{
+	Character = InCharacter;
+}
+
+void ULagCompensationComponent::SetController(AShooterCharacterController* InController)
+{
+	Controller = InController;
+}
