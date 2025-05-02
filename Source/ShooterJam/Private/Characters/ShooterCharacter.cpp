@@ -1365,6 +1365,7 @@ void AShooterCharacter::PostInitializeComponents()
 	
 	PostInitializeCombatComponent();
 	PostInitializeBuffComponent();
+	PostInitializeLagCompensationComponent();
 }
 
 void AShooterCharacter::Jump()
