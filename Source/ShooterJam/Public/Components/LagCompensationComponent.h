@@ -40,6 +40,7 @@ class SHOOTERJAM_API ULagCompensationComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
+//private fields
 private:
 	UPROPERTY()
 	AShooterCharacter* Character;
@@ -52,13 +53,16 @@ private:
 	UPROPERTY(EditAnywhere)
 	float MaxRecordTime{ 4.f };
 
-public:	
+//public methods
+public:
 	ULagCompensationComponent();
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& TraceStart, const FVector_NetQuantize& HitLocation, float HitTime);
+	void ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime);
 
+
+//protected methods
 protected:
 	virtual void BeginPlay() override;
 	
@@ -66,9 +70,15 @@ protected:
 	void GetFramePackage(FFramePackage& InPack);
 	void SaveFrame();
 
+//private methods
+private:
+	FFramePackage InterpolateBetweenFrames(const FFramePackage& InFirst, const FFramePackage& InSecond, float HitTime);
+
+
+//public getters/setters
 public:
 	void SetCharacter(AShooterCharacter* InCharacter);
 	void SetController(AShooterCharacterController* InController);
 
-	FORCEINLINE TDoubleLinkedList<FFramePackage>& GetFrameHistory() const { return FrameHistory; }
+	FORCEINLINE const TDoubleLinkedList<FFramePackage>& GetFrameHistory() const { return FrameHistory; }
 };
