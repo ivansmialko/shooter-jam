@@ -27,10 +27,22 @@ struct FFramePackage
 	GENERATED_BODY()
 
 	UPROPERTY()
-	float Time;
+	float Time{ 0.f };
 
 	TMap<FName, FBoxInformation> HitBoxInfo;
 };
+
+USTRUCT(BlueprintType)
+struct FSsrResult
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	bool bHitConfirmed{ false };
+	UPROPERTY()
+	bool bHeadshot{ false };
+};
+
 
 class AShooterCharacter;
 class AShooterCharacterController;
@@ -67,12 +79,15 @@ protected:
 	virtual void BeginPlay() override;
 	
 	void ShowFramePackage(const FFramePackage& InPackage, FColor InColor);
-	void GetFramePackage(FFramePackage& InPack);
+	void GetFramePackage(FFramePackage& InPack, AShooterCharacter* InCharacter = nullptr);
 	void SaveFrame();
+	void RewindPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
+	void EnablePlayerCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled)
 
 //private methods
 private:
-	FFramePackage InterpolateBetweenFrames(const FFramePackage& InFirst, const FFramePackage& InSecond, float HitTime);
+	FFramePackage InterpolateBetweenFrames(const FFramePackage& InOlderFrame, const FFramePackage& InYoungerFrame, float InHitTime);
+	FSsrResult ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation);
 
 
 //public getters/setters
