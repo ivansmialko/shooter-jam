@@ -4,8 +4,10 @@
 #include "Components/LagCompensationComponent.h"
 
 #include "Characters/ShooterCharacter.h"
+#include "Weaponry/WeaponBase.h"
 
 #include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ULagCompensationComponent::ULagCompensationComponent()
 {
@@ -79,6 +81,16 @@ FSsrResult ULagCompensationComponent::ServerSideRewind(AShooterCharacter* InHitC
 	return ConfirmHit(FrameToCheck, InHitCharacter, InTraceStart, InHitLocation);
 }
 
+void ULagCompensationComponent::Server_ScoreRequest_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime, AWeaponBase* InWeapon)
+{
+	FSsrResult ConfirmResult = ServerSideRewind(InHitCharacter, InTraceStart, InHitLocation, InHitTime);
+
+	if (InHitCharacter && ConfirmResult.bHitConfirmed && Character)
+	{
+		UGameplayStatics::ApplyDamage(InHitCharacter, InWeapon->GetBaseDamage(), Character->GetController(), InHitCharacter, UDamageType::StaticClass());
+	}
+}
+
 void ULagCompensationComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -117,6 +129,12 @@ void ULagCompensationComponent::GetFramePackage(FFramePackage& InPack, AShooterC
 
 void ULagCompensationComponent::SaveFrame()
 {
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
 	if (FrameHistory.Num() <= 1)
 	{
 		FFramePackage ThisFrame;
@@ -136,7 +154,7 @@ void ULagCompensationComponent::SaveFrame()
 		GetFramePackage(ThisFrame);
 		FrameHistory.AddHead(ThisFrame);
 
-		ShowFramePackage(ThisFrame, FColor::Red);
+		//ShowFramePackage(ThisFrame, FColor::Red);
 	}
 }
 

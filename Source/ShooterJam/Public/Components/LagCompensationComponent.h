@@ -46,6 +46,7 @@ struct FSsrResult
 
 class AShooterCharacter;
 class AShooterCharacterController;
+class AWeaponBase;
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class SHOOTERJAM_API ULagCompensationComponent : public UActorComponent
@@ -71,24 +72,24 @@ public:
 
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	void ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime);
-
+	UFUNCTION(Server, Reliable)
+	void Server_ScoreRequest(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime, AWeaponBase* InDamageCauser);
 
 //protected methods
 protected:
 	virtual void BeginPlay() override;
 	
-	void ShowFramePackage(const FFramePackage& InPackage, FColor InColor);
-	void GetFramePackage(FFramePackage& InPack, AShooterCharacter* InCharacter = nullptr);
-	void SaveFrame();
-	void RewindPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
-	void EnablePlayerCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled)
+	FSsrResult ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime);
 
 //private methods
 private:
 	FFramePackage InterpolateBetweenFrames(const FFramePackage& InOlderFrame, const FFramePackage& InYoungerFrame, float InHitTime);
 	FSsrResult ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation);
-
+	void ShowFramePackage(const FFramePackage& InPackage, FColor InColor);
+	void GetFramePackage(FFramePackage& InPack, AShooterCharacter* InCharacter = nullptr);
+	void SaveFrame();
+	void RewindPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
+	void EnablePlayerCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled);
 
 //public getters/setters
 public:
