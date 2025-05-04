@@ -25,7 +25,7 @@ void AWeaponMultiHitScan::Fire()
 		if (FireHit.bBlockingHit)
 		{
 			SpawnImpactParticles(FireHit);
-			DealDamage(FireHit);
+			DealDamage(FireHit, Start);
 			BeamEnd = End;
 		}
 

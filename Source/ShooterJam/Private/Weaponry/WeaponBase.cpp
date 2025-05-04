@@ -2,6 +2,7 @@
 #include "Weaponry/BulletShell.h"
 #include "Characters/ShooterCharacter.h"
 #include "PlayerControllers/ShooterCharacterController.h"
+#include "Components/LagCompensationComponent.h"
 
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -10,6 +11,7 @@
 #include "Engine/SkeletalMeshSocket.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 AWeaponBase::AWeaponBase()
 {
@@ -297,6 +299,38 @@ void AWeaponBase::HitScan(FHitResult& OutHitResult, const FVector& TraceStart, c
 		return;
 
 	World->LineTraceSingleByChannel(OutHitResult, TraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
+}
+
+void AWeaponBase::DealDamage(const FHitResult& HitResult, const FVector_NetQuantize& TraceStart)
+{
+	AShooterCharacter* HitCharacter = Cast<AShooterCharacter>(HitResult.GetActor());
+	if (!HitCharacter)
+		return;
+
+	APawn* OwnerPawn = Cast<APawn>(GetOwner());
+	if (!OwnerPawn)
+		return;
+
+	AController* InstigatorController = OwnerPawn->GetController();
+	if (!InstigatorController)
+		return;
+
+	if (HasAuthority() && !bUseServerSideRewind)
+	{
+		UGameplayStatics::ApplyDamage(HitCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
+	}
+	
+	if(!HasAuthority() && bUseServerSideRewind)
+	{
+		OwnerCharacter = (OwnerCharacter ? OwnerCharacter : Cast<AShooterCharacter>(OwnerPawn));
+		OwnerController = (OwnerController ? OwnerController : Cast<AShooterCharacterController>(InstigatorController));
+
+		if (OwnerCharacter && OwnerController && OwnerCharacter->GetLagCompensationComponent())
+		{
+			float HitTime{ OwnerController->GetServerTime() - OwnerController->GetSingleTripTime() };
+			OwnerCharacter->GetLagCompensationComponent()->Server_ScoreRequest(HitCharacter, TraceStart, HitResult.ImpactPoint, HitTime, this);
+		}
+	}
 }
 
 FTransform AWeaponBase::GetMuzzleTransform() const

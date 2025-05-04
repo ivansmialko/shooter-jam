@@ -30,7 +30,6 @@ public:
 	virtual void Fire() override;
 	//~ End AWeaponBase Interface
 
-	void DealDamage(const FHitResult& HitResult);
 	void SpawnBeamParticles(const FVector& Start, const FVector& End);
 	void SpawnImpactParticles(const FHitResult& HitResult);
 };

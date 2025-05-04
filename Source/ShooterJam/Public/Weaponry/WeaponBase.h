@@ -102,12 +102,6 @@ private:
 	USkeletalMeshComponent* WeaponMesh;
 
 //~ End exposed members
-
-	UPROPERTY()
-	AShooterCharacter* OwnerCharacter;
-
-	UPROPERTY()
-	AShooterCharacterController* OwnerController;
 	
 	//Calculated at beginplay, based on FireRate (bullets per minute)
 	float FireDelay{ 0 };
@@ -116,6 +110,9 @@ private:
 protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float BaseDamage{ 20.f };
+
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	bool bUseServerSideRewind{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bUseScatter{ false };
@@ -134,6 +131,12 @@ protected:
 
 	/** The number of unprocessed server requests for Ammo. Incremented in SpendRound, decremented in Client_UpdateAmmo */
 	int32 Sequence{ 0 };
+
+	UPROPERTY()
+	AShooterCharacter* OwnerCharacter;
+
+	UPROPERTY()
+	AShooterCharacterController* OwnerController;
 
 //private methods
 private:
@@ -209,6 +212,8 @@ protected:
 	FVector GetTraceEnd(const FVector& TraceStart, const FVector& HitTarget) const;
 	void HitScan(FHitResult& OutHitResult, const FVector& TraceStart, const FVector& TraceEnd);
 
+	virtual void DealDamage(const FHitResult& HitResult, const FVector_NetQuantize& TraceStart);
+
 //public getters
 public:
 	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
@@ -224,6 +229,7 @@ public:
 	FORCEINLINE float GetFovZoomed() const { return FovZoomed; }
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
+	FORCEINLINE float GetBaseDamage() const { return BaseDamage; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE UTexture2D* GetCrosshairsCenter() const { return CrosshairsCenter; }
