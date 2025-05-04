@@ -69,6 +69,9 @@ private:
 	UPROPERTY(EditAnywhere)
 	float HighPingTreshold{ 50.f };
 
+	/** Time that it takes for request to reach the server. Calculated every few seconds */
+	float SingleTripTime{ 0.f };
+
 	//Current match state, synchronized with ShooterGameMode's match state
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
@@ -153,4 +156,5 @@ public:
 //public getters/setters
 public:
 	AShooterHUD* GetPlayerHud();
+	FORCEINLINE float GetSingleTripTime() const { return SingleTripTime; }
 };

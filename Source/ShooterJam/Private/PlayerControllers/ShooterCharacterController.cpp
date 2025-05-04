@@ -186,6 +186,7 @@ void AShooterCharacterController::Client_ReportServerTime_Implementation(float I
 	float CurrentServerTime{ InServerTime + RoundTripTime * 0.5f };
 
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
+	SingleTripTime = RoundTripTime * 0.5f;
 }
 
 void AShooterCharacterController::UpdateCountdowns()
