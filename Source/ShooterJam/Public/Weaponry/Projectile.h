@@ -34,6 +34,12 @@ protected:
 	float DamageOuterRadius{ 500.f };
 
 	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	float InitialSpeed{ 15000 };
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	bool bUseServerSideRewind{ false };
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
 	UBoxComponent* CollisionBox;
 
 	UPROPERTY(EditAnywhere, Category = "Projectile Style")
@@ -61,6 +67,8 @@ protected:
 	UParticleSystemComponent* TracerComponent;
 
 	FTimerHandle DestroyTimer;
+	FVector_NetQuantize TraceStart;
+	FVector_NetQuantize100 InitialVelocity;
 
 protected:
 	virtual void BeginPlay() override;
