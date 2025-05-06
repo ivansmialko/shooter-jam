@@ -89,4 +89,16 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 	virtual void Destroyed() override;
+
+//getters/setters
+public:
+
+	FORCEINLINE bool GetUseSsr() const { return bUseServerSideRewind; }
+	FORCEINLINE float GetInitialSpeed() const { return InitialSpeed; }
+	FORCEINLINE const FVector_NetQuantize& GetTraceStart() const { return TraceStart; }
+	FORCEINLINE const FVector_NetQuantize100& GetInitialVelocity() const { return InitialVelocity; }
+
+	void SetUseSsr(bool bInUseSsr);
+	void SetTraceStart(const FVector_NetQuantize& InTraceStart);
+	void SetInitialVelocity(const FVector_NetQuantize100& InInitialVelocity);
 };
