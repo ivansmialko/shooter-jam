@@ -6,9 +6,8 @@
 #include "Weaponry/Projectile.h"
 #include "ProjectileBullet.generated.h"
 
-/**
- * 
- */
+struct FPropertyChangedEvent;
+
 UCLASS()
 class SHOOTERJAM_API AProjectileBullet : public AProjectile
 {
@@ -20,6 +19,10 @@ protected:
 	//~ End AProjectile Interface
 
 	virtual void BeginPlay() override;
+
+#ifdef WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
+#endif // WITH_EDITOR
 
 public:
 	AProjectileBullet();
