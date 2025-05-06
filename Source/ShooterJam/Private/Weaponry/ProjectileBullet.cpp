@@ -44,6 +44,27 @@ void AProjectileBullet::BeginPlay()
 	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 }
 
+#ifdef WITH_EDITOR
+void AProjectileBullet::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (!ProjectileMovement)
+		return;
+
+	if (!PropertyChangedEvent.Property)
+		return;
+
+	FName PropertyName{ PropertyChangedEvent.Property->GetFName() };
+	if (PropertyName != GET_MEMBER_NAME_CHECKED(AProjectileBullet, InitialSpeed))
+		return;
+
+	ProjectileMovement->InitialSpeed = InitialSpeed;
+	ProjectileMovement->MaxSpeed = InitialSpeed;
+
+}
+#endif // WITH_EDITOR
+
 AProjectileBullet::AProjectileBullet()
 {
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));

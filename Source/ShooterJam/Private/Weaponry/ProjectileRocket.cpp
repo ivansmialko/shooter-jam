@@ -58,6 +58,27 @@ void AProjectileRocket::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	}
 }
 
+
+#ifdef WITH_EDITOR
+void AProjectileRocket::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	if (!RocketMovementComponent)
+		return;
+
+	if (!PropertyChangedEvent.Property)
+		return;
+
+	FName PropertyName{ PropertyChangedEvent.Property->GetName() };
+	if (PropertyName != GET_MEMBER_NAME_CHECKED(AProjectileRocket, InitialSpeed))
+		return;
+
+	RocketMovementComponent->InitialSpeed = InitialSpeed;
+	RocketMovementComponent->MaxSpeed = InitialSpeed;
+}
+#endif // WITH_EDITOR
+
 AProjectileRocket::AProjectileRocket()
 {
 	ProjectileMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RocketMesh"));
