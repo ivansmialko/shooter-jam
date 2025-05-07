@@ -44,6 +44,7 @@ void AProjectileWeapon::Fire()
 			{
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, MuzzleTransform.GetLocation(), TargetRotation, BulletSpawnParameters);
 				SpawnedProjectile->SetUseSsr(false);
+				SpawnedProjectile->SetDamage(BaseDamage);
 			}
 			else //Server, not locally controlled - spawn non-replicated projectile, no SSR
 			{
@@ -58,15 +59,25 @@ void AProjectileWeapon::Fire()
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindClass, MuzzleTransform.GetLocation(), TargetRotation, BulletSpawnParameters);
 				SpawnedProjectile->SetUseSsr(true);
 				SpawnedProjectile->SetTraceStart(MuzzleTransform.GetLocation());
-				SpawnedProjectile->SetInitialVelocity(SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->GetInitialVelocity())
+				SpawnedProjectile->SetInitialVelocity(SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->GetInitialVelocity());
+				SpawnedProjectile->SetDamage(BaseDamage);
+			}
+			else //Client, not locally controlled - spawn non-replicated projectile, no SSR
+			{
+				SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindClass, MuzzleTransform.GetLocation(), TargetRotation, BulletSpawnParameters);
+				SpawnedProjectile->SetUseSsr(false);
 			}
 		}
 	}
-	else
+	else //Weapon not using ssr
 	{
-
+		if (InstigatorPawn->HasAuthority()) //Server
+		{
+			SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, MuzzleTransform.GetLocation(), TargetRotation, BulletSpawnParameters);
+			SpawnedProjectile->SetUseSsr(false);
+			SpawnedProjectile->SetDamage(BaseDamage);
+		}
 	}
-
 
 	Super::Fire();
 }

@@ -144,19 +144,3 @@ void AProjectile::Destroyed()
 	SpawnHitFx();
 	Super::Destroyed();
 }
-
-void AProjectile::SetUseSsr(bool bInUseSsr)
-{
-	bUseServerSideRewind = bInUseSsr;
-}
-
-void AProjectile::SetTraceStart(const FVector_NetQuantize& InTraceStart)
-{
-	TraceStart = InTraceStart;
-}
-
-void AProjectile::SetInitialVelocity(const FVector_NetQuantize100& InInitialVelocity)
-{
-	InitialVelocity = InInitialVelocity;
-}
-

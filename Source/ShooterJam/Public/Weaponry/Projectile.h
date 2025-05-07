@@ -95,10 +95,12 @@ public:
 
 	FORCEINLINE bool GetUseSsr() const { return bUseServerSideRewind; }
 	FORCEINLINE float GetInitialSpeed() const { return InitialSpeed; }
+	FORCEINLINE float GetDamage() const { return Damage; }
 	FORCEINLINE const FVector_NetQuantize& GetTraceStart() const { return TraceStart; }
 	FORCEINLINE const FVector_NetQuantize100& GetInitialVelocity() const { return InitialVelocity; }
 
-	void SetUseSsr(bool bInUseSsr);
-	void SetTraceStart(const FVector_NetQuantize& InTraceStart);
-	void SetInitialVelocity(const FVector_NetQuantize100& InInitialVelocity);
+	FORCEINLINE void SetUseSsr(bool bInUseSsr) { bUseServerSideRewind = bInUseSsr; }
+	FORCEINLINE void SetTraceStart(const FVector_NetQuantize& InTraceStart) { TraceStart = InTraceStart; }
+	FORCEINLINE void SetInitialVelocity(const FVector_NetQuantize100& InInitialVelocity) { InitialVelocity = InInitialVelocity; }
+	FORCEINLINE void SetDamage(float InDamage) { Damage = InDamage; }
 };
