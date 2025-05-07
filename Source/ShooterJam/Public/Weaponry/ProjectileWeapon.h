@@ -14,9 +14,7 @@ class SHOOTERJAM_API AProjectileWeapon : public AWeaponBase
 {
 	GENERATED_BODY()
 	
-public:
-	virtual void Fire() override;
-
+//private members
 private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> ProjectileClass;
@@ -24,4 +22,11 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AProjectile> ServerSideRewindClass;
 
+//public methods
+public:
+	virtual void Fire() override;
+
+//protected methods
+protected:
+	void SpawnProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation, APawn* Instigator);
 };
