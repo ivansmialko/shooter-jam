@@ -356,93 +356,83 @@ void AShooterCharacter::InitializeSsrHitBoxes()
 	/** Hit boxes for server-side rewind */
 	SsrHead = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Head"));
 	SsrHead->SetupAttachment(GetMesh(), FName("head"));
-	SsrHead->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("head"), SsrHead);
 
 	SsrPelvis = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Pelvis"));
 	SsrPelvis->SetupAttachment(GetMesh(), FName("pelvis"));
-	SsrPelvis->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("pelvis"), SsrPelvis);
 
 	SsrSpine02 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine02"));
 	SsrSpine02->SetupAttachment(GetMesh(), FName("spine_02"));
-	SsrSpine02->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("spine_02"), SsrSpine02);
 
 	SsrSpine03 = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Spine03"));
 	SsrSpine03->SetupAttachment(GetMesh(), FName("spine_03"));
-	SsrSpine03->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("spine_03"), SsrSpine03);
 
 	SsrUpperArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmL"));
 	SsrUpperArmL->SetupAttachment(GetMesh(), FName("upperarm_l"));
-	SsrUpperArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("upperarm_l"), SsrUpperArmL);
 
 	SsrUpperArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_UpperArmR"));
 	SsrUpperArmR->SetupAttachment(GetMesh(), FName("upperarm_r"));
-	SsrUpperArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("upperarm_r"), SsrUpperArmR);
 
 	SsrLowerArmL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmL"));
 	SsrLowerArmL->SetupAttachment(GetMesh(), FName("lowerarm_l"));
-	SsrLowerArmL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("lowerarm_l"), SsrLowerArmL);
 
 	SsrLowerArmR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_LowerArmR"));
 	SsrLowerArmR->SetupAttachment(GetMesh(), FName("lowerarm_r"));
-	SsrLowerArmR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("lowerarm_r"), SsrLowerArmR);
 
 	SsrHandL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandL"));
 	SsrHandL->SetupAttachment(GetMesh(), FName("hand_l"));
-	SsrHandL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("hand_l"), SsrHandL);
 
 	SsrHandR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_HandR"));
 	SsrHandR->SetupAttachment(GetMesh(), FName("hand_r"));
-	SsrHandR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("hand_r"), SsrHandR);
 
 	SsrBackpack = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_Backpack"));
 	SsrBackpack->SetupAttachment(GetMesh(), FName("backpack"));
-	SsrBackpack->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("backpack"), SsrBackpack);
 
 	SsrBackpackBlanket = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_BackpackBlanket"));
 	SsrBackpackBlanket->SetupAttachment(GetMesh(), FName("blanket"));
-	SsrBackpackBlanket->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("blanket"), SsrBackpackBlanket);
 
 	SsrThighL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighL"));
 	SsrThighL->SetupAttachment(GetMesh(), FName("thigh_l"));
-	SsrThighL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("thigh_l"), SsrThighL);
 
 	SsrThighR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_ThighR"));
 	SsrThighR->SetupAttachment(GetMesh(), FName("thigh_r"));
-	SsrThighR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("thigh_r"), SsrThighR);
 
 	SsrCalfL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfL"));
 	SsrCalfL->SetupAttachment(GetMesh(), FName("calf_l"));
-	SsrCalfL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("calf_l"), SsrCalfL);
 
 	SsrCalrR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_CalfR"));
 	SsrCalrR->SetupAttachment(GetMesh(), FName("calf_r"));
-	SsrCalrR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("calf_r"), SsrCalrR);
 
 	SsrFootL = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootL"));
 	SsrFootL->SetupAttachment(GetMesh(), FName("foot_l"));
-	SsrFootL->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("foot_l"), SsrFootL);
 
 	SsrFootR = CreateDefaultSubobject<UBoxComponent>(TEXT("SSR_FootR"));
 	SsrFootR->SetupAttachment(GetMesh(), FName("foot_r"));
-	SsrFootR->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	SsrCollisionBoxes.Add(FName("foot_r"), SsrFootR);
+
+	for (const auto& [BoxName, Box] : SsrCollisionBoxes)
+	{
+		Box->SetCollisionObjectType(ECC_HitBox);
+		Box->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+		Box->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+		Box->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void AShooterCharacter::InitializeCameraBoom()

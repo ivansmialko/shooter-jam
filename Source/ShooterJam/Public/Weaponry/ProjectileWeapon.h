@@ -28,5 +28,5 @@ public:
 
 //protected methods
 protected:
-	void SpawnProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation, APawn* Instigator);
+	void SpawnProjectile(const FVector& SpawnLocation, const FRotator& SpawnRotation);
 };
