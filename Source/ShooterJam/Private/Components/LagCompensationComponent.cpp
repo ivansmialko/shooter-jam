@@ -3,6 +3,7 @@
 
 #include "Components/LagCompensationComponent.h"
 
+#include "Game/ShooterJam.h"
 #include "Characters/ShooterCharacter.h"
 #include "Weaponry/WeaponBase.h"
 
@@ -236,13 +237,22 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 	if (!HeadBox || !(*HeadBox))
 	{
 		(*HeadBox)->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		(*HeadBox)->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+		(*HeadBox)->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
 
 		if (UWorld* World{ GetWorld() })
 		{
-			World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
+			World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
 			if (ConfirmShotResult.bBlockingHit)
 			{
+				if (ConfirmShotResult.Component.IsValid())
+				{
+					UBoxComponent* Box{ Cast<UBoxComponent>(ConfirmShotResult.Component) };
+					if (Box)
+					{
+						DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
+					}
+				}
+
 				RewindPlayerBoxes(InCharacter, CurrentFrame, true);
 				EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
 				return FSsrResult{ true, true };
@@ -257,14 +267,23 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 			continue;
 
 		HitBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		HitBoxComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+		HitBoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
 	}
 
 	if (UWorld * World{ GetWorld() })
 	{
-		World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECollisionChannel::ECC_Visibility);
+		World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
 		if (ConfirmShotResult.bBlockingHit)
 		{
+			if (ConfirmShotResult.Component.IsValid())
+			{
+				UBoxComponent* Box{ Cast<UBoxComponent>(ConfirmShotResult.Component) };
+				if (Box)
+				{
+					DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
+				}
+			}
+
 			RewindPlayerBoxes(InCharacter, CurrentFrame, true);
 			EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
 			return FSsrResult{ true, true };
