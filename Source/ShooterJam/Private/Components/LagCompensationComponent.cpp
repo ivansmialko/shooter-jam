@@ -234,7 +234,7 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 
 	// Confirm collision for the headshot first
 	UBoxComponent** HeadBox{ InCharacter->GetSsrCollisionBoxes().Find(FName("head")) };
-	if (!HeadBox || !(*HeadBox))
+	if (HeadBox && (*HeadBox))
 	{
 		(*HeadBox)->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 		(*HeadBox)->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
