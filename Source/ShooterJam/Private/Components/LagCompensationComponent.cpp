@@ -148,6 +148,22 @@ void ULagCompensationComponent::EnablePlayerCollisions(AShooterCharacter* InHitC
 	CharacterMesh->SetCollisionEnabled(InCollisionEnabled);
 }
 
+void ULagCompensationComponent::EnableHitBoxesCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled, ECollisionResponse InCollisionResponse)
+{
+	if (!InHitCharacter)
+		return;
+
+	//Confirm collision for the rest of the body
+	for (const auto [HitBoxName, HitBoxComponent] : InHitCharacter->GetSsrCollisionBoxes())
+	{
+		if (!HitBoxComponent)
+			continue;
+
+		HitBoxComponent->SetCollisionEnabled(InCollisionEnabled);
+		HitBoxComponent->SetCollisionResponseToChannel(ECC_HitBox, InCollisionResponse);
+	}
+}
+
 FFramePackage ULagCompensationComponent::InterpolateBetweenFrames(const FFramePackage& InOlderFrame, const FFramePackage& InYoungerFrame, float InHitTime)
 {
 	const float Distance{ InYoungerFrame.Time - InOlderFrame.Time };
@@ -233,79 +249,49 @@ FFramePackage ULagCompensationComponent::GetFrameToCheck(AShooterCharacter* InHi
 
 FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation)
 {
+	FSsrResult ServerSideRewindResult;
+
 	if (!InCharacter)
-		return FSsrResult();
+		return ServerSideRewindResult;
+
+	UWorld* World{ GetWorld() };
+	if (!World)
+		return ServerSideRewindResult;
 
 	FFramePackage CurrentFrame;
-	GetFramePackage(CurrentFrame, InCharacter);
-	ResetPlayerBoxes(InCharacter, InFramePackage);
-	EnablePlayerCollisions(InCharacter, ECollisionEnabled::NoCollision);
-
+	GetFramePackage(CurrentFrame, InCharacter);		//Save current position of hit-boxes
+	ResetPlayerBoxes(InCharacter, InFramePackage);	//Rewind hit-boxes positions to past
+	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
+	EnableHitBoxesCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics, ECollisionResponse::ECR_Block);
+	
 	FHitResult ConfirmShotResult;
 	const FVector TraceEnd{ InTraceStart + (InHitLocation - InTraceStart) * 1.25f };
 
-	// Confirm collision for the headshot first
-	UBoxComponent** HeadBox{ InCharacter->GetSsrCollisionBoxes().Find(FName("head")) };
-	if (HeadBox && (*HeadBox))
+
+	World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
+	if (ConfirmShotResult.bBlockingHit) //Collision confirmed. Also check if head shot
 	{
-		(*HeadBox)->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		(*HeadBox)->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
-
-		if (UWorld* World{ GetWorld() })
+		if (ConfirmShotResult.Component.IsValid())
 		{
-			World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
-			if (ConfirmShotResult.bBlockingHit)
+			UBoxComponent* Box{ Cast<UBoxComponent>(ConfirmShotResult.Component) };
+			if (Box)
 			{
-				if (ConfirmShotResult.Component.IsValid())
-				{
-					UBoxComponent* Box{ Cast<UBoxComponent>(ConfirmShotResult.Component) };
-					if (Box)
-					{
-						DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
-					}
-				}
-
-				ResetPlayerBoxes(InCharacter, CurrentFrame, true);
-				EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-				return FSsrResult{ true, true };
+				ServerSideRewindResult.bHeadshot = (Box->GetName() == "SSR_Head");
+				DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), (ServerSideRewindResult.bHeadshot ? FColor::Red : FColor::Blue), false, 8.f);
 			}
 		}
-	}
 
-	//Confirm collision for the rest of the body
-	for (const auto [HitBoxName, HitBoxComponent] : InCharacter->GetSsrCollisionBoxes())
+		ServerSideRewindResult.bHitConfirmed = true;
+	}
+	else //No collision confirmed
 	{
-		if (!HitBoxComponent)
-			continue;
-
-		HitBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		HitBoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+		ServerSideRewindResult.bHitConfirmed = false;
+		ServerSideRewindResult.bHeadshot = false;
 	}
 
-	if (UWorld * World{ GetWorld() })
-	{
-		World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
-		if (ConfirmShotResult.bBlockingHit)
-		{
-			if (ConfirmShotResult.Component.IsValid())
-			{
-				UBoxComponent* Box{ Cast<UBoxComponent>(ConfirmShotResult.Component) };
-				if (Box)
-				{
-					DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
-				}
-			}
-
-			ResetPlayerBoxes(InCharacter, CurrentFrame, true);
-			EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-			return FSsrResult{ true, false };
-		}
-	}
-
-	//No collision confirmed
 	ResetPlayerBoxes(InCharacter, CurrentFrame, true);
 	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-	return FSsrResult{ false, false };
+	return ServerSideRewindResult;
 }
 
 FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime)
@@ -315,7 +301,7 @@ FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& 
 
 	UWorld* World{ GetWorld() };
 	if (!World)
-		return;
+		return FSsrResult();
 
 	FFramePackage CurrentFrame;
 	GetFramePackage(CurrentFrame, InCharacter);
