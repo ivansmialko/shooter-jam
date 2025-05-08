@@ -80,15 +80,19 @@ protected:
 	virtual void BeginPlay() override;
 	
 	FSsrResult ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime);
+	FSsrResult ServerSideRewindProjectile(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime);
+	FSsrResult ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation);
+	FSsrResult ConfirmHitProjectile(const FFramePackage& InFramePackage, AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime);
+
 
 //private methods
 private:
 	FFramePackage InterpolateBetweenFrames(const FFramePackage& InOlderFrame, const FFramePackage& InYoungerFrame, float InHitTime);
-	FSsrResult ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation);
+	FFramePackage GetFrameToCheck(AShooterCharacter* InHitCharacter, float InHitTime);
 	void ShowFramePackage(const FFramePackage& InPackage, FColor InColor);
 	void GetFramePackage(FFramePackage& InPack, AShooterCharacter* InCharacter = nullptr);
 	void SaveFrame();
-	void RewindPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
+	void ResetPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
 	void EnablePlayerCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled);
 
 //public getters/setters

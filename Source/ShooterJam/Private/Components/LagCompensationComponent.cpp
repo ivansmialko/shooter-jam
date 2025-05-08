@@ -24,62 +24,14 @@ void ULagCompensationComponent::TickComponent(float DeltaTime, ELevelTick TickTy
 
 FSsrResult ULagCompensationComponent::ServerSideRewind(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime)
 {
-	if (!InHitCharacter)
-		return FSsrResult();
-
-	ULagCompensationComponent* LagCompensation{ InHitCharacter->GetLagCompensationComponent() };
-	if (!LagCompensation)
-		return FSsrResult();
-
-	const TDoubleLinkedList<FFramePackage>& History = LagCompensation->GetFrameHistory();
-	if (!History.GetHead() || !History.GetTail())
-		return FSsrResult();
-
-	//If true - too far back, too laggy to perform SSR
-	const float OldestHistoryTime{ History.GetTail()->GetValue().Time };
-	if (OldestHistoryTime > InHitTime)
-		return FSsrResult();
-
-	//Frame package we check to verity the hit
-	FFramePackage FrameToCheck;
-
-	if (OldestHistoryTime == InHitTime)
-	{
-		FrameToCheck = History.GetTail()->GetValue();
-	}
-
-	const float NewestHistoryTime{ History.GetHead()->GetValue().Time };
-	if (NewestHistoryTime <= InHitTime)
-	{
-		FrameToCheck = History.GetHead()->GetValue();
-	}
-
-	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Younger = History.GetHead();
-	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Older = Younger;
-	while (Older->GetValue().Time > InHitTime) //is Older, still younger than hit time
-	{
-		if (!Older->GetNextNode())
-			break;
-
-		//March back until OlderTime < HitTime < YoungerTie
-		Older = Older->GetNextNode();
-
-		if (Older->GetValue().Time > InHitTime)
-		{
-			Younger = Older;
-		}
-	}
-	if (Older->GetValue().Time == InHitTime) //highly unlikely, but we found our frame to check
-	{
-		FrameToCheck = Older->GetValue();
-	}
-
-	if (FrameToCheck.Time <= 1.f) //if FrameToCheck is uninitialized yet - use interpolation between Older and Younger
-	{
-		FrameToCheck = InterpolateBetweenFrames(Older->GetValue(), Younger->GetValue(), InHitTime);
-	}
-
+	FFramePackage FrameToCheck{ GetFrameToCheck(InHitCharacter, InHitTime) };
 	return ConfirmHit(FrameToCheck, InHitCharacter, InTraceStart, InHitLocation);
+}
+
+FSsrResult ULagCompensationComponent::ServerSideRewindProjectile(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime)
+{
+	FFramePackage FrameToCheck{ GetFrameToCheck(InHitCharacter, InHitTime) };
+	return ConfirmHitProjectile(FrameToCheck, InHitCharacter, InTraceStart, InInitialVelocity, InHitTime);
 }
 
 void ULagCompensationComponent::Server_ScoreRequest_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime, AWeaponBase* InWeapon)
@@ -159,7 +111,7 @@ void ULagCompensationComponent::SaveFrame()
 	}
 }
 
-void ULagCompensationComponent::RewindPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision /*= false*/)
+void ULagCompensationComponent::ResetPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision /*= false*/)
 {
 	if (!InHitCharacter)
 		return;
@@ -219,6 +171,66 @@ FFramePackage ULagCompensationComponent::InterpolateBetweenFrames(const FFramePa
 	return InterpFramePackage;
 }
 
+FFramePackage ULagCompensationComponent::GetFrameToCheck(AShooterCharacter* InHitCharacter, float InHitTime)
+{
+	//Frame package we check to verity the hit
+	FFramePackage FrameToCheck;
+
+	if (!InHitCharacter)
+		return FrameToCheck;
+
+	ULagCompensationComponent* LagCompensation{ InHitCharacter->GetLagCompensationComponent() };
+	if (!LagCompensation)
+		return FrameToCheck;
+
+	const TDoubleLinkedList<FFramePackage>& History = LagCompensation->GetFrameHistory();
+	if (!History.GetHead() || !History.GetTail())
+		return FrameToCheck;
+
+	//If true - too far back, too laggy to perform SSR
+	const float OldestHistoryTime{ History.GetTail()->GetValue().Time };
+	if (OldestHistoryTime > InHitTime)
+		return FrameToCheck;
+
+	if (OldestHistoryTime == InHitTime)
+	{
+		FrameToCheck = History.GetTail()->GetValue();
+	}
+
+	const float NewestHistoryTime{ History.GetHead()->GetValue().Time };
+	if (NewestHistoryTime <= InHitTime)
+	{
+		FrameToCheck = History.GetHead()->GetValue();
+	}
+
+	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Younger = History.GetHead();
+	TDoubleLinkedList<FFramePackage>::TDoubleLinkedListNode* Older = Younger;
+	while (Older->GetValue().Time > InHitTime) //is Older, still younger than hit time
+	{
+		if (!Older->GetNextNode())
+			break;
+
+		//March back until OlderTime < HitTime < YoungerTie
+		Older = Older->GetNextNode();
+
+		if (Older->GetValue().Time > InHitTime)
+		{
+			Younger = Older;
+		}
+	}
+	if (Older->GetValue().Time == InHitTime) //highly unlikely, but we found our frame to check
+	{
+		FrameToCheck = Older->GetValue();
+	}
+
+	if (FrameToCheck.Time <= 1.f) //if FrameToCheck is uninitialized yet - use interpolation between Older and Younger
+	{
+		FrameToCheck = InterpolateBetweenFrames(Older->GetValue(), Younger->GetValue(), InHitTime);
+	}
+
+	return FrameToCheck;
+}
+
 FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation)
 {
 	if (!InCharacter)
@@ -226,7 +238,7 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 
 	FFramePackage CurrentFrame;
 	GetFramePackage(CurrentFrame, InCharacter);
-	RewindPlayerBoxes(InCharacter, InFramePackage);
+	ResetPlayerBoxes(InCharacter, InFramePackage);
 	EnablePlayerCollisions(InCharacter, ECollisionEnabled::NoCollision);
 
 	FHitResult ConfirmShotResult;
@@ -253,7 +265,7 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 					}
 				}
 
-				RewindPlayerBoxes(InCharacter, CurrentFrame, true);
+				ResetPlayerBoxes(InCharacter, CurrentFrame, true);
 				EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
 				return FSsrResult{ true, true };
 			}
@@ -284,14 +296,99 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 				}
 			}
 
-			RewindPlayerBoxes(InCharacter, CurrentFrame, true);
+			ResetPlayerBoxes(InCharacter, CurrentFrame, true);
+			EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
+			return FSsrResult{ true, false };
+		}
+	}
+
+	//No collision confirmed
+	ResetPlayerBoxes(InCharacter, CurrentFrame, true);
+	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
+	return FSsrResult{ false, false };
+}
+
+FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime)
+{
+	if (!InCharacter)
+		return FSsrResult();
+
+	UWorld* World{ GetWorld() };
+	if (!World)
+		return;
+
+	FFramePackage CurrentFrame;
+	GetFramePackage(CurrentFrame, InCharacter);
+	ResetPlayerBoxes(InCharacter, InFramePackage);
+	EnablePlayerCollisions(InCharacter, ECollisionEnabled::NoCollision);
+
+	FPredictProjectilePathParams PathParams;
+	PathParams.bTraceWithCollision = true;
+	PathParams.MaxSimTime = MaxRecordTime;
+	PathParams.LaunchVelocity = InInitialVelocity;
+	PathParams.StartLocation = InTraceStart;
+	PathParams.SimFrequency = 15.f;
+	PathParams.ProjectileRadius = 5.f;
+	PathParams.TraceChannel = ECC_HitBox;
+	PathParams.ActorsToIgnore.Add(GetOwner());
+	PathParams.DrawDebugTime = 5.f;
+	PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
+
+	FPredictProjectilePathResult PathResult;
+	UGameplayStatics::PredictProjectilePath(World, PathParams, PathResult);
+
+	// Confirm collision for the head shot first
+	UBoxComponent** HeadBox{ InCharacter->GetSsrCollisionBoxes().Find(FName("head")) };
+	if (HeadBox && (*HeadBox))
+	{
+		(*HeadBox)->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		(*HeadBox)->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+
+		if (PathResult.HitResult.bBlockingHit)
+		{
+			if (PathResult.HitResult.Component.IsValid())
+			{
+				UBoxComponent* Box{ Cast<UBoxComponent>(PathResult.HitResult.Component) };
+				if (Box)
+				{
+					DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
+				}
+			}
+
+			ResetPlayerBoxes(InCharacter, CurrentFrame, true);
 			EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
 			return FSsrResult{ true, true };
 		}
 	}
 
+	//Confirm collision for the rest of the body
+	for (const auto [HitBoxName, HitBoxComponent] : InCharacter->GetSsrCollisionBoxes())
+	{
+		if (!HitBoxComponent)
+			continue;
+
+		HitBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		HitBoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
+	}
+
+	if (PathResult.HitResult.bBlockingHit)
+	{
+		if (PathResult.HitResult.Component.IsValid())
+		{
+			UBoxComponent* Box{ Cast<UBoxComponent>(PathResult.HitResult.Component) };
+			if (Box)
+			{
+				DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
+			}
+		}
+
+		ResetPlayerBoxes(InCharacter, CurrentFrame, true);
+		EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
+		return FSsrResult{ true, false };
+	}
+
 	//No collision confirmed
-	RewindPlayerBoxes(InCharacter, CurrentFrame, true);
+	ResetPlayerBoxes(InCharacter, CurrentFrame, true);
 	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
 	return FSsrResult{ false, false };
 }
