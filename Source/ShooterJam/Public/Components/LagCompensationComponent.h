@@ -94,6 +94,7 @@ private:
 	void SaveFrame();
 	void ResetPlayerBoxes(AShooterCharacter* InHitCharacter, const FFramePackage& InFramePackage, bool bInDisableCollision = false);
 	void EnablePlayerCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled);
+	void EnableHitBoxesCollisions(AShooterCharacter* InHitCharacter, ECollisionEnabled::Type InCollisionEnabled, ECollisionResponse InCollisionResponse);
 
 //public getters/setters
 public:
