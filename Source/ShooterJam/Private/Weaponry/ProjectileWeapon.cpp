@@ -69,7 +69,7 @@ void AProjectileWeapon::SpawnProjectile(const FVector& SpawnLocation, const FRot
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindClass, SpawnLocation, SpawnRotation, BulletSpawnParameters);
 				SpawnedProjectile->SetUseSsr(true);
 				SpawnedProjectile->SetTraceStart(SpawnLocation);
-				SpawnedProjectile->SetInitialVelocity(SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->GetInitialVelocity());
+				SpawnedProjectile->SetInitialVelocity(SpawnedProjectile->GetActorForwardVector() * SpawnedProjectile->GetInitialSpeed());
 			}
 			else //Client, not locally controlled - spawn non-replicated projectile, no SSR
 			{
