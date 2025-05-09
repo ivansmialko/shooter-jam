@@ -56,10 +56,10 @@ void AProjectileWeapon::SpawnProjectile(const FVector& SpawnLocation, const FRot
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, BulletSpawnParameters);
 				SpawnedProjectile->SetUseSsr(false);
 			}
-			else //Server, not locally controlled - spawn non-replicated projectile, no SSR
+			else //Server, not locally controlled - spawn non-replicated projectile, use SSR
 			{
 				SpawnedProjectile = World->SpawnActor<AProjectile>(ServerSideRewindClass, SpawnLocation, SpawnRotation, BulletSpawnParameters);
-				SpawnedProjectile->SetUseSsr(false);
+				SpawnedProjectile->SetUseSsr(true);
 			}
 		}
 		else //Client, using SSR

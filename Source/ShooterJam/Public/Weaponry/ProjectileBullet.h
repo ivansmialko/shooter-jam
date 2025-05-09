@@ -19,7 +19,7 @@ protected:
 	//~ End AProjectile Interface
 
 	virtual void BeginPlay() override;
-
+	
 #ifdef WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
 #endif // WITH_EDITOR

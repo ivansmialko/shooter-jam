@@ -2,22 +2,37 @@
 
 
 #include "Weaponry/ProjectileBullet.h"
+#include "Characters/ShooterCharacter.h"
+#include "PlayerControllers/ShooterCharacterController.h"
+#include "Components/LagCompensationComponent.h"
 
 #include "GameFramework/ProjectileMovementComponent.h"
-#include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 
 void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	ACharacter* OwnerCharacter = Cast<ACharacter>(GetOwner());
+	AShooterCharacter* OwnerCharacter = Cast<AShooterCharacter>(GetOwner());
 	if (!OwnerCharacter)
 		return;
 
-	AController* OwnerController = OwnerCharacter->GetController();
+	AShooterCharacterController* OwnerController = Cast<AShooterCharacterController>(OwnerCharacter->GetController());
 	if (!OwnerController)
 		return;
 
-	UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+	if (HasAuthority() && !bUseServerSideRewind)
+	{
+		UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+	}
+
+	if (!HasAuthority() && bUseServerSideRewind)
+	{
+		AShooterCharacter* HitCharacter = Cast<AShooterCharacter>(OtherActor);
+		if (OwnerCharacter && OwnerController && OwnerCharacter->GetLagCompensationComponent())
+		{
+			float HitTime{ OwnerController->GetServerTime() - OwnerController->GetSingleTripTime() };
+			OwnerCharacter->GetLagCompensationComponent()->Server_ScoreRequestProjectile(HitCharacter, TraceStart, InitialVelocity, HitTime);
+		}
+	}
 
 	Super::OnHit(HitComp, OtherActor, OtherComp, NormalImpulse, Hit);
 }
