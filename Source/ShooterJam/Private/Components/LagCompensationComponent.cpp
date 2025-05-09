@@ -315,17 +315,20 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 
 FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& InFramePackage, AShooterCharacter* InCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InInitialVelocity, float InHitTime)
 {
+	FSsrResult ServerSideRewindResult;
+
 	if (!InCharacter)
-		return FSsrResult();
+		return ServerSideRewindResult;
 
 	UWorld* World{ GetWorld() };
 	if (!World)
-		return FSsrResult();
+		return ServerSideRewindResult;
 
 	FFramePackage CurrentFrame;
-	GetFramePackage(CurrentFrame, InCharacter);
-	ResetPlayerBoxes(InCharacter, InFramePackage);
-	EnablePlayerCollisions(InCharacter, ECollisionEnabled::NoCollision);
+	GetFramePackage(CurrentFrame, InCharacter);		//Save current position of hit-boxes
+	ResetPlayerBoxes(InCharacter, InFramePackage);	//Rewind hit-boxes positions to past
+	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
+	EnableHitBoxesCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics, ECollisionResponse::ECR_Block);
 
 	FPredictProjectilePathParams PathParams;
 	PathParams.bTraceWithCollision = true;
@@ -341,41 +344,6 @@ FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& 
 
 	FPredictProjectilePathResult PathResult;
 	UGameplayStatics::PredictProjectilePath(World, PathParams, PathResult);
-
-	// Confirm collision for the head shot first
-	UBoxComponent** HeadBox{ InCharacter->GetSsrCollisionBoxes().Find(FName("head")) };
-	if (HeadBox && (*HeadBox))
-	{
-		(*HeadBox)->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		(*HeadBox)->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
-
-		if (PathResult.HitResult.bBlockingHit)
-		{
-			if (PathResult.HitResult.Component.IsValid())
-			{
-				UBoxComponent* Box{ Cast<UBoxComponent>(PathResult.HitResult.Component) };
-				if (Box)
-				{
-					DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Red, false, 8.f);
-				}
-			}
-
-			ResetPlayerBoxes(InCharacter, CurrentFrame, true);
-			EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-			return FSsrResult{ true, true };
-		}
-	}
-
-	//Confirm collision for the rest of the body
-	for (const auto [HitBoxName, HitBoxComponent] : InCharacter->GetSsrCollisionBoxes())
-	{
-		if (!HitBoxComponent)
-			continue;
-
-		HitBoxComponent->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
-		HitBoxComponent->SetCollisionResponseToChannel(ECC_HitBox, ECollisionResponse::ECR_Block);
-	}
-
 	if (PathResult.HitResult.bBlockingHit)
 	{
 		if (PathResult.HitResult.Component.IsValid())
@@ -383,19 +351,22 @@ FSsrResult ULagCompensationComponent::ConfirmHitProjectile(const FFramePackage& 
 			UBoxComponent* Box{ Cast<UBoxComponent>(PathResult.HitResult.Component) };
 			if (Box)
 			{
-				DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), FColor::Blue, false, 8.f);
+				ServerSideRewindResult.bHeadshot = (Box->GetName() == "SSR_Head");
+				DrawDebugBox(World, Box->GetComponentLocation(), Box->GetScaledBoxExtent(), FQuat(Box->GetComponentRotation()), (ServerSideRewindResult.bHeadshot ? FColor::Red : FColor::Blue), false, 8.f);
 			}
 		}
 
-		ResetPlayerBoxes(InCharacter, CurrentFrame, true);
-		EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-		return FSsrResult{ true, false };
+		ServerSideRewindResult.bHitConfirmed = true;
+	}
+	else
+	{
+		ServerSideRewindResult.bHitConfirmed = false;
+		ServerSideRewindResult.bHeadshot = false;
 	}
 
-	//No collision confirmed
 	ResetPlayerBoxes(InCharacter, CurrentFrame, true);
 	EnablePlayerCollisions(InCharacter, ECollisionEnabled::QueryAndPhysics);
-	return FSsrResult{ false, false };
+	return ServerSideRewindResult;
 }
 
 void ULagCompensationComponent::SetCharacter(AShooterCharacter* InCharacter)

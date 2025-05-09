@@ -24,10 +24,10 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 		UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
 	}
 
-	if (!HasAuthority() && bUseServerSideRewind)
+	if (bUseServerSideRewind && OwnerCharacter->GetLagCompensationComponent() && OwnerCharacter->IsLocallyControlled())
 	{
 		AShooterCharacter* HitCharacter = Cast<AShooterCharacter>(OtherActor);
-		if (OwnerCharacter && OwnerController && OwnerCharacter->GetLagCompensationComponent())
+		if (OwnerCharacter && OwnerController)
 		{
 			float HitTime{ OwnerController->GetServerTime() - OwnerController->GetSingleTripTime() };
 			OwnerCharacter->GetLagCompensationComponent()->Server_ScoreRequestProjectile(HitCharacter, TraceStart, InitialVelocity, HitTime);
