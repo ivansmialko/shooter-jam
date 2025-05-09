@@ -44,6 +44,26 @@ void ULagCompensationComponent::Server_ScoreRequest_Implementation(AShooterChara
 	}
 }
 
+void ULagCompensationComponent::Server_ScoreRequestProjectile_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InitialVelocity, float InHitTime)
+{
+	if (!InHitCharacter)
+		return;
+
+	if (!Character)
+		return;
+
+	AWeaponBase* EquippedWeapon{ Character->GetEquippedWeapon() };
+	if (!EquippedWeapon)
+		return;
+
+	FSsrResult ConfirmResult = ServerSideRewindProjectile(InHitCharacter, InTraceStart, InitialVelocity, InHitTime);
+
+	if (!ConfirmResult.bHitConfirmed)
+		return;
+
+	UGameplayStatics::ApplyDamage(InHitCharacter, EquippedWeapon->GetBaseDamage(), Character->GetController(), EquippedWeapon, UDamageType::StaticClass());
+}
+
 void ULagCompensationComponent::BeginPlay()
 {
 	Super::BeginPlay();
@@ -266,7 +286,6 @@ FSsrResult ULagCompensationComponent::ConfirmHit(const FFramePackage& InFramePac
 	
 	FHitResult ConfirmShotResult;
 	const FVector TraceEnd{ InTraceStart + (InHitLocation - InTraceStart) * 1.25f };
-
 
 	World->LineTraceSingleByChannel(ConfirmShotResult, InTraceStart, TraceEnd, ECC_HitBox);
 	if (ConfirmShotResult.bBlockingHit) //Collision confirmed. Also check if head shot

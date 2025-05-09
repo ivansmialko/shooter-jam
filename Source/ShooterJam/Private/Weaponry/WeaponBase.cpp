@@ -315,7 +315,7 @@ void AWeaponBase::DealDamage(const FHitResult& HitResult, const FVector_NetQuant
 	if (!InstigatorController)
 		return;
 
-	if (HasAuthority() && !bUseServerSideRewind)
+	if (HasAuthority() && (!bUseServerSideRewind || OwnerPawn->IsLocallyControlled()))
 	{
 		UGameplayStatics::ApplyDamage(HitCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
 	}

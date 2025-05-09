@@ -75,6 +75,8 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_ScoreRequest(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime, AWeaponBase* InDamageCauser);
 
+	UFUNCTION(Server, Reliable)
+	void Server_ScoreRequestProjectile(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InitialVelocity, float InHitTime);
 //protected methods
 protected:
 	virtual void BeginPlay() override;
