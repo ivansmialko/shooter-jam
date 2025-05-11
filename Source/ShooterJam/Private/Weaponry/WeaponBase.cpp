@@ -383,21 +383,6 @@ TArray<FVector_NetQuantize> AWeaponBase::GetHitTargetsNet(const FVector InTraceS
 	return CurrHitTargets;
 }
 
-void AWeaponBase::SetIsDestroyAfterDeath(bool bInIsDestroy)
-{
-	bIsDestroyAfterDeath = bInIsDestroy;
-}
-
-void AWeaponBase::AddHitTarget(const FVector& InHitTarget)
-{
-	HitTargets.Add(InHitTarget);
-}
-
-void AWeaponBase::AddHitTarget(const FVector_NetQuantize& InHitTarget)
-{
-	HitTargets.Add(InHitTarget);
-}
-
 void AWeaponBase::AddHitTarget(const TArray<FVector_NetQuantize>& InHitTargets)
 {
 	for (int32 i = 0; i < InHitTargets.Num(); ++i)
@@ -446,6 +431,8 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeaponBase, WeaponState);
+	DOREPLIFETIME_CONDITION(AWeaponBase, bUseServerSideRewind, COND_OwnerOnly);
+
 }
 
 void AWeaponBase::ShowPickUpWidget(bool bShowWidget)

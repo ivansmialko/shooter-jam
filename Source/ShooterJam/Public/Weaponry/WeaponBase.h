@@ -111,7 +111,7 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float BaseDamage{ 20.f };
 
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties", Replicated)
 	bool bUseServerSideRewind{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
@@ -214,7 +214,7 @@ protected:
 
 	virtual void DealDamage(const FHitResult& HitResult, const FVector_NetQuantize& TraceStart);
 
-//public getters
+//public getters/setters
 public:
 	FORCEINLINE bool IsEmpty() const { return Ammo <= 0; }
 	FORCEINLINE bool IsFull() const { return GetWeaponAmmo() == GetMagCapacity(); }
@@ -242,8 +242,9 @@ public:
 	TArray<FVector> GetHitTargets(const FVector& InTraceStart, const FVector& InDirection) const;
 	TArray<FVector_NetQuantize> GetHitTargetsNet(const FVector InTraceStart, const FVector InDirection) const;
 
-	void SetIsDestroyAfterDeath(bool bInIsDestroy);
-	void AddHitTarget(const FVector& InHitTarget);
-	void AddHitTarget(const FVector_NetQuantize& InHitTarget);
+	FORCEINLINE void SetIsDestroyAfterDeath(bool bInIsDestroy) { bIsDestroyAfterDeath = bInIsDestroy; }
+	FORCEINLINE void AddHitTarget(const FVector& InHitTarget) { HitTargets.Add(InHitTarget); }
+	FORCEINLINE void AddHitTarget(const FVector_NetQuantize& InHitTarget) { HitTargets.Add(InHitTarget); }
 	void AddHitTarget(const TArray<FVector_NetQuantize>& InHitTarget);
+	FORCEINLINE void SetUseSsr(bool bInUseSsr) { bUseServerSideRewind = bInUseSsr; }
 };

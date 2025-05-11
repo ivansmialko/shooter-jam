@@ -252,10 +252,10 @@ private:
 	UFUNCTION()
 	void OnRep_Shield(float LastShield);
 	virtual void OnRep_ReplicatedMovement() override;
-
 	UFUNCTION()
 	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
-	
+	UFUNCTION()
+	void OnPingTooHigh(bool bInIsTooHighPing);
 	void OnEliminatedTimerFinished();
 	UFUNCTION()
 	void TimelineUpdateDissolveMaterial(float InDissolveValue);

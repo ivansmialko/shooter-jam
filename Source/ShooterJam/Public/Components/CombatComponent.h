@@ -258,8 +258,8 @@ public:
 	FORCEINLINE AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
 	FORCEINLINE AWeaponBase* GetSecondaryWeapon() const { return SecondaryWeapon; }
 
-
 	void SetIsAiming(bool bInIsAiming);
 	void SetIsFiring(bool bInIsFiring);
 	void SetHitTarget(const FVector& TraceHitTarget);
+	void SetWeaponsUseSsr(bool bInUseSsr);
 };
