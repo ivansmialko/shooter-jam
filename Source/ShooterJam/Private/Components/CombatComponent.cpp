@@ -464,13 +464,13 @@ void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
 
 void UCombatComponent::SetWeaponsUseSsr(bool bInUseSsr)
 {
-	if (EquippedWeapon)
+	if (EquippedWeapon && EquippedWeapon->GetIsUsingSsr())
 	{
-		EquippedWeapon->SetUseSsr(bInUseSsr);
+		EquippedWeapon->SetCurrentlyUseSsr(bInUseSsr);
 	}
-	if (SecondaryWeapon)
+	if (SecondaryWeapon && SecondaryWeapon->GetIsUsingSsr())
 	{
-		SecondaryWeapon->SetUseSsr(bInUseSsr);
+		SecondaryWeapon->SetCurrentlyUseSsr(bInUseSsr);
 	}
 }
 

@@ -111,8 +111,12 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float BaseDamage{ 20.f };
 
+	/** Enables server-side rewind for the weapon */
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties", Replicated)
 	bool bUseServerSideRewind{ false };
+
+	/** Tells if weapon currently using ssr. It can be different from design value (upper one) in situations like too high ping */
+	bool bCurrentlyUsingSsr{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bUseScatter{ false };
@@ -222,6 +226,8 @@ public:
 	FORCEINLINE bool GetIsReloadInterruptable() const { return bIsReloadInterruptable; }
 	FORCEINLINE bool GetIsDestroyAfterDeath() const { return bIsDestroyAfterDeath; }
 	FORCEINLINE bool GetIsUsingScatter() const { return bUseScatter; }
+	FORCEINLINE bool GetIsUsingSsr() const { return bUseServerSideRewind; }
+	FORCEINLINE bool GetIsCurrentlyUsingSsr() const { return bCurrentlyUsingSsr; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return Ammo; }
 	FORCEINLINE int32 GetMagCapacity() const { return MagCapacity; }
 	FORCEINLINE int32 GetScatterHitsNumber() const { return ScatterHitsNumber; }
@@ -247,4 +253,5 @@ public:
 	FORCEINLINE void AddHitTarget(const FVector_NetQuantize& InHitTarget) { HitTargets.Add(InHitTarget); }
 	void AddHitTarget(const TArray<FVector_NetQuantize>& InHitTarget);
 	FORCEINLINE void SetUseSsr(bool bInUseSsr) { bUseServerSideRewind = bInUseSsr; }
+	FORCEINLINE void SetCurrentlyUseSsr(bool bInCurrentlyUseSsr) { bCurrentlyUsingSsr = bInCurrentlyUseSsr; }
 };
