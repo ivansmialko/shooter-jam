@@ -10,6 +10,8 @@
 class AShooterHUD;
 class AShooterCharacter;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPingTooHigh, bool, isTooHighPing);
+
 /**
  * 
  */
@@ -17,6 +19,10 @@ UCLASS()
 class SHOOTERJAM_API AShooterCharacterController : public APlayerController
 {
 	GENERATED_BODY()
+
+//public fields
+public:
+	FOnPingTooHigh OnTooHighPingDelegate;
 
 //private fields
 private:
@@ -98,6 +104,10 @@ private:
 		Used to deliver settings for server's version of a character */
 	UFUNCTION(Server, Reliable)
 	void Server_RequestGameSettings();
+
+	/** Reports to server, if local ping is too high */
+	UFUNCTION(Server, Reliable)
+	void Server_ReportPingStatus(bool bHighPing);
 
 	/**  Same as Server_RequestGameSettings, but delivers settings from server's to client's version of a character */
 	UFUNCTION(Client, Reliable)

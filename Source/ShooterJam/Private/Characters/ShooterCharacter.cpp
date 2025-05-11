@@ -262,6 +262,14 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, cons
 	GameMode->OnPlayerEliminated(this, PlayerController, AttackerController);
 }
 
+void AShooterCharacter::OnPingTooHigh(bool bInIsTooHighPing)
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->SetWeaponsUseSsr(!bInIsTooHighPing);
+}
+
 void AShooterCharacter::OnEliminatedTimerFinished()
 {
 	AShooterGameMode* GameMode = GetShooterGameMode();
@@ -548,6 +556,14 @@ void AShooterCharacter::PollInitPlayerController()
 		return;
 
 	PlayerController = GetController<AShooterCharacterController>();
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->OnTooHighPingDelegate.IsBound() && HasAuthority())
+	{
+		PlayerController->OnTooHighPingDelegate.AddDynamic(this, &AShooterCharacter::OnPingTooHigh);
+	}
 }
 
 void AShooterCharacter::PollInitPlayerHud()

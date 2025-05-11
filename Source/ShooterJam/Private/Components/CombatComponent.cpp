@@ -462,6 +462,18 @@ void UCombatComponent::SetHitTarget(const FVector& TraceHitTarget)
 	HitTarget = TraceHitTarget;
 }
 
+void UCombatComponent::SetWeaponsUseSsr(bool bInUseSsr)
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetUseSsr(bInUseSsr);
+	}
+	if (SecondaryWeapon)
+	{
+		SecondaryWeapon->SetUseSsr(bInUseSsr);
+	}
+}
+
 void UCombatComponent::OnRep_EquippedWeapon()
 {
 	if (!Character)

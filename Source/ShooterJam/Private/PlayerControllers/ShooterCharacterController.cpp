@@ -40,9 +40,13 @@ void AShooterCharacterController::CheckPing(float InDeltaTime)
 			return;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Player ping: %.0f"), PlayerState->GetPingInMilliseconds());
+
 	if (PlayerState->GetPingInMilliseconds() < HighPingTreshold)
 	{
 		CheckPingTimer = CheckPingTime;
+
+		Server_ReportPingStatus(false);
 		return;
 	}
 
@@ -50,6 +54,8 @@ void AShooterCharacterController::CheckPing(float InDeltaTime)
 		return;
 
 	GetPlayerHud()->ShowPingAnimation();
+
+	Server_ReportPingStatus(true);
 
 	PingWarningTimer = PingWarningDuration;
 	CheckPingTimer = CheckPingTime;
@@ -168,6 +174,11 @@ void AShooterCharacterController::Server_RequestGameSettings_Implementation()
 	MatchState = GameMode->GetMatchState();
 
 	Client_ReportGameSettings(MatchState, WarmupDuration, MatchDuration, CooldownDuration, LevelStartingTime);
+}
+
+void AShooterCharacterController::Server_ReportPingStatus_Implementation(bool bHighPing)
+{
+	OnTooHighPingDelegate.Broadcast(bHighPing);
 }
 
 void AShooterCharacterController::Client_ReportGameSettings_Implementation(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InCooldownDuration, float InLevelStartingTime)
