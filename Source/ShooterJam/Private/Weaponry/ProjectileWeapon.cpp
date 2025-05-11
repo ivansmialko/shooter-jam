@@ -47,7 +47,7 @@ void AProjectileWeapon::SpawnProjectile(const FVector& SpawnLocation, const FRot
 	BulletSpawnParameters.Instigator = InstigatorPawn;
 
 	AProjectile* SpawnedProjectile{ nullptr };
-	if (bUseServerSideRewind)
+	if (bCurrentlyUsingSsr)
 	{
 		if (InstigatorPawn->HasAuthority())	//Server
 		{

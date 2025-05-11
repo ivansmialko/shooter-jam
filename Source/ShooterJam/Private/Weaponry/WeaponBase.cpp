@@ -249,6 +249,7 @@ void AWeaponBase::BeginPlay()
 
 	//Calculate fire delay	
 	FireDelay = 60.f / static_cast<float>(FireRate);
+	bCurrentlyUsingSsr = bUseServerSideRewind;
 }
 
 void AWeaponBase::OnAreaSphereOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -315,12 +316,12 @@ void AWeaponBase::DealDamage(const FHitResult& HitResult, const FVector_NetQuant
 	if (!InstigatorController)
 		return;
 
-	if (HasAuthority() && (!bUseServerSideRewind || OwnerPawn->IsLocallyControlled()))
+	if (HasAuthority() && (!bCurrentlyUsingSsr || OwnerPawn->IsLocallyControlled()))
 	{
 		UGameplayStatics::ApplyDamage(HitCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
 	}
 	
-	if(!HasAuthority() && bUseServerSideRewind)
+	if(!HasAuthority() && bCurrentlyUsingSsr)
 	{
 		OwnerCharacter = (OwnerCharacter ? OwnerCharacter : Cast<AShooterCharacter>(OwnerPawn));
 		OwnerController = (OwnerController ? OwnerController : Cast<AShooterCharacterController>(InstigatorController));
@@ -431,7 +432,7 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AWeaponBase, WeaponState);
-	DOREPLIFETIME_CONDITION(AWeaponBase, bUseServerSideRewind, COND_OwnerOnly);
+	DOREPLIFETIME_CONDITION(AWeaponBase, bCurrentlyUsingSsr, COND_OwnerOnly);
 
 }
 
