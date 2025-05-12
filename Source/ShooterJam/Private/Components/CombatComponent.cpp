@@ -179,7 +179,7 @@ void UCombatComponent::OnFireTimerFinished()
 	ReloadWeapon();
 }
 
-void UCombatComponent::OnReloadFinished()
+void UCombatComponent::OnAnimReloadFinished()
 {
 	if (!Character)
 		return;
@@ -198,7 +198,7 @@ void UCombatComponent::OnReloadFinished()
 	}
 }
 
-void UCombatComponent::OnThrowFinished()
+void UCombatComponent::OnAnimThrowFinished()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Finished anim"));
 
@@ -206,9 +206,28 @@ void UCombatComponent::OnThrowFinished()
 	AttachActorToRightHand(EquippedWeapon);
 }
 
-void UCombatComponent::OnThrowLaunched()
+void UCombatComponent::OnAnimThrowLaunched()
 {
 	RequestThrow();
+}
+
+void UCombatComponent::OnAnimSwapSwapped()
+{
+	AWeaponBase* TempWeapon = EquippedWeapon;
+	EquipPrimaryWeapon(SecondaryWeapon);
+	EquipSecondaryWeapon(TempWeapon);
+
+}
+
+void UCombatComponent::OnAnimSwapFinished()
+{
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
+	CombatState = ECombatState::ECS_Unoccupied;
 }
 
 void UCombatComponent::RequestFire()
@@ -334,6 +353,17 @@ void UCombatComponent::OnStateThrow()
 	SetGrenadeVisibility(true);
 }
 
+void UCombatComponent::OnStateSwapping()
+{
+	if (!Character)
+		return;
+
+	if (Character->IsLocallyControlled())
+		return;
+
+	Character->PlaySwapMontage();
+}
+
 void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
 	if (bInDropPrevious)
@@ -419,9 +449,11 @@ void UCombatComponent::SwapWeapons()
 	if (CombatState != ECombatState::ECS_Unoccupied)
 		return;
 
-	AWeaponBase* TempWeapon = EquippedWeapon;
-	EquipPrimaryWeapon(SecondaryWeapon);
-	EquipSecondaryWeapon(TempWeapon);
+	if (!Character)
+		return;
+
+	Character->PlaySwapMontage();
+	CombatState = ECombatState::ECS_Swapping;
 }
 
 void UCombatComponent::SetIsAiming(bool bInIsAiming)
@@ -545,6 +577,10 @@ void UCombatComponent::OnRep_CombatState()
 	{
 		OnStateThrow();
 	}
+	case ECombatState::ECS_Swapping:
+	{
+		OnStateSwapping();
+	}
 	default:
 		break;
 	}
@@ -563,7 +599,7 @@ void UCombatComponent::OnRep_IsAiming()
 	bIsAiming = bIsAimingPressed;
 }
 
-void UCombatComponent::OnShellInserted()
+void UCombatComponent::OnAnimShellInserted()
 {
 	if (!Character)
 		return;
@@ -953,4 +989,9 @@ void UCombatComponent::PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount)
 	{
 		ReloadWeapon();
 	}
+}
+
+void UCombatComponent::ChangeCombatState(ECombatState InCombatState)
+{
+	CombatState = InCombatState;
 }

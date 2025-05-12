@@ -112,10 +112,11 @@ protected:
 	float BaseDamage{ 20.f };
 
 	/** Enables server-side rewind for the weapon */
-	UPROPERTY(EditAnywhere, Category = "Weapon Properties", Replicated)
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bUseServerSideRewind{ false };
 
 	/** Tells if weapon currently using ssr. It can be different from design value (upper one) in situations like too high ping */
+	UPROPERTY(Replicated)
 	bool bCurrentlyUsingSsr{ false };
 
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")

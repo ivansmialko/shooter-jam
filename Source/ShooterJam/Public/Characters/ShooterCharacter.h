@@ -61,6 +61,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* ThrowMontage;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* SwapMontage;
+
 	/** Float curve that represents dissolving of character's mesh after dying */
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UCurveFloat* DissolveCurve;
@@ -340,16 +343,20 @@ public:
 
 	virtual void OnEliminated();
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
-	virtual void OnReloadFinished();
-	virtual void OnShellInserted();
-	virtual void OnThrowFinished();
-	virtual void OnThrowLaunched();
+
+	virtual void OnAnimReloadFinished();
+	virtual void OnAnimShellInserted();
+	virtual void OnAnimThrowFinished();
+	virtual void OnAnimThrowLaunched();
+	virtual void OnAnimSwapSwapped();
+	virtual void OnAnimSwapFinished();
 
 	void PlayFireMontage(bool bInIsAiming);
 	void PlayEliminationMontage();
 	void PlayReloadMontage();
 	void PlayReloadEndMontage();
 	void PlayThrowMontage();
+	void PlaySwapMontage();
 
 	void InitInputs();
 	void DisableInputs();

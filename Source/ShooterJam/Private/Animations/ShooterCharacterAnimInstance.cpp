@@ -101,7 +101,7 @@ void UShooterCharacterAnimInstance::Native_OnReloadFinished()
 	if (!ShooterCharacter)
 		return;
 
-	ShooterCharacter->OnReloadFinished();
+	ShooterCharacter->OnAnimReloadFinished();
 }
 
 void UShooterCharacterAnimInstance::Native_OnShellInserted()
@@ -109,7 +109,7 @@ void UShooterCharacterAnimInstance::Native_OnShellInserted()
 	if (!ShooterCharacter)
 		return;
 
-	ShooterCharacter->OnShellInserted();
+	ShooterCharacter->OnAnimShellInserted();
 }
 
 void UShooterCharacterAnimInstance::Native_OnThrowFinished()
@@ -117,7 +117,7 @@ void UShooterCharacterAnimInstance::Native_OnThrowFinished()
 	if (!ShooterCharacter)
 		return;
 
-	ShooterCharacter->OnThrowFinished();
+	ShooterCharacter->OnAnimThrowFinished();
 }
 
 void UShooterCharacterAnimInstance::Native_OnThrowLaunched()
@@ -125,5 +125,21 @@ void UShooterCharacterAnimInstance::Native_OnThrowLaunched()
 	if (!ShooterCharacter)
 		return;
 
-	ShooterCharacter->OnThrowLaunched();
+	ShooterCharacter->OnAnimThrowLaunched();
+}
+
+void UShooterCharacterAnimInstance::Native_OnSwapSwapped()
+{
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->OnAnimSwapSwapped();
+}
+
+void UShooterCharacterAnimInstance::Native_OnSwapFinished()
+{
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->OnAnimSwapFinished();
 }

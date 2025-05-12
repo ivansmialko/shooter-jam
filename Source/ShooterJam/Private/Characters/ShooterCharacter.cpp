@@ -113,7 +113,25 @@ void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 	if (!bGameplayEnabled)
 		return;
 
+	if (!CombatComponent)
+		return;
+
+	if (!CombatComponent->GetIsUnoccupied())
+		return;
+
 	Server_OnEquip();
+
+	if (!CombatComponent->GetIsShouldSwapWeapons())
+		return;
+
+	if (HasAuthority())
+		return;
+
+	if (OverlappingWeapon)
+		return;
+
+	PlaySwapMontage();
+	CombatComponent->ChangeCombatState(ECombatState::ECS_Swapping);
 }
 
 
@@ -1123,36 +1141,67 @@ void AShooterCharacter::PlayThrowMontage()
 	//AnimInstance->Montage_JumpToSection(FName(SectionName));
 }
 
-void AShooterCharacter::OnReloadFinished()
+void AShooterCharacter::PlaySwapMontage()
 {
-	if (!CombatComponent)
+	if (!GetMesh())
 		return;
 
-	CombatComponent->OnReloadFinished();
+	if (!ThrowMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(SwapMontage);
 }
 
-void AShooterCharacter::OnShellInserted()
+void AShooterCharacter::OnAnimReloadFinished()
 {
 	if (!CombatComponent)
 		return;
 
-	CombatComponent->OnShellInserted();
+	CombatComponent->OnAnimReloadFinished();
 }
 
-void AShooterCharacter::OnThrowFinished()
+void AShooterCharacter::OnAnimShellInserted()
 {
 	if (!CombatComponent)
 		return;
 
-	CombatComponent->OnThrowFinished();
+	CombatComponent->OnAnimShellInserted();
 }
 
-void AShooterCharacter::OnThrowLaunched()
+void AShooterCharacter::OnAnimThrowFinished()
 {
 	if (!CombatComponent)
 		return;
 
-	CombatComponent->OnThrowLaunched();
+	CombatComponent->OnAnimThrowFinished();
+}
+
+void AShooterCharacter::OnAnimThrowLaunched()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnAnimThrowLaunched();
+}
+
+void AShooterCharacter::OnAnimSwapSwapped()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnAnimSwapSwapped();
+}
+
+void AShooterCharacter::OnAnimSwapFinished()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->OnAnimSwapFinished();
 }
 
 void AShooterCharacter::PlayHitReactMontage()
