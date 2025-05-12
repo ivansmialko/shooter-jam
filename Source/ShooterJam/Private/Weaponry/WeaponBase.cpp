@@ -433,7 +433,6 @@ void AWeaponBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifet
 
 	DOREPLIFETIME(AWeaponBase, WeaponState);
 	DOREPLIFETIME_CONDITION(AWeaponBase, bCurrentlyUsingSsr, COND_OwnerOnly);
-
 }
 
 void AWeaponBase::ShowPickUpWidget(bool bShowWidget)

@@ -32,6 +32,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Native_OnThrowLaunched();
 
+	UFUNCTION(BlueprintCallable)
+	void Native_OnSwapSwapped();
+
+	UFUNCTION(BlueprintCallable)
+	void Native_OnSwapFinished();
+
 private:
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	class AShooterCharacter* ShooterCharacter;

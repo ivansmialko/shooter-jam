@@ -143,6 +143,7 @@ public:
 	void ReloadWeapon();
 	void Throw();
 	void PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount);
+	void ChangeCombatState(ECombatState InCombatState);
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	
@@ -166,10 +167,12 @@ public:
 	void OnRep_IsAiming();
 	//~ End Replication Notifies
 
-	void OnShellInserted();
-	void OnReloadFinished();
-	void OnThrowFinished();
-	void OnThrowLaunched();
+	void OnAnimShellInserted();
+	void OnAnimReloadFinished();
+	void OnAnimThrowFinished();
+	void OnAnimThrowLaunched();
+	void OnAnimSwapSwapped();
+	void OnAnimSwapFinished();
 
 	UFUNCTION(Server, Reliable)
 	void Server_FireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);
@@ -239,6 +242,7 @@ protected:
 
 	void OnStateReload();
 	void OnStateThrow();
+	void OnStateSwapping();
 
 	void EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious = false);
 	void EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip);

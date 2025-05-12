@@ -41,22 +41,22 @@ void AProjectileBullet::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FPredictProjectilePathParams PathParams;
-	PathParams.bTraceWithChannel = true;
-	PathParams.bTraceWithCollision = true;
-	PathParams.DrawDebugTime = 5.f;
-	PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
-	PathParams.LaunchVelocity = GetActorForwardVector() * InitialSpeed;
-	PathParams.MaxSimTime = 4.f;
-	PathParams.ProjectileRadius = 5.f;
-	PathParams.SimFrequency = 30.f;
-	PathParams.OverrideGravityZ = 0.3f;
-	PathParams.StartLocation = GetActorLocation();
-	PathParams.TraceChannel = ECollisionChannel::ECC_Visibility;
-	PathParams.ActorsToIgnore.Add(this);
-	FPredictProjectilePathResult PathResult;
+	//FPredictProjectilePathParams PathParams;
+	//PathParams.bTraceWithChannel = true;
+	//PathParams.bTraceWithCollision = true;
+	//PathParams.DrawDebugTime = 5.f;
+	//PathParams.DrawDebugType = EDrawDebugTrace::ForDuration;
+	//PathParams.LaunchVelocity = GetActorForwardVector() * InitialSpeed;
+	//PathParams.MaxSimTime = 4.f;
+	//PathParams.ProjectileRadius = 5.f;
+	//PathParams.SimFrequency = 30.f;
+	//PathParams.OverrideGravityZ = 0.3f;
+	//PathParams.StartLocation = GetActorLocation();
+	//PathParams.TraceChannel = ECollisionChannel::ECC_Visibility;
+	//PathParams.ActorsToIgnore.Add(this);
+	//FPredictProjectilePathResult PathResult;
 
-	UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
+	//UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 }
 
 #ifdef WITH_EDITOR
