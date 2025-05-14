@@ -23,6 +23,7 @@ public:
 
 class UCharacterOverlay;
 class UAnnouncementWidget;
+class UGameMenu;
 
 UCLASS()
 class SHOOTERJAM_API AShooterHUD : public AHUD
@@ -40,6 +41,9 @@ private:
 	//** Class of announcement widget
 	UAnnouncementWidget* AnnouncementWidget{ nullptr };
 
+	/** Class of in-game menu */
+	UGameMenu* GameMenuWidget{ nullptr };
+
 	//** Blueprint selector, to set a derived from UCharacterOverlay widget
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<class UUserWidget> CharacterOverlayBlueprint;
@@ -47,6 +51,9 @@ private:
 	//** Blueprint selector, to set a derived from UAnnouncementWidget widget
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UUserWidget> AnnouncementWidgetBlueprint;
+
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UUserWidget> GameMenuWidgetBlueprint;
 
 	//** Max crosshair spread
 	UPROPERTY(EditAnywhere)
@@ -88,6 +95,9 @@ public:
 
 	/** Creates an instance of UUserWidget and add it to the screen */
 	void AddAnnouncementWidget();
+
+	/** Creates an instance of UUserWidget and adds it to the screen */
+	void AddGameMenuWidget();
 
 	/** Hides an announcement widget */
 	void HideAnnouncementWidget();

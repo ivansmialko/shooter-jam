@@ -149,6 +149,8 @@ private:
 	UInputAction* ReloadAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ThrowAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* ExitAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* CameraBoom;
