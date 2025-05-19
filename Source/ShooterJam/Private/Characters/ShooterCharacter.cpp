@@ -235,11 +235,6 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 	RequestThrow();
 }
 
-void AShooterCharacter::OnExit(const FInputActionValue& Value)
-{
-
-}
-
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
@@ -1407,7 +1402,6 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
 	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
-	EnhancedInput->BindAction(ExitAction, ETriggerEvent::Started, this, &AShooterCharacter::OnExit);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

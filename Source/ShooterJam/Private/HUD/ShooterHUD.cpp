@@ -4,6 +4,7 @@
 #include "HUD/ShooterHUD.h"
 #include "HUD/CharacterOverlay.h"
 #include "HUD/AnnouncementWidget.h"
+#include "HUD/GameMenu.h"
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -188,6 +189,47 @@ void AShooterHUD::HidePingAnimation()
 	{
 		CharacterOverlay->StopAnimation(CharacterOverlay->WifiBlinkAnimation);
 	}
+}
+
+void AShooterHUD::ShowGameMenu()
+{
+	if (GetIsGameMenuOpen())
+	{
+		GameMenuWidget->SetVisibility(ESlateVisibility::Visible);
+		GameMenuWidget->MenuSetup();
+		return;
+	}
+
+	APlayerController* PlayerController = GetOwningPlayerController();
+	if (!PlayerController)
+		return;
+
+	if (!GameMenuWidgetBlueprint)
+		return;
+
+	GameMenuWidget = CreateWidget<UGameMenu>(PlayerController, GameMenuWidgetBlueprint);
+	if (!GameMenuWidget)
+		return;
+
+	GameMenuWidget->AddToViewport();
+	GameMenuWidget->MenuSetup();
+}
+
+void AShooterHUD::HideGameMenu()
+{
+	if (!GameMenuWidget)
+		return;
+
+	GameMenuWidget->SetVisibility(ESlateVisibility::Hidden);
+	GameMenuWidget->MenuTeardown();
+}
+
+bool AShooterHUD::GetIsGameMenuOpen()
+{
+	if (!GameMenuWidget)
+		return false;
+
+	return GameMenuWidget->IsInViewport();
 }
 
 void AShooterHUD::SetCrosshairsPackage(FCrosshairsPackage& InCrosshairsPackage)

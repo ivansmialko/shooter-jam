@@ -9,6 +9,9 @@
 
 class AShooterHUD;
 class AShooterCharacter;
+class UInputAction;
+class UInputMappingContext;
+struct FInputActionValue;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPingTooHigh, bool, isTooHighPing);
 
@@ -26,9 +29,19 @@ public:
 
 //private fields
 private:
+
+//~ Begin Exposed members
 	/** Frequency, controller is requesting servertime with */
 	UPROPERTY(EditAnywhere, Category = Time);
 	float TimeSyncFrequency{ 5.f };
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputMappingContext* InputMappingContext;
+
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* InputActionExit;
+
+//~ End Exposed members
 
 	/** Reference to player's heads up display */
 	AShooterHUD* ShooterHud;
@@ -122,6 +135,8 @@ private:
 	UFUNCTION()
 	void OnRep_MatchState();
 
+	void OnInputExit(const FInputActionValue& InValue);
+
 	void DefaultInitHud(AShooterCharacter* ShooterCharacter);
 
 	/** Handle changing match state to "WaitingToStart" */
@@ -135,31 +150,37 @@ private:
 
 //protected methods
 protected:
-	//~ Begin AActor Inteface
+//~ Begin AActor Inteface
 	virtual void BeginPlay() override;
-	//~ End AActor Interface
+//~ End AActor Interface
+
+//~ Begin APlayerController Interface
+	/** Bind inputs */
+	virtual void SetupInputComponent() override;
+//~ End APlayerController Interface
 
 //public methods
 public:
 
-	//~ Begin UObject Interface
+//~ Begin UObject Interface
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-	//~ End UObject Interface
+//~ End UObject Interface
 
-	//~ Begin AActor Interface
+//~ Begin AActor Interface
 	virtual void Tick(float DeltaSeconds) override;
-	//~ End AActor Interface
+//~ End AActor Interface
 
-	//~ Begin APlayerController Interface
+//~ Begin APlayerController Interface
 	virtual void OnPossess(APawn* InPawn) override;
 
 	/** Sync with server clock ASAP */
 	virtual void ReceivedPlayer() override;
-	//~ End APlayerController Interface
+//~ End APlayerController Interface
 
 	/** Current world time on server, synchronized */
 	virtual float GetServerTime();
 
+	/** Handles match state changes */
 	void OnMatchStateSet(FName InState);
 
 
