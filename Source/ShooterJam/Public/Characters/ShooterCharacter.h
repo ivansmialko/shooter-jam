@@ -29,10 +29,17 @@ class AWeaponBase;
 class UBuffComponent;
 class ULagCompensationComponent;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLeftGame);
+
 UCLASS()
 class SHOOTERJAM_API AShooterCharacter : public ACharacter, public ICrosshairsInteractable
 {
 	GENERATED_BODY()
+
+
+//public members
+public:
+	FOnLeftGame OnLeftGame;
 
 //private members
 private:
@@ -180,6 +187,7 @@ private:
 	bool bRotateRootBone;
 	bool bInputInitialized{ false };
 	bool bHudInitialized{ false };
+	bool bLeftGame{ false };
 	float AO_Yaw;
 	float AO_Pitch;
 	float Root_AO_Yaw;
@@ -274,7 +282,7 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_OnReload();
 	UFUNCTION(NetMulticast, Reliable)
-	void Multicast_OnEliminated();
+	void Multicast_OnEliminated(bool bInLeftGame);
 
 	void ActionEquip();
 	void ActionAimStart();
@@ -343,7 +351,10 @@ public:
 	virtual void Jump() override;
 	virtual void Destroyed() override;
 
-	virtual void OnEliminated();
+	UFUNCTION(Server, Reliable)
+	void Server_LeaveGame();
+
+	virtual void OnEliminated(bool bInLeftGame);
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
 
 	virtual void OnAnimReloadFinished();
@@ -394,6 +405,7 @@ public:
 	FORCEINLINE bool GetUseFabrik() const { return GetIsUnoccupied(); }
 	FORCEINLINE bool GetUseAimOffsets() const { return GetIsUnoccupied(); }
 	FORCEINLINE bool GetUseRightHandTransform() const { return GetIsUnoccupied(); }
+	FORCEINLINE bool GetIsLeftGame() const { return bLeftGame; }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }

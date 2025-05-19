@@ -75,7 +75,23 @@ void AShooterGameMode::OnPlayerEliminated(AShooterCharacter* InElimCharacter, AS
 	if (!InElimCharacter)
 		return;
 
-	InElimCharacter->OnEliminated();
+	InElimCharacter->OnEliminated(false);
+}
+
+void AShooterGameMode::OnPlayerLeft(AShooterPlayerState* InPlayerLeaving)
+{
+	//Get server's game state
+	AShooterGameState* ShooterGameState = GetGameState<AShooterGameState>();
+	if (!ShooterGameState)
+		return;
+
+	ShooterGameState->RemovePlayer(InPlayerLeaving);
+
+	AShooterCharacter* ShooterCharacterLeaving{ Cast<AShooterCharacter>(InPlayerLeaving->GetPawn()) };
+	if (!ShooterCharacterLeaving)
+		return;
+
+	ShooterCharacterLeaving->OnEliminated(true);
 }
 
 void AShooterGameMode::RequestRespawn(ACharacter* InCharacter, AController* InController)

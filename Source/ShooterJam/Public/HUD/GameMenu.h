@@ -30,6 +30,8 @@ protected:
 
 	UFUNCTION()
 	void OnDestroySession(bool bWasSuccessfull);
+	UFUNCTION()
+	void OnPlayerLeft();
 
 private:
 

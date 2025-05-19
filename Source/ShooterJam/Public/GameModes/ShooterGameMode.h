@@ -12,6 +12,7 @@ namespace MatchState
 };
 
 class AShooterCharacter;
+class AShooterPlayerState;
 class AShooterCharacterController;
 
 UCLASS()
@@ -43,6 +44,7 @@ public:
 	virtual void Tick(float DeltaSeconds);
 
 	virtual void OnPlayerEliminated(AShooterCharacter* InElimCharacter, AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController);
+	virtual void OnPlayerLeft(AShooterPlayerState* InPlayerLeaving);
 	virtual void RequestRespawn(ACharacter* InCharacter, AController* InController);
 
 //protected methods

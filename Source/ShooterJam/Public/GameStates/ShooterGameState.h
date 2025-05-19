@@ -27,6 +27,7 @@ public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void UpdateTopScore(AShooterPlayerState* ScoringPlayer);
+	void RemovePlayer(AShooterPlayerState* InPlayerToRemove);
 
 public:
 	FORCEINLINE const TArray<AShooterPlayerState*>& GetTopScoringPlayers() const { return TopScoringPlayers; };
