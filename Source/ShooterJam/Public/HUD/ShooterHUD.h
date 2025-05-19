@@ -35,27 +35,28 @@ private:
 	//** Package for users crosshair images
 	FCrosshairsPackage CrosshairsPackage;
 
-	//** Class of user's actual HUD widget
+	//** Instance of CharacterOverlay widget
 	UCharacterOverlay* CharacterOverlay{ nullptr };
 
-	//** Class of announcement widget
+	//** Instance of Announcement widget
 	UAnnouncementWidget* AnnouncementWidget{ nullptr };
 
-	/** Class of in-game menu */
+	//** Instance of in-game menu */
 	UGameMenu* GameMenuWidget{ nullptr };
 
-	//** Blueprint selector, to set a derived from UCharacterOverlay widget
+	//** Class of Overlay Widget to create
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<class UUserWidget> CharacterOverlayBlueprint;
 
-	//** Blueprint selector, to set a derived from UAnnouncementWidget widget
+	//** Class of Announcement Widget to create
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UUserWidget> AnnouncementWidgetBlueprint;
 
+	/** Class of Game Menu Widget to create */
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UUserWidget> GameMenuWidgetBlueprint;
 
-	//** Max crosshair spread
+	/** Max crosshair spread */
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax{ 60.f };
 
@@ -71,7 +72,7 @@ private:
 	int32 Defeats{ 0 };
 	//** Used to cache current Ammo amount
 	int32 Ammo{ 0 };
-	//** Used to cache Carried Ammo amount
+	/** Used to cache Carried Ammo amount */
 	int32 CarriedAmmo{ 0 };
 
 //private methods
@@ -114,9 +115,16 @@ public:
 	/** Hides a ping animation */
 	void HidePingAnimation();
 
+	/** Shows in-game menu */
+	void ShowGameMenu();
+
+	/** Hides in-game menu */
+	void HideGameMenu();
+
 
 //public getters/setters
 public:
+	bool GetIsGameMenuOpen();
 	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
 

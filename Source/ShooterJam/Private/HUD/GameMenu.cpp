@@ -31,10 +31,15 @@ void UGameMenu::MenuSetup()
 		return;
 
 	MultiplayerSessionsSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
-	if (!MultiplayerSessionsSubsystem)
-		return;
+	if (MultiplayerSessionsSubsystem && !MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.IsBound())
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &UGameMenu::OnDestroySession);
+	}
 
-	MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &UGameMenu::OnDestroySession);
+	if (ExitButton && !ExitButton->OnClicked.IsBound())
+	{
+		ExitButton->OnClicked.AddDynamic(this, &UGameMenu::OnExitButtonClicked);
+	}
 }
 
 void UGameMenu::MenuTeardown()
@@ -50,6 +55,16 @@ void UGameMenu::MenuTeardown()
 	FInputModeGameOnly InputModeData;
 	PlayerController->SetInputMode(InputModeData);
 	PlayerController->SetShowMouseCursor(false);
+
+	if (ExitButton)
+	{
+		ExitButton->OnClicked.RemoveDynamic(this, &UGameMenu::OnExitButtonClicked);
+	}
+
+	if (MultiplayerSessionsSubsystem)
+	{
+		MultiplayerSessionsSubsystem->MultiplayerOnDestroySessionComplete.RemoveDynamic(this, &UGameMenu::OnDestroySession);
+	}
 }
 
 bool UGameMenu::Initialize()
@@ -57,21 +72,12 @@ bool UGameMenu::Initialize()
 	if (!Super::Initialize())
 		return false;
 
-	if (ExitButton)
-	{
-		ExitButton->OnClicked.AddDynamic(this, &UGameMenu::OnExitButtonClicked);
-	}
-
 	return true;
 }
 
 void UGameMenu::OnDestroySession(bool bWasSuccessfull)
 {
-	if (!bWasSuccessfull)
-	{
-		ExitButton->SetIsEnabled(true);
-		return;
-	}
+	ExitButton->SetIsEnabled(true);
 
 	UWorld* World{ GetWorld() };
 	if (!World)

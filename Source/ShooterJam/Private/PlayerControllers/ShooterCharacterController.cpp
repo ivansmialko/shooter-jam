@@ -12,6 +12,8 @@
 
 #include "Net/UnrealNetwork.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnhancedInputSubsystems.h"
+#include "EnhancedInputComponent.h"
 
 bool AShooterCharacterController::CheckInitHud()
 {
@@ -261,6 +263,21 @@ void AShooterCharacterController::OnRep_MatchState()
 	HandleMatchState();
 }
 
+void AShooterCharacterController::OnInputExit(const FInputActionValue& InValue)
+{
+	if (!ShooterHud)
+		return;
+
+	if (ShooterHud->GetIsGameMenuOpen())
+	{
+		ShooterHud->HideGameMenu();
+	}
+	else
+	{
+		ShooterHud->ShowGameMenu();
+	}
+}
+
 void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCharacter)
 {
 	if (!InShooterCharacter)
@@ -354,5 +371,22 @@ void AShooterCharacterController::BeginPlay()
 	//FString SysMessage = FString::Printf(TEXT("Player %s, %d, is local: %s."), *LocalRoleString, static_cast<int>(GetNetMode()), (IsLocalController() ? TEXT("true") : TEXT("false")));
 	//FString UserMessage = FString::Printf(TEXT("BeginPlay(), i'm %s."), *GetName());
 	//GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Cyan, FString::Printf(TEXT("%s%s"), *SysMessage, *UserMessage));
+}
+
+void AShooterCharacterController::SetupInputComponent()
+{
+	Super::SetupInputComponent();
+
+	UEnhancedInputLocalPlayerSubsystem* EnhancedInputSubsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer());
+	if (!EnhancedInputSubsystem)
+		return;
+
+	EnhancedInputSubsystem->AddMappingContext(InputMappingContext, 0);
+
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(InputComponent);
+	if (!EnhancedInput)
+		return;
+
+	EnhancedInput->BindAction(InputActionExit, ETriggerEvent::Completed, this, &AShooterCharacterController::OnInputExit);
 }
 
