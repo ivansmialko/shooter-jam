@@ -3,6 +3,8 @@
 
 #include "HUD/GameMenu.h"
 
+#include "Characters/ShooterCharacter.h"
+
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/GameModeBase.h"
 #include "Components/Button.h"
@@ -98,12 +100,35 @@ void UGameMenu::OnDestroySession(bool bWasSuccessfull)
 	}
 }
 
-void UGameMenu::OnExitButtonClicked()
+void UGameMenu::OnPlayerLeft()
 {
-	ExitButton->SetIsEnabled(false);
-
 	if (!MultiplayerSessionsSubsystem)
 		return;
 
 	MultiplayerSessionsSubsystem->DestroySession();
+}
+
+void UGameMenu::OnExitButtonClicked()
+{
+	ExitButton->SetIsEnabled(false);
+
+	UWorld* World{ GetWorld() };
+	if (!World)
+		return;
+
+	APlayerController* Controller { World->GetFirstPlayerController() };
+	if (!Controller)
+		return;
+
+	AShooterCharacter* ShooterCharacterLeaving{ Cast<AShooterCharacter>(Controller->GetPawn()) };
+	if (ShooterCharacterLeaving)
+	{
+		ShooterCharacterLeaving->Server_LeaveGame();
+		ShooterCharacterLeaving->OnLeftGame.AddDynamic(this, &UGameMenu::OnPlayerLeft);
+	}
+	else
+	{
+		ExitButton->SetIsEnabled(true);
+	}
+
 }

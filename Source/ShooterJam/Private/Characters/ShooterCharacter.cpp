@@ -291,10 +291,15 @@ void AShooterCharacter::OnPingTooHigh(bool bInIsTooHighPing)
 void AShooterCharacter::OnEliminatedTimerFinished()
 {
 	AShooterGameMode* GameMode = GetShooterGameMode();
-	if (!GameMode)
-		return;
+	if (GameMode && !bLeftGame)
+	{
+		GameMode->RequestRespawn(this, GetController());
+	}
 
-	GameMode->RequestRespawn(this, GetController());
+	if (bLeftGame && IsLocallyControlled())
+	{
+		OnLeftGame.Broadcast();
+	}
 }
 
 void AShooterCharacter::CalculateAimOffset(float DeltaTime)
@@ -749,15 +754,35 @@ void AShooterCharacter::Server_OnReload_Implementation()
 	ActionReload();
 }
 
-void AShooterCharacter::Multicast_OnEliminated_Implementation()
+void AShooterCharacter::Server_LeaveGame_Implementation()
+{
+	UWorld* World{ GetWorld() };
+	if (!World)
+		return;
+
+	AShooterGameMode* GameMode{ World->GetAuthGameMode<AShooterGameMode>() };
+	if (!GameMode)
+		return;
+
+	AShooterPlayerState* ShooterPlayerState{ GetPlayerState<AShooterPlayerState>() };
+	if (!ShooterPlayerState)
+		return;
+
+	GameMode->OnPlayerLeft(ShooterPlayerState);
+}
+
+void AShooterCharacter::Multicast_OnEliminated_Implementation(bool bInLeftGame)
 {
 	bIsEliminated = true;
+	bLeftGame = bInLeftGame;
 	PlayEliminationMontage();
 
 	PlayDissolvingEffect();
 	PlayElimbotEffect();
 
 	DisableInputs();
+
+	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 
 	if (!PlayerController)
 		return;
@@ -1435,14 +1460,12 @@ void AShooterCharacter::Jump()
 	}
 }
 
-void AShooterCharacter::OnEliminated()
+void AShooterCharacter::OnEliminated(bool bInLeftGame)
 {
-	Multicast_OnEliminated();
+	Multicast_OnEliminated(bInLeftGame);
 
 	DropWeapon();
 	DropSecondaryWeapon();
-
-	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
 }
 
 void AShooterCharacter::OnSpendRound(AWeaponBase* InWeapon)

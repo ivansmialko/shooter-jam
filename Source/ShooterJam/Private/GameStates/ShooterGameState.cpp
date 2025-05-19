@@ -36,3 +36,11 @@ void AShooterGameState::UpdateTopScore(AShooterPlayerState* ScoringPlayer)
 		TopScore = ScoringPlayer->GetScore();
 	}
 }
+
+void AShooterGameState::RemovePlayer(AShooterPlayerState* InPlayerToRemove)
+{
+	if (!InPlayerToRemove)
+		return;
+
+	TopScoringPlayers.Remove(InPlayerToRemove);
+}
