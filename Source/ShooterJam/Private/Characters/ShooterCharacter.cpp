@@ -10,6 +10,7 @@
 #include "Components/LagCompensationComponent.h"
 #include "Game/ShooterJam.h"
 #include "GameModes/ShooterGameMode.h"
+#include "GameStates/ShooterGameState.h"
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "PlayerState/ShooterPlayerState.h"
 #include "Weaponry/WeaponTypes.h"
@@ -29,6 +30,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 #include "Particles/ParticleSystemComponent.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 AShooterCharacter::AShooterCharacter()
 {
@@ -571,6 +574,8 @@ void AShooterCharacter::PollInitPlayerState()
 
 	PlayerState->UpdateScoreHud();
 	PlayerState->UpdateDefeatsHud();
+
+	CheckShowCrown();
 }
 
 void AShooterCharacter::PollInitPlayerController()
@@ -771,6 +776,39 @@ void AShooterCharacter::Server_LeaveGame_Implementation()
 	GameMode->OnPlayerLeft(ShooterPlayerState);
 }
 
+void AShooterCharacter::Multicast_GainedLead_Implementation()
+{
+	if (!CrownEffect)
+		return;
+
+	if (!CrownEffectComponent)
+	{
+		CrownEffectComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
+			CrownEffect,
+			GetCapsuleComponent(),
+			FName(),
+			GetActorLocation() + FVector(0.f, 0.f, 110.f),
+			GetActorRotation(),
+			EAttachLocation::KeepWorldPosition,
+			false
+		);
+	}
+	 
+	if (!CrownEffectComponent)
+		return;
+
+	CrownEffectComponent->Activate();
+
+}
+
+void AShooterCharacter::Multicast_LostLead_Implementation()
+{
+	if (!CrownEffectComponent)
+		return;
+
+	CrownEffectComponent->DestroyComponent();
+}
+
 void AShooterCharacter::Multicast_OnEliminated_Implementation(bool bInLeftGame)
 {
 	bIsEliminated = true;
@@ -894,6 +932,22 @@ void AShooterCharacter::DropSecondaryWeapon()
 	}
 
 	CombatComponent->GetSecondaryWeapon()->OnDropped();
+}
+
+void AShooterCharacter::CheckShowCrown()
+{
+	AShooterPlayerState* ShooterPlayerState{ Cast<AShooterPlayerState>(GetPlayerState()) };
+	if (!ShooterPlayerState)
+		return;
+
+	AShooterGameState* ShooterGameState{ Cast<AShooterGameState>(UGameplayStatics::GetGameState(this)) };
+	if (!ShooterGameState)
+		return;
+
+	if (!ShooterGameState->IsPlayerLeading(ShooterPlayerState))
+		return;
+
+	Multicast_GainedLead();
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)

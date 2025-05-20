@@ -21,6 +21,8 @@ class USoundCue;
 class UInputMappingContext;
 class UInputAction;
 class UBoxComponent;
+class UNiagaraSystem;
+class UNiagaraComponent; 
 
 class AShooterCharacterController;
 class AShooterPlayerState;
@@ -78,10 +80,13 @@ private:
 	/** Material instance of dissolve material. */
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UMaterialInstance* DissolveMaterialInstance;				//Selected in the editor
-	UPROPERTY(EditAnywhere, Category = Effects)
 
 	/** Elimination bot particle system. */
+	UPROPERTY(EditAnywhere, Category = Effects)
 	UParticleSystem* ElimbotEffect;								//Selected in the editor
+
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UNiagaraSystem* CrownEffect;								//Selected in the editor
 
 	/** Sound of elimination. */
 	UPROPERTY(EditAnywhere, Category = Effects)
@@ -169,6 +174,8 @@ private:
 	UMaterialInstanceDynamic* DissolveMaterialInstanceDynamic;	//Instance of UMaterialInstance that we create in runtime
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UParticleSystemComponent* ElimbotComponent;					//Instance of Particle system that we spawn in runtime
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UNiagaraComponent* CrownEffectComponent;
 
 	UPROPERTY(VisibleAnywhere)
 	UCombatComponent* CombatComponent;
@@ -354,6 +361,12 @@ public:
 	UFUNCTION(Server, Reliable)
 	void Server_LeaveGame();
 
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_GainedLead();
+
+	UFUNCTION(NetMulticast, Reliable)
+	void Multicast_LostLead();
+
 	virtual void OnEliminated(bool bInLeftGame);
 	virtual void OnSpendRound(AWeaponBase* InWeapon);
 
@@ -383,6 +396,8 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bInShowScope);
+
+	void CheckShowCrown();
 
 	//public getters/setters
 public:
