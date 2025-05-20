@@ -30,5 +30,6 @@ public:
 	void RemovePlayer(AShooterPlayerState* InPlayerToRemove);
 
 public:
+	FORCEINLINE bool IsPlayerLeading(AShooterPlayerState* InPlayerState) const { return TopScoringPlayers.Contains(InPlayerState); }
 	FORCEINLINE const TArray<AShooterPlayerState*>& GetTopScoringPlayers() const { return TopScoringPlayers; };
 };
