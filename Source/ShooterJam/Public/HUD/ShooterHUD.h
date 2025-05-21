@@ -60,12 +60,18 @@ private:
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UUserWidget> GameMenuWidgetBlueprint;
 
-	UPROPERTY(EditAnywhere, Category = "HUD")
+	UPROPERTY(EditAnywhere, Category = "Chat")
 	TSubclassOf<UUserWidget> WorldChatWidgetBlueprint;
+
+	UPROPERTY(EditAnywhere, Category = "Chat")
+	TSubclassOf<UUserWidget> WorldChatItemWidgetBlueprint;
 
 	/** Max crosshair spread */
 	UPROPERTY(EditAnywhere)
 	float CrosshairSpreadMax{ 60.f };
+
+	UPROPERTY(EditAnywhere, Category = "Chat")
+	float ChatMessageDuration{ 1.5f };
 
 	//** Used to cache Health value
 	float Health{ 0.f };

@@ -243,7 +243,9 @@ void AShooterHUD::ShowWorldChat()
 	if (!WorldChatWidget)
 		return;
 
+	WorldChatWidget->SetOwningPlayer(PlayerController);
 	WorldChatWidget->AddToViewport();
+	WorldChatWidget->SetChatItemBlueprint(WorldChatItemWidgetBlueprint);
 }
 
 void AShooterHUD::HideWorldChat()
