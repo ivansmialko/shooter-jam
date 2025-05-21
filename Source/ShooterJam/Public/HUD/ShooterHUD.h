@@ -61,9 +61,6 @@ private:
 	TSubclassOf<UUserWidget> GameMenuWidgetBlueprint;
 
 	UPROPERTY(EditAnywhere, Category = "Chat")
-	TSubclassOf<UUserWidget> WorldChatWidgetBlueprint;
-
-	UPROPERTY(EditAnywhere, Category = "Chat")
 	TSubclassOf<UUserWidget> WorldChatItemWidgetBlueprint;
 
 	/** Max crosshair spread */
@@ -134,20 +131,13 @@ public:
 	/** Hides in-game menu */
 	void HideGameMenu();
 
-	/** Show in-game chat */
-	void ShowWorldChat();
-
-	/** Hides in-game chat */
-	void HideWorldChat();
-
-
 //public getters/setters
 public:
 	bool GetIsGameMenuOpen();
-	bool GetIsWorldChatOpen();
+	UWorldChat* GetWorldChat() const;
+
 	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
-	FORCEINLINE UWorldChat* GetWorldChat() const { return WorldChatWidget; }
 
 	void SetCrosshairsPackage(FCrosshairsPackage& InHUDPackage);
 	void SetHealth(float InHealth, float InMaxHealth);
