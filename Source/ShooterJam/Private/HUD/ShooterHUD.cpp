@@ -225,37 +225,6 @@ void AShooterHUD::HideGameMenu()
 	GameMenuWidget->MenuTeardown();
 }
 
-void AShooterHUD::ShowWorldChat()
-{
-	if (GetIsWorldChatOpen())
-	{
-		WorldChatWidget->SetVisibility(ESlateVisibility::Visible);
-	}
-
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (!PlayerController)
-		return;
-
-	if (!WorldChatWidgetBlueprint)
-		return;
-
-	WorldChatWidget = CreateWidget<UWorldChat>(PlayerController, WorldChatWidgetBlueprint);
-	if (!WorldChatWidget)
-		return;
-
-	WorldChatWidget->SetOwningPlayer(PlayerController);
-	WorldChatWidget->AddToViewport();
-	WorldChatWidget->SetChatItemBlueprint(WorldChatItemWidgetBlueprint);
-}
-
-void AShooterHUD::HideWorldChat()
-{
-	if (!WorldChatWidget)
-		return;
-
-	WorldChatWidget->SetVisibility(ESlateVisibility::Hidden);
-}
-
 bool AShooterHUD::GetIsGameMenuOpen()
 {
 	if (!GameMenuWidget)
@@ -264,12 +233,12 @@ bool AShooterHUD::GetIsGameMenuOpen()
 	return GameMenuWidget->IsInViewport();
 }
 
-bool AShooterHUD::GetIsWorldChatOpen()
+UWorldChat* AShooterHUD::GetWorldChat() const
 {
-	if (!WorldChatWidget)
-		return false;
+	if (!CharacterOverlay)
+		return nullptr;
 
-	return WorldChatWidget->IsInViewport();
+	return CharacterOverlay->WorldChat;
 }
 
 void AShooterHUD::SetCrosshairsPackage(FCrosshairsPackage& InCrosshairsPackage)

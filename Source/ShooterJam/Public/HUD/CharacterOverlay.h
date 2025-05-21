@@ -10,6 +10,7 @@ class UProgressBar;
 class UTextBlock;
 class UStackBox;
 class UImage;
+class UWorldChat;
 
 /**
  * C++ base for W_CharacterOverlay. Collection of widgets that represents user's HUD
@@ -43,6 +44,8 @@ public:
 	UTextBlock* ShieldText;
 	UPROPERTY(meta = (BindWidget))
 	UImage* WifiImage;
+	UPROPERTY(meta = (BindWidget))
+	UWorldChat* WorldChat;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* WifiBlinkAnimation;

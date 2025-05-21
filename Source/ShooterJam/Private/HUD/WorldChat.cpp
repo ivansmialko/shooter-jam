@@ -33,6 +33,7 @@ void UWorldChat::AddMessage(const FString& InMessage)
 		return;
 
 	NewSlot->SetAnchors(FAnchors(0, 1, 0, 1));
+	NewSlot->SetAlignment(FVector2D(0.f, 1.f));
 
 	//UCanvasPanelSlot* CanvasSlot = Canvas->AddChildToCanvas(NewItem);
 	//if (!CanvasSlot)

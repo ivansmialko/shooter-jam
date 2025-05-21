@@ -21,10 +21,13 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UCanvasPanel* Canvas;
 
+	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> WorldChatItemBlueprint;
 
-	TArray<UWorldChatItem*> MessagesHistory;
+	UPROPERTY(EditAnywhere)
 	float MessageDuration{ 3.f };
+
+	TArray<UWorldChatItem*> MessagesHistory;
 
 //public methods
 public:

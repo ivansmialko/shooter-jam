@@ -238,7 +238,7 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 {
 	//RequestThrow();
 
-	PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there");
+	PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there!");
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -1016,7 +1016,6 @@ void AShooterCharacter::HudUpdate()
 	HudUpdateHealth();
 	HudUpdateShield();
 	HudUpdateGrenades();
-	HudShowChat();
 }
 
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
@@ -1424,23 +1423,6 @@ void AShooterCharacter::HudUpdateGrenades()
 		return;
 
 	PlayerController->GetPlayerHud()->SetGrenadesAmount(CombatComponent->GetGrenadesAmount());
-}
-
-void AShooterCharacter::HudShowChat()
-{
-	if (!PlayerController)
-	{
-		PlayerController = Cast<AShooterCharacterController>(GetController());
-	}
-
-	if (!PlayerController)
-		return;
-
-	if (!PlayerController->GetPlayerHud())
-		return;
-
-	PlayerController->GetPlayerHud()->ShowWorldChat();
-	PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there");
 }
 
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
