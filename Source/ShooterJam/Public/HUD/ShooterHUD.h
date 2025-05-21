@@ -24,6 +24,7 @@ public:
 class UCharacterOverlay;
 class UAnnouncementWidget;
 class UGameMenu;
+class UWorldChat;
 
 UCLASS()
 class SHOOTERJAM_API AShooterHUD : public AHUD
@@ -44,6 +45,9 @@ private:
 	//** Instance of in-game menu */
 	UGameMenu* GameMenuWidget{ nullptr };
 
+	/** Instance of in-game chat */
+	UWorldChat* WorldChatWidget{ nullptr };
+
 	//** Class of Overlay Widget to create
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<class UUserWidget> CharacterOverlayBlueprint;
@@ -55,6 +59,9 @@ private:
 	/** Class of Game Menu Widget to create */
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<UUserWidget> GameMenuWidgetBlueprint;
+
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UUserWidget> WorldChatWidgetBlueprint;
 
 	/** Max crosshair spread */
 	UPROPERTY(EditAnywhere)
@@ -121,12 +128,20 @@ public:
 	/** Hides in-game menu */
 	void HideGameMenu();
 
+	/** Show in-game chat */
+	void ShowWorldChat();
+
+	/** Hides in-game chat */
+	void HideWorldChat();
+
 
 //public getters/setters
 public:
 	bool GetIsGameMenuOpen();
+	bool GetIsWorldChatOpen();
 	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }
+	FORCEINLINE UWorldChat* GetWorldChat() const { return WorldChatWidget; }
 
 	void SetCrosshairsPackage(FCrosshairsPackage& InHUDPackage);
 	void SetHealth(float InHealth, float InMaxHealth);

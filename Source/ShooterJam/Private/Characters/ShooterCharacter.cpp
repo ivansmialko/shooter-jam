@@ -14,6 +14,7 @@
 #include "PlayerControllers/ShooterCharacterController.h"
 #include "PlayerState/ShooterPlayerState.h"
 #include "Weaponry/WeaponTypes.h"
+#include "HUD/WorldChat.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -1013,6 +1014,7 @@ void AShooterCharacter::HudUpdate()
 	HudUpdateHealth();
 	HudUpdateShield();
 	HudUpdateGrenades();
+	HudShowChat();
 }
 
 AWeaponBase* AShooterCharacter::GetEquippedWeapon() const
@@ -1420,6 +1422,23 @@ void AShooterCharacter::HudUpdateGrenades()
 		return;
 
 	PlayerController->GetPlayerHud()->SetGrenadesAmount(CombatComponent->GetGrenadesAmount());
+}
+
+void AShooterCharacter::HudShowChat()
+{
+	if (!PlayerController)
+	{
+		PlayerController = Cast<AShooterCharacterController>(GetController());
+	}
+
+	if (!PlayerController)
+		return;
+
+	if (!PlayerController->GetPlayerHud())
+		return;
+
+	PlayerController->GetPlayerHud()->ShowWorldChat();
+	PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there");
 }
 
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
