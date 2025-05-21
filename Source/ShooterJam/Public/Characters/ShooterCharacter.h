@@ -393,6 +393,7 @@ public:
 	void HudUpdateShield();
 	void HudUpdateAmmo();
 	void HudUpdateGrenades();
+	void HudShowChat();
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void ShowSniperScopeWidget(bool bInShowScope);
