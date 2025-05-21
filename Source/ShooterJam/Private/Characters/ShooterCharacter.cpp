@@ -236,7 +236,9 @@ void AShooterCharacter::OnReload(const FInputActionValue& Value)
 
 void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 {
-	RequestThrow();
+	//RequestThrow();
+
+	PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there");
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
