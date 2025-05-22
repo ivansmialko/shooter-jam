@@ -130,6 +130,10 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_ReportServerTime(float InTimeOfClientRequest, float InServerTime);
 
+	/** Shows a message in a world chat, on a client machine */
+	UFUNCTION(Client, Reliable)
+	void Client_WorldChatEliminaion(APlayerState* InAttacker, APlayerState* InAttacked);
+
 	void HandleMatchState();
 
 	UFUNCTION()
@@ -183,6 +187,8 @@ public:
 	/** Handles match state changes */
 	void OnMatchStateSet(FName InState);
 
+	/** If someone is eliminated - this method called, to display in chat */
+	void OnEliminationBroadcast(APlayerState* InAttacker, APlayerState* InAttacked);
 
 //public getters/setters
 public:

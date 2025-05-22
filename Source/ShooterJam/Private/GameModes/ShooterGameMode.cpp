@@ -96,6 +96,15 @@ void AShooterGameMode::OnPlayerEliminated(AShooterCharacter* InElimCharacter, AS
 		}
 	}
 
+	for (FConstPlayerControllerIterator It = GetWorld()->GetPlayerControllerIterator(); It; ++It)
+	{
+		AShooterCharacterController* ShooterController{ Cast<AShooterCharacterController>(*It) };
+		if (!ShooterController)
+			continue;
+
+		ShooterController->OnEliminationBroadcast(AttackerPlayerState, EliminatedPlayerState);
+	}
+
 	if (!InElimCharacter)
 		return;
 

@@ -5,6 +5,7 @@
 
 #include "HUD/ShooterHUD.h"
 #include "HUD/CharacterOverlay.h"
+#include "HUD/WorldChat.h"
 #include "Characters/ShooterCharacter.h"
 #include "GameModes/ShooterGameMode.h"
 #include "PlayerState/ShooterPlayerState.h"
@@ -149,6 +150,11 @@ void AShooterCharacterController::OnMatchStateSet(FName InState)
 	HandleMatchState();
 }
 
+void AShooterCharacterController::OnEliminationBroadcast(APlayerState* InAttacker, APlayerState* InAttacked)
+{
+	Client_WorldChatEliminaion_Implementation(InAttacker, InAttacked);
+}
+
 AShooterHUD* AShooterCharacterController::GetPlayerHud()
 {
 	if (!CheckInitHud())
@@ -200,6 +206,43 @@ void AShooterCharacterController::Client_ReportServerTime_Implementation(float I
 
 	ClientServerDelta = CurrentServerTime - GetWorld()->GetTimeSeconds();
 	SingleTripTime = RoundTripTime * 0.5f;
+}
+
+void AShooterCharacterController::Client_WorldChatEliminaion_Implementation(APlayerState* InAttacker, APlayerState* InAttacked)
+{
+	if (!InAttacker)
+		return;
+
+	if (!InAttacked)
+		return;
+
+	APlayerState* CurrentPlayer = GetPlayerState<APlayerState>();
+	if (!CurrentPlayer)
+		return;
+
+	if (!ShooterHud)
+		return;
+
+	if (InAttacker == CurrentPlayer && InAttacked != CurrentPlayer)
+	{
+		ShooterHud->GetWorldChat()->AddKillMessage("You", InAttacked->GetPlayerName());
+		return;
+	}
+	if (InAttacked == CurrentPlayer && InAttacker != CurrentPlayer)
+	{
+		ShooterHud->GetWorldChat()->AddKillMessage(InAttacker->GetPlayerName(), "you");
+		return;
+	}
+	if (InAttacker == InAttacked && InAttacker == CurrentPlayer)
+	{
+		ShooterHud->GetWorldChat()->AddKillMessage("You", "yourself");
+		return;
+	}
+	if (InAttacker == InAttacked && InAttacker != CurrentPlayer)
+	{
+		ShooterHud->GetWorldChat()->AddKillMessage(InAttacker->GetPlayerName(), "themselves");
+		return;
+	}
 }
 
 void AShooterCharacterController::UpdateCountdowns()
