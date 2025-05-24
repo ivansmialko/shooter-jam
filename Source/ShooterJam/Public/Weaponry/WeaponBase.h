@@ -111,6 +111,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	float BaseDamage{ 20.f };
 
+	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
+	float HeadDamage{ 40.f };
+
 	/** Enables server-side rewind for the weapon */
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
 	bool bUseServerSideRewind{ false };
@@ -237,6 +240,7 @@ public:
 	FORCEINLINE float GetZoomInterpSpeed() const { return ZoomInterpSpeed; }
 	FORCEINLINE float GetFireDelay() const { return FireDelay; }
 	FORCEINLINE float GetBaseDamage() const { return BaseDamage; }
+	FORCEINLINE float GetHeadDamage() const { return HeadDamage; }
 	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
 	FORCEINLINE USkeletalMeshComponent* GetWeaponMesh() const { return WeaponMesh; }
 	FORCEINLINE UTexture2D* GetCrosshairsCenter() const { return CrosshairsCenter; }

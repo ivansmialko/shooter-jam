@@ -316,9 +316,13 @@ void AWeaponBase::DealDamage(const FHitResult& HitResult, const FVector_NetQuant
 	if (!InstigatorController)
 		return;
 
+	bool bIsHeadShot{ HitResult.BoneName == FString("head") };
+
+	float CurrentDamage{ bIsHeadShot ? HeadDamage : BaseDamage };
+
 	if (HasAuthority() && (!bCurrentlyUsingSsr || OwnerPawn->IsLocallyControlled()))
 	{
-		UGameplayStatics::ApplyDamage(HitCharacter, BaseDamage, InstigatorController, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(HitCharacter, CurrentDamage, InstigatorController, this, UDamageType::StaticClass());
 	}
 	
 	if(!HasAuthority() && bCurrentlyUsingSsr)
