@@ -34,14 +34,24 @@ FSsrResult ULagCompensationComponent::ServerSideRewindProjectile(AShooterCharact
 	return ConfirmHitProjectile(FrameToCheck, InHitCharacter, InTraceStart, InInitialVelocity, InHitTime);
 }
 
-void ULagCompensationComponent::Server_ScoreRequest_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime, AWeaponBase* InWeapon)
+void ULagCompensationComponent::Server_ScoreRequest_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize& InHitLocation, float InHitTime)
 {
-	FSsrResult ConfirmResult = ServerSideRewind(InHitCharacter, InTraceStart, InHitLocation, InHitTime);
+	if (!InHitCharacter)
+		return;
 
-	if (InHitCharacter && ConfirmResult.bHitConfirmed && Character)
-	{
-		UGameplayStatics::ApplyDamage(InHitCharacter, InWeapon->GetBaseDamage(), Character->GetController(), InHitCharacter, UDamageType::StaticClass());
-	}
+	if (!Character)
+		return;
+
+	AWeaponBase* EquippedWeapon{ Character->GetEquippedWeapon() };
+	if (!EquippedWeapon)
+		return;
+
+	FSsrResult ConfirmResult = ServerSideRewind(InHitCharacter, InTraceStart, InHitLocation, InHitTime);
+	if (!ConfirmResult.bHitConfirmed)
+		return;
+
+	float CurrentDamage{ ConfirmResult.bHeadshot ? EquippedWeapon->GetHeadDamage() : EquippedWeapon->GetBaseDamage() };
+	UGameplayStatics::ApplyDamage(InHitCharacter, CurrentDamage, Character->GetController(), InHitCharacter, UDamageType::StaticClass());
 }
 
 void ULagCompensationComponent::Server_ScoreRequestProjectile_Implementation(AShooterCharacter* InHitCharacter, const FVector_NetQuantize& InTraceStart, const FVector_NetQuantize100& InitialVelocity, float InHitTime)
@@ -61,7 +71,8 @@ void ULagCompensationComponent::Server_ScoreRequestProjectile_Implementation(ASh
 	if (!ConfirmResult.bHitConfirmed)
 		return;
 
-	UGameplayStatics::ApplyDamage(InHitCharacter, EquippedWeapon->GetBaseDamage(), Character->GetController(), EquippedWeapon, UDamageType::StaticClass());
+	float CurrentDamage{ ConfirmResult.bHeadshot ? EquippedWeapon->GetHeadDamage() : EquippedWeapon->GetBaseDamage() };
+	UGameplayStatics::ApplyDamage(InHitCharacter, CurrentDamage, Character->GetController(), EquippedWeapon, UDamageType::StaticClass());
 }
 
 void ULagCompensationComponent::BeginPlay()
