@@ -22,7 +22,10 @@ class SHOOTERJAM_API AProjectile : public AActor
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
-	float Damage{ 1.f };
+	float BaseDamage{ 1.f };
+
+	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
+	float HeadDamage{ 10.f };
 
 	UPROPERTY(EditAnywhere, Category = "Projectile Properties")
 	float DestroyTime{ 3.f };
@@ -95,12 +98,14 @@ public:
 
 	FORCEINLINE bool GetUseSsr() const { return bUseServerSideRewind; }
 	FORCEINLINE float GetInitialSpeed() const { return InitialSpeed; }
-	FORCEINLINE float GetDamage() const { return Damage; }
+	FORCEINLINE float GetDamage() const { return BaseDamage; }
 	FORCEINLINE const FVector_NetQuantize& GetTraceStart() const { return TraceStart; }
 	FORCEINLINE const FVector_NetQuantize100& GetInitialVelocity() const { return InitialVelocity; }
 
 	FORCEINLINE void SetUseSsr(bool bInUseSsr) { bUseServerSideRewind = bInUseSsr; }
 	FORCEINLINE void SetTraceStart(const FVector_NetQuantize& InTraceStart) { TraceStart = InTraceStart; }
 	FORCEINLINE void SetInitialVelocity(const FVector_NetQuantize100& InInitialVelocity) { InitialVelocity = InInitialVelocity; }
-	FORCEINLINE void SetDamage(float InDamage) { Damage = InDamage; }
+	FORCEINLINE void SetBaseDamage(float InDamage) { BaseDamage = InDamage; }
+	FORCEINLINE void SetHeadDamage(float InHeadDamage) { HeadDamage = InHeadDamage; }
+
 };

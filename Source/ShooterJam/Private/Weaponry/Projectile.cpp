@@ -94,7 +94,7 @@ void AProjectile::DealExplosionDamage()
 	{
 		UGameplayStatics::ApplyRadialDamageWithFalloff(
 			this,						//World context
-			Damage,						//Base damage
+			BaseDamage,						//Base damage
 			10.f,						//Minimal damage
 			GetActorLocation(),			//Origin
 			DamageInnerRadius,						//Inner radius

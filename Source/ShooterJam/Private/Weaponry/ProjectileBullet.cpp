@@ -19,9 +19,13 @@ void AProjectileBullet::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, 
 	if (!OwnerController)
 		return;
 
+	bool bIsHeadShot{ Hit.BoneName == FString("head") };
+
+	float CurrentDamage{ bIsHeadShot ? HeadDamage : BaseDamage };
+
 	if (HasAuthority() && !bUseServerSideRewind)
 	{
-		UGameplayStatics::ApplyDamage(OtherActor, Damage, OwnerController, this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(OtherActor, CurrentDamage, OwnerController, this, UDamageType::StaticClass());
 	}
 
 	if (bUseServerSideRewind && OwnerCharacter->GetLagCompensationComponent() && OwnerCharacter->IsLocallyControlled())
