@@ -273,7 +273,7 @@ private:
 	void OnRep_Shield(float LastShield);
 	virtual void OnRep_ReplicatedMovement() override;
 	UFUNCTION()
-	void OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
+	void OnReceiveDamage(AActor* DamagedActor, float BaseDamage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
 	UFUNCTION()
 	void OnPingTooHigh(bool bInIsTooHighPing);
 	void OnEliminatedTimerFinished();

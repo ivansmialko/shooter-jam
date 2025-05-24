@@ -91,5 +91,6 @@ void AProjectileWeapon::SpawnProjectile(const FVector& SpawnLocation, const FRot
 		return;
 
 	//Projectile's damage should be equal to weapon's damage, or it's easy to get lost in settings
-	SpawnedProjectile->SetDamage(BaseDamage);
+	SpawnedProjectile->SetBaseDamage(BaseDamage);
+	SpawnedProjectile->SetHeadDamage(HeadDamage);
 }

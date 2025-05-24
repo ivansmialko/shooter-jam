@@ -242,22 +242,22 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
-void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float Damage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
+void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float BaseDamage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
 	if (bIsEliminated)
 		return;
 
-	float DamageToHealth = Damage;
+	float DamageToHealth = BaseDamage;
 	if (Shield > 0.f)
 	{
-		if (Shield >= Damage)
+		if (Shield >= BaseDamage)
 		{
-			Shield = FMath::Clamp(Shield - Damage, 0, MaxShield);
+			Shield = FMath::Clamp(Shield - BaseDamage, 0, MaxShield);
 			DamageToHealth = 0.f;
 		}
 		else
 		{
-			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0, Damage);
+			DamageToHealth = FMath::Clamp(DamageToHealth - Shield, 0, BaseDamage);
 			Shield = 0.f;
 		}
 	}
