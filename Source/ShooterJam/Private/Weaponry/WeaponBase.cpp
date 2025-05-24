@@ -333,7 +333,7 @@ void AWeaponBase::DealDamage(const FHitResult& HitResult, const FVector_NetQuant
 		if (OwnerCharacter && OwnerController && OwnerCharacter->GetLagCompensationComponent())
 		{
 			float HitTime{ OwnerController->GetServerTime() - OwnerController->GetSingleTripTime() };
-			OwnerCharacter->GetLagCompensationComponent()->Server_ScoreRequest(HitCharacter, TraceStart, HitResult.ImpactPoint, HitTime, this);
+			OwnerCharacter->GetLagCompensationComponent()->Server_ScoreRequest(HitCharacter, TraceStart, HitResult.ImpactPoint, HitTime);
 		}
 	}
 }
