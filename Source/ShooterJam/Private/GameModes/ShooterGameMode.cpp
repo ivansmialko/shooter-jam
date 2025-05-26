@@ -118,7 +118,7 @@ void AShooterGameMode::OnPlayerLeft(AShooterPlayerState* InPlayerLeaving)
 	if (!ShooterGameState)
 		return;
 
-	ShooterGameState->RemovePlayer(InPlayerLeaving);
+	ShooterGameState->RemovePlayerFromTopScore(InPlayerLeaving);
 
 	AShooterCharacter* ShooterCharacterLeaving{ Cast<AShooterCharacter>(InPlayerLeaving->GetPawn()) };
 	if (!ShooterCharacterLeaving)

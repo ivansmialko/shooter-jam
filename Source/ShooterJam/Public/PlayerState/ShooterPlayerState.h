@@ -62,4 +62,6 @@ public:
 public:
 	FORCEINLINE int32 GetDefeats() const { return Defeats; }
 	FORCEINLINE ETeamType GetTeamType() const { return TeamType; }
+
+	FORCEINLINE void SetTeamType(ETeamType InTeamType) { TeamType = InTeamType; }
 };

@@ -56,6 +56,7 @@ void AShooterPlayerState::OnRep_Score()
 void AShooterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	DOREPLIFETIME(AShooterPlayerState, Defeats);
+	DOREPLIFETIME(AShooterPlayerState, TeamType);
 }
 
 void AShooterPlayerState::OnRep_Defeats()

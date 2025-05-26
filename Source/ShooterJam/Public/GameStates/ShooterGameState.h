@@ -4,6 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+
+#include "PlayerState/ShooterPlayerState.h"
+
 #include "ShooterGameState.generated.h"
 
 class AShooterPlayerState;
@@ -16,6 +19,7 @@ class SHOOTERJAM_API AShooterGameState : public AGameState
 {
 	GENERATED_BODY()
 
+//private members
 private:
 
 	UPROPERTY(Replicated)
@@ -31,6 +35,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_TeamBlueScore)
 	float TeamBlueScore;
 
+//protected methods
 protected:
 
 	UFUNCTION()
@@ -39,13 +44,21 @@ protected:
 	UFUNCTION()
 	void OnRep_TeamBlueScore();
 
+//public methods
 public:
 	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void UpdateTopScore(AShooterPlayerState* ScoringPlayer);
-	void RemovePlayer(AShooterPlayerState* InPlayerToRemove);
+	void RemovePlayerFromTopScore(AShooterPlayerState* InPlayerToRemove);
 
+	ETeamType DistributePlayerToTeam(AShooterPlayerState* InPlayerToAdd);
+	void AddPlayerToTeam(AShooterPlayerState* InPlayerToAdd, ETeamType InTeamType);
+	void RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemove);
+
+//public getters/setters
 public:
 	FORCEINLINE bool IsPlayerLeading(AShooterPlayerState* InPlayerState) const { return TopScoringPlayers.Contains(InPlayerState); }
 	FORCEINLINE const TArray<AShooterPlayerState*>& GetTopScoringPlayers() const { return TopScoringPlayers; };
+	FORCEINLINE const TArray<AShooterPlayerState*>& GetTeamRedMembers() const { return TeamRed; }
+	FORCEINLINE const TArray<AShooterPlayerState*>& GetTeamBlueMembers() const { return TeamBlue; }
 };

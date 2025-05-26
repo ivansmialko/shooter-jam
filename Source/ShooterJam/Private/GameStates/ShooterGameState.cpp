@@ -49,10 +49,62 @@ void AShooterGameState::UpdateTopScore(AShooterPlayerState* ScoringPlayer)
 	}
 }
 
-void AShooterGameState::RemovePlayer(AShooterPlayerState* InPlayerToRemove)
+void AShooterGameState::RemovePlayerFromTopScore(AShooterPlayerState* InPlayerToRemove)
 {
 	if (!InPlayerToRemove)
 		return;
 
 	TopScoringPlayers.Remove(InPlayerToRemove);
+}
+
+ETeamType AShooterGameState::DistributePlayerToTeam(AShooterPlayerState* InPlayerToAdd)
+{
+	if (TeamRed.Num() > TeamBlue.Num())
+	{
+		AddPlayerToTeam(InPlayerToAdd, ETeamType::ETT_Blue);
+		return ETeamType::ETT_Blue;
+	}
+
+	if (TeamBlue.Num() > TeamRed.Num())
+	{
+		AddPlayerToTeam(InPlayerToAdd, ETeamType::ETT_Red);
+		return ETeamType::ETT_Red;
+	}
+
+	if (TeamRed.Num() == TeamBlue.Num())
+	{
+		ETeamType RandomTeam{ static_cast<ETeamType>(FMath::RandRange(static_cast<int32>(ETeamType::ETT_NoTeam) + 1, static_cast<int32>(ETeamType::ETT_MAX) - 1)) };
+		AddPlayerToTeam(InPlayerToAdd, RandomTeam);
+		return RandomTeam;
+	}
+
+	return ETeamType::ETT_NoTeam;
+}
+
+void AShooterGameState::AddPlayerToTeam(AShooterPlayerState* InPlayerToAdd, ETeamType InTeamType)
+{
+	if (InTeamType == ETeamType::ETT_Red)
+	{
+		TeamRed.AddUnique(InPlayerToAdd);
+		return;
+	}
+
+	if (InTeamType == ETeamType::ETT_Blue)
+	{
+		TeamBlue.AddUnique(InPlayerToAdd);
+		return;
+	}
+}
+
+void AShooterGameState::RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemove)
+{
+	if (TeamRed.Contains(InPlayerToRemove))
+	{
+		TeamRed.Contains(InPlayerToRemove);
+	}
+
+	if (TeamBlue.Contains(InPlayerToRemove))
+	{
+		TeamBlue.Remove(InPlayerToRemove);
+	}
 }
