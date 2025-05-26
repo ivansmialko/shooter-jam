@@ -6,6 +6,15 @@
 #include "GameFramework/PlayerState.h"
 
 #include "ShooterPlayerState.generated.h"
+UENUM(BlueprintType)
+enum class ETeamType : uint8
+{
+	ETT_NoTeam UMETA(DisplayName = "No team"),
+	ETT_Red UMETA(DisplayName = "Red"),
+	ETT_Blue UMETA(DisplayName = "Blue"),
+
+	ETT_MAX UMETA(DisplayName = "DefaultMAX")
+};
 
 /**
  * 
@@ -22,6 +31,9 @@ private:
 
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
+
+	UPROPERTY(Replicated)
+	ETeamType TeamType{ ETeamType::ETT_NoTeam };
 
 //private functions
 private:
@@ -49,4 +61,5 @@ public:
 //public getters
 public:
 	FORCEINLINE int32 GetDefeats() const { return Defeats; }
+	FORCEINLINE ETeamType GetTeamType() const { return TeamType; }
 };
