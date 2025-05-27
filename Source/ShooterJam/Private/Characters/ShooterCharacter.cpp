@@ -699,6 +699,11 @@ void AShooterCharacter::CheckHidePlayerIfCameraClose()
 		return;
 
 	CombatComponent->GetEquippedWeapon()->GetWeaponMesh()->bOwnerNoSee = (DistanceFromCameraToCharacter < CameraDistanceTreshold);
+
+	if (!CombatComponent->GetSecondaryWeapon())
+		return;
+
+	CombatComponent->GetSecondaryWeapon()->GetWeaponMesh()->bOwnerNoSee = (DistanceFromCameraToCharacter < CameraDistanceTreshold);
 }
 
 void AShooterCharacter::OnRep_OverlappingWeapon(AWeaponBase* LastOverlappedWeapon)
@@ -788,7 +793,7 @@ void AShooterCharacter::Multicast_GainedLead_Implementation()
 	{
 		CrownEffectComponent = UNiagaraFunctionLibrary::SpawnSystemAttached(
 			CrownEffect,
-			GetCapsuleComponent(),
+			GetMesh(),
 			FName(),
 			GetActorLocation() + FVector(0.f, 0.f, 110.f),
 			GetActorRotation(),
@@ -801,7 +806,6 @@ void AShooterCharacter::Multicast_GainedLead_Implementation()
 		return;
 
 	CrownEffectComponent->Activate();
-
 }
 
 void AShooterCharacter::Multicast_LostLead_Implementation()
@@ -824,6 +828,11 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation(bool bInLeftGame)
 	DisableInputs();
 
 	GetWorldTimerManager().SetTimer(EliminatedTimer, this, &AShooterCharacter::OnEliminatedTimerFinished, EliminationDelay);
+
+	if (GrenadeMesh)
+	{
+		GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 
 	if (!PlayerController)
 		return;
