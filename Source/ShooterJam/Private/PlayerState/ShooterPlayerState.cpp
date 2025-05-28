@@ -47,6 +47,17 @@ void AShooterPlayerState::UpdateDefeatsHud()
 	PlayerController->GetPlayerHud()->SetDefeats(GetDefeats());
 }
 
+void AShooterPlayerState::ChangeTeamType(ETeamType InTeamType)
+{
+	TeamType = InTeamType;
+
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->ChangeTeamType(InTeamType);
+}
+
 void AShooterPlayerState::OnRep_Score()
 {
 	Super::OnRep_Score();
@@ -62,6 +73,15 @@ void AShooterPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& 
 void AShooterPlayerState::OnRep_Defeats()
 {
 	UpdateDefeatsHud();
+}
+
+void AShooterPlayerState::OnRep_TeamType(ETeamType InTeamType)
+{
+	AShooterCharacter* ShooterCharacter = Cast<AShooterCharacter>(GetPawn());
+	if (!ShooterCharacter)
+		return;
+
+	ShooterCharacter->ChangeTeamType(InTeamType);
 }
 
 void AShooterPlayerState::UpdateScore(float InNewScore)
