@@ -24,7 +24,7 @@ void ATeamsGameMode::HandleMatchHasStarted()
 		if (ShooterPlayerState->GetTeamType() != ETeamType::ETT_NoTeam)
 			continue;
 
-		ShooterPlayerState->SetTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
+		ShooterPlayerState->ChangeTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
 	}
 }
 
@@ -43,7 +43,7 @@ void ATeamsGameMode::PostLogin(APlayerController* InNewPlayer)
 	if (ShooterPlayerState->GetTeamType() != ETeamType::ETT_NoTeam)
 		return;
 
-	ShooterPlayerState->SetTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
+	ShooterPlayerState->ChangeTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
 }
 
 void ATeamsGameMode::Logout(AController* InExitingPlayer)

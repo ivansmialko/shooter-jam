@@ -32,7 +32,7 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_Defeats)
 	int32 Defeats;
 
-	UPROPERTY(Replicated)
+	UPROPERTY(ReplicatedUsing = OnRep_TeamType)
 	ETeamType TeamType{ ETeamType::ETT_NoTeam };
 
 //private functions
@@ -52,16 +52,19 @@ public:
 	UFUNCTION()
 	virtual void OnRep_Defeats();
 
+	UFUNCTION()
+	virtual void OnRep_TeamType(ETeamType InTeamType);
+
 	virtual void UpdateScore(float InNewScore);
 	virtual void UpdateDefeats(float InNewDefeats);
 
 	void UpdateScoreHud();
 	void UpdateDefeatsHud();
 
+	void ChangeTeamType(ETeamType InTeamType);
+
 //public getters
 public:
 	FORCEINLINE int32 GetDefeats() const { return Defeats; }
 	FORCEINLINE ETeamType GetTeamType() const { return TeamType; }
-
-	FORCEINLINE void SetTeamType(ETeamType InTeamType) { TeamType = InTeamType; }
 };

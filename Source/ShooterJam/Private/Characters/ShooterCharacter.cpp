@@ -579,6 +579,7 @@ void AShooterCharacter::PollInitPlayerState()
 	PlayerState->UpdateDefeatsHud();
 
 	CheckShowCrown();
+	ChangeTeamType(PlayerState->GetTeamType());
 }
 
 void AShooterCharacter::PollInitPlayerController()
@@ -960,6 +961,34 @@ void AShooterCharacter::CheckShowCrown()
 		return;
 
 	Multicast_GainedLead();
+}
+
+void AShooterCharacter::ChangeTeamType(ETeamType InTeamType)
+{
+	if (!GetMesh())
+		return;
+
+	if (PlayerSkinDefault)
+		return;
+
+	switch (InTeamType)
+	{
+	case ETeamType::ETT_Red:
+	{
+		GetMesh()->SetMaterial(0, PlayerSkinBlue);
+		DissolveMaterialInstance = DissolveMaterialBlueInstance;
+	} break;
+	case ETeamType::ETT_Blue:
+	{
+		GetMesh()->SetMaterial(0, PlayerSkinRed);
+		DissolveMaterialInstance = DissolveMaterialRedInstance;
+	} break;
+	default:
+	{
+		GetMesh()->SetMaterial(0, PlayerSkinDefault);
+		DissolveMaterialInstance = DissolveMaterialBlueInstance;
+	} break;
+	}
 }
 
 void AShooterCharacter::SetOverlappingWeapon(AWeaponBase* Weapon)

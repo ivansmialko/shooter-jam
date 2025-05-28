@@ -8,6 +8,7 @@
 #include "Animations/TurningInPlace.h"
 #include "Interfaces/CrosshairsInteractable.h"
 #include "Components/CombatComponent.h"
+#include "PlayerState/ShooterPlayerState.h"
 
 #include "Components/TimelineComponent.h"
 
@@ -80,6 +81,26 @@ private:
 	/** Material instance of dissolve material. */
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UMaterialInstance* DissolveMaterialInstance;				//Selected in the editor
+
+	/** Material instance of dissolve material (red color) */
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* DissolveMaterialRedInstance;				//Selected in the editor
+
+	/** Material instance of dissolve material (blue color) */
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* DissolveMaterialBlueInstance;			//Selected in the editor
+
+	/** Material instance of red player's skin */
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* PlayerSkinRed;
+
+	/** Material instance of blue player's skin */
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* PlayerSkinBlue;
+
+	/** Material instance of blue player's skin */
+	UPROPERTY(EditAnywhere, Category = Effects)
+	UMaterialInstance* PlayerSkinDefault;
 
 	/** Elimination bot particle system. */
 	UPROPERTY(EditAnywhere, Category = Effects)
@@ -398,6 +419,7 @@ public:
 	void ShowSniperScopeWidget(bool bInShowScope);
 
 	void CheckShowCrown();
+	void ChangeTeamType(ETeamType InTeamType);
 
 	//public getters/setters
 public:
