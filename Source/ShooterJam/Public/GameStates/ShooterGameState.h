@@ -55,6 +55,8 @@ public:
 	void AddPlayerToTeam(AShooterPlayerState* InPlayerToAdd, ETeamType InTeamType);
 	void RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemove);
 
+	void TeamScore(ETeamType InTeamType);
+
 //public getters/setters
 public:
 	FORCEINLINE bool IsPlayerLeading(AShooterPlayerState* InPlayerState) const { return TopScoringPlayers.Contains(InPlayerState); }
