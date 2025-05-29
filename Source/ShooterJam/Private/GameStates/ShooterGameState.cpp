@@ -108,3 +108,20 @@ void AShooterGameState::RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemo
 		TeamBlue.Remove(InPlayerToRemove);
 	}
 }
+
+void AShooterGameState::TeamScore(ETeamType InTeamType)
+{
+	switch (InTeamType)
+	{
+	case ETeamType::ETT_Red:
+	{
+		++TeamRedScore;
+	} break;
+	case ETeamType::ETT_Blue:
+	{
+		++TeamBlueScore;
+	} break;
+	default:
+		break;
+	}
+}
