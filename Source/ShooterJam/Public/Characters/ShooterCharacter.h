@@ -205,35 +205,6 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	ULagCompensationComponent* LagCompensationComponent;
 
-//~ End Exposed members
-
-//~ Begin Replicated members
-	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
-	AWeaponBase* OverlappingWeapon;
-//~ End Replicated members
-
-	bool bRotateRootBone;
-	bool bInputInitialized{ false };
-	bool bHudInitialized{ false };
-	bool bLeftGame{ false };
-	float AO_Yaw;
-	float AO_Pitch;
-	float Root_AO_Yaw;
-	float ProxyTurnTreshold{ 0.5f };
-	float ProxyYaw;
-	float TimeSinceLastMovementRep{ 0.f };
-	FRotator ProxyRotation;
-	FRotator ProxyRotationLastFrame;
-	FRotator StartingAimRotation;
-	
-	ETurningInPlace TurningInPlace{ ETurningInPlace::TIP_NotTurning };
-	
-	FTimerHandle EliminatedTimer;
-	FOnTimelineFloat DissolveTrackDlg;
-
-	AShooterCharacterController* PlayerController{ nullptr };
-	AShooterPlayerState* PlayerState{ nullptr };
-
 	/** Hit boxes for server-side rewind */
 	UPROPERTY(EditAnywhere, Category = "Server side rewind")
 	UBoxComponent* SsrHead;
@@ -271,6 +242,35 @@ private:
 	UBoxComponent* SsrFootL;
 	UPROPERTY(EditAnywhere, Category = "Server side rewind")
 	UBoxComponent* SsrFootR;
+//~ End Exposed members
+
+//~ Begin Replicated members
+	UPROPERTY(ReplicatedUsing = OnRep_OverlappingWeapon)
+	AWeaponBase* OverlappingWeapon;
+//~ End Replicated members
+
+	bool bRotateRootBone;
+	bool bInputInitialized{ false };
+	bool bHudInitialized{ false };
+	bool bLeftGame{ false };
+	float AO_Yaw;
+	float AO_Pitch;
+	float Root_AO_Yaw;
+	float ProxyTurnTreshold{ 0.5f };
+	float ProxyYaw;
+	float TimeSinceLastMovementRep{ 0.f };
+	FRotator ProxyRotation;
+	FRotator ProxyRotationLastFrame;
+	FRotator StartingAimRotation;
+	
+	ETurningInPlace TurningInPlace{ ETurningInPlace::TIP_NotTurning };
+	
+	FTimerHandle EliminatedTimer;
+	FOnTimelineFloat DissolveTrackDlg;
+
+	AShooterCharacterController* ShooterCharacterController{ nullptr };
+	AShooterPlayerState* ShooterPlayerState{ nullptr };
+	AShooterGameMode* ShooterGameMode{ nullptr };
 
 	TMap<FName, UBoxComponent*> SsrCollisionBoxes;
 //protected methods
@@ -461,6 +461,7 @@ public:
 
 	AWeaponBase* GetEquippedWeapon() const;
 	UStaticMeshComponent* GetGrenadeMesh() const;
-	AShooterGameMode* GetShooterGameMode() const;
+	AShooterGameMode* GetShooterGameMode();
+	AShooterPlayerState* GetShooterPlayerState();
 	FVector GetHitTarget() const;
 };

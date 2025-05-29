@@ -90,14 +90,14 @@ void AShooterHUD::AddCharacterOverlay()
 		return;
 	}
 
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (!PlayerController)
+	APlayerController* ShooterCharacterController = GetOwningPlayerController();
+	if (!ShooterCharacterController)
 		return;
 
 	if (!CharacterOverlayBlueprint)
 		return;
 
-	CharacterOverlay = CreateWidget<UCharacterOverlay>(PlayerController, CharacterOverlayBlueprint);
+	CharacterOverlay = CreateWidget<UCharacterOverlay>(ShooterCharacterController, CharacterOverlayBlueprint);
 	if (!CharacterOverlay)
 		return;
 
@@ -112,14 +112,14 @@ void AShooterHUD::AddAnnouncementWidget()
 		return;
 	}
 
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (!PlayerController)
+	APlayerController* ShooterCharacterController = GetOwningPlayerController();
+	if (!ShooterCharacterController)
 		return;
 
 	if (!AnnouncementWidgetBlueprint)
 		return;
 
-	AnnouncementWidget = CreateWidget<UAnnouncementWidget>(PlayerController, AnnouncementWidgetBlueprint);
+	AnnouncementWidget = CreateWidget<UAnnouncementWidget>(ShooterCharacterController, AnnouncementWidgetBlueprint);
 	if (!AnnouncementWidget)
 		return;
 
@@ -201,14 +201,14 @@ void AShooterHUD::ShowGameMenu()
 		return;
 	}
 
-	APlayerController* PlayerController = GetOwningPlayerController();
-	if (!PlayerController)
+	APlayerController* ShooterCharacterController = GetOwningPlayerController();
+	if (!ShooterCharacterController)
 		return;
 
 	if (!GameMenuWidgetBlueprint)
 		return;
 
-	GameMenuWidget = CreateWidget<UGameMenu>(PlayerController, GameMenuWidgetBlueprint);
+	GameMenuWidget = CreateWidget<UGameMenu>(ShooterCharacterController, GameMenuWidgetBlueprint);
 	if (!GameMenuWidget)
 		return;
 

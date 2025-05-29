@@ -209,14 +209,14 @@ void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 
 	CombatComponent->DropWeaponLaunch();
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetWeaponAmmoEmpty();
-	PlayerController->GetPlayerHud()->SetCarriedAmmoEmpty();
+	ShooterCharacterController->GetPlayerHud()->SetWeaponAmmoEmpty();
+	ShooterCharacterController->GetPlayerHud()->SetCarriedAmmoEmpty();
 }
 
 void AShooterCharacter::OnReload(const FInputActionValue& Value)
@@ -247,6 +247,9 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float BaseDamage, 
 	if (bIsEliminated)
 		return;
 
+	if (!GetShooterGameMode())
+		return;
+
 	float DamageToHealth = BaseDamage;
 	if (Shield > 0.f)
 	{
@@ -275,15 +278,11 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float BaseDamage, 
 	if (Health > 0.f)
 		return;
 
-	AShooterGameMode* GameMode = GetShooterGameMode();
-	if (!GameMode)
-		return;
-
 	AShooterCharacterController* AttackerController = Cast<AShooterCharacterController>(InstigatorController);
 	if (!AttackerController)
 		return;
 
-	GameMode->OnPlayerEliminated(this, PlayerController, AttackerController);
+	GetShooterGameMode()->OnPlayerEliminated(this, ShooterCharacterController, AttackerController);
 }
 
 void AShooterCharacter::OnPingTooHigh(bool bInIsTooHighPing)
@@ -568,33 +567,33 @@ void AShooterCharacter::InitializeCharacter()
 
 void AShooterCharacter::PollInitPlayerState()
 {
-	if (PlayerState)
+	if (ShooterPlayerState)
 		return;
 
-	PlayerState = GetPlayerState<AShooterPlayerState>();
-	if (!PlayerState)
+	ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+	if (!ShooterPlayerState)
 		return;
 
-	PlayerState->UpdateScoreHud();
-	PlayerState->UpdateDefeatsHud();
+	ShooterPlayerState->UpdateScoreHud();
+	ShooterPlayerState->UpdateDefeatsHud();
 
 	CheckShowCrown();
-	ChangeTeamType(PlayerState->GetTeamType());
+	ChangeTeamType(ShooterPlayerState->GetTeamType());
 }
 
 void AShooterCharacter::PollInitPlayerController()
 {
-	if (PlayerController)
+	if (ShooterCharacterController)
 		return;
 
-	PlayerController = GetController<AShooterCharacterController>();
+	ShooterCharacterController = GetController<AShooterCharacterController>();
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->OnTooHighPingDelegate.IsBound() && HasAuthority())
+	if (!ShooterCharacterController->OnTooHighPingDelegate.IsBound() && HasAuthority())
 	{
-		PlayerController->OnTooHighPingDelegate.AddDynamic(this, &AShooterCharacter::OnPingTooHigh);
+		ShooterCharacterController->OnTooHighPingDelegate.AddDynamic(this, &AShooterCharacter::OnPingTooHigh);
 	}
 }
 
@@ -603,13 +602,13 @@ void AShooterCharacter::PollInitPlayerHud()
 	if (bHudInitialized)
 		return;
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	if (!PlayerController->GetPlayerHud()->IsOverlayInitialized())
+	if (!ShooterCharacterController->GetPlayerHud()->IsOverlayInitialized())
 		return;
 
 	bHudInitialized = true;
@@ -778,11 +777,10 @@ void AShooterCharacter::Server_LeaveGame_Implementation()
 	if (!GameMode)
 		return;
 
-	AShooterPlayerState* ShooterPlayerState{ GetPlayerState<AShooterPlayerState>() };
-	if (!ShooterPlayerState)
+	if (!GetShooterPlayerState())
 		return;
 
-	GameMode->OnPlayerLeft(ShooterPlayerState);
+	GameMode->OnPlayerLeft(GetShooterPlayerState());
 }
 
 void AShooterCharacter::Multicast_GainedLead_Implementation()
@@ -835,13 +833,13 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation(bool bInLeftGame)
 		GrenadeMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetWeaponAmmo(0);
+	ShooterCharacterController->GetPlayerHud()->SetWeaponAmmo(0);
 }
 
 void AShooterCharacter::ActionEquip()
@@ -903,9 +901,9 @@ void AShooterCharacter::DisableInputs()
 	//Disable movement
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->StopMovementImmediately();
-	if (PlayerController)
+	if (ShooterCharacterController)
 	{
-		DisableInput(PlayerController);
+		DisableInput(ShooterCharacterController);
 	}
 
 	//Disable collision
@@ -949,15 +947,14 @@ void AShooterCharacter::DropSecondaryWeapon()
 
 void AShooterCharacter::CheckShowCrown()
 {
-	AShooterPlayerState* ShooterPlayerState{ Cast<AShooterPlayerState>(GetPlayerState()) };
-	if (!ShooterPlayerState)
+	if (!GetShooterPlayerState())
 		return;
 
 	AShooterGameState* ShooterGameState{ Cast<AShooterGameState>(UGameplayStatics::GetGameState(this)) };
 	if (!ShooterGameState)
 		return;
 
-	if (!ShooterGameState->IsPlayerLeading(ShooterPlayerState))
+	if (!ShooterGameState->IsPlayerLeading(GetShooterPlayerState()))
 		return;
 
 	Multicast_GainedLead();
@@ -968,7 +965,7 @@ void AShooterCharacter::ChangeTeamType(ETeamType InTeamType)
 	if (!GetMesh())
 		return;
 
-	if (PlayerSkinDefault)
+	if (!PlayerSkinDefault)
 		return;
 
 	switch (InTeamType)
@@ -1387,47 +1384,47 @@ void AShooterCharacter::PlayElimbotEffect()
 
 void AShooterCharacter::HudUpdateHealth()
 {
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 	{
-		PlayerController = Cast<AShooterCharacterController>(GetController());
+		ShooterCharacterController = Cast<AShooterCharacterController>(GetController());
 	}
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetHealth(Health, MaxHealth);
+	ShooterCharacterController->GetPlayerHud()->SetHealth(Health, MaxHealth);
 }
 
 void AShooterCharacter::HudUpdateShield()
 {
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 	{
-		PlayerController = Cast<AShooterCharacterController>(GetController());
+		ShooterCharacterController = Cast<AShooterCharacterController>(GetController());
 	}
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetShield(Shield, MaxShield);
+	ShooterCharacterController->GetPlayerHud()->SetShield(Shield, MaxShield);
 }
 
 void AShooterCharacter::HudUpdateAmmo()
 {
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 	{
-		PlayerController = Cast<AShooterCharacterController>(GetController());
+		ShooterCharacterController = Cast<AShooterCharacterController>(GetController());
 	}
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
 	if (!CombatComponent)
@@ -1435,32 +1432,32 @@ void AShooterCharacter::HudUpdateAmmo()
 
 	if (!CombatComponent->GetEquippedWeapon())
 	{
-		PlayerController->GetPlayerHud()->SetWeaponAmmoEmpty();
-		PlayerController->GetPlayerHud()->SetCarriedAmmoEmpty();
+		ShooterCharacterController->GetPlayerHud()->SetWeaponAmmoEmpty();
+		ShooterCharacterController->GetPlayerHud()->SetCarriedAmmoEmpty();
 		return;
 	}
 
-	PlayerController->GetPlayerHud()->SetWeaponAmmo(CombatComponent->GetWeaponAmmo());
-	PlayerController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
+	ShooterCharacterController->GetPlayerHud()->SetWeaponAmmo(CombatComponent->GetWeaponAmmo());
+	ShooterCharacterController->GetPlayerHud()->SetCarriedAmmo(CombatComponent->GetCarriedAmmo());
 }
 
 void AShooterCharacter::HudUpdateGrenades()
 {
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 	{
-		PlayerController = Cast<AShooterCharacterController>(GetController());
+		ShooterCharacterController = Cast<AShooterCharacterController>(GetController());
 	}
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
 	if (!CombatComponent)
 		return;
 
-	PlayerController->GetPlayerHud()->SetGrenadesAmount(CombatComponent->GetGrenadesAmount());
+	ShooterCharacterController->GetPlayerHud()->SetGrenadesAmount(CombatComponent->GetGrenadesAmount());
 }
 
 void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
@@ -1471,9 +1468,22 @@ void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
 	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), InDissolveValue);
 }
 
-AShooterGameMode* AShooterCharacter::GetShooterGameMode() const
+AShooterGameMode* AShooterCharacter::GetShooterGameMode()
 {
-	return GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	if (ShooterGameMode)
+		return ShooterGameMode;
+
+	ShooterGameMode = GetWorld()->GetAuthGameMode<AShooterGameMode>();
+	return ShooterGameMode;
+}
+
+AShooterPlayerState* AShooterCharacter::GetShooterPlayerState()
+{
+	if (ShooterPlayerState)
+		return ShooterPlayerState;
+
+	ShooterPlayerState = GetPlayerState<AShooterPlayerState>();
+	return ShooterPlayerState;
 }
 
 void AShooterCharacter::Tick(float DeltaTime)

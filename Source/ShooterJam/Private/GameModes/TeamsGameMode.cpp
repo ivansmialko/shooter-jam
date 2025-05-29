@@ -58,3 +58,20 @@ void ATeamsGameMode::Logout(AController* InExitingPlayer)
 
 	ShooterGameState->RemovePlayerFromTeam(ShooterPlayerState);
 }
+
+float ATeamsGameMode::CalculateDamage(AController* InAttacker, AController* InAttacked, float BaseDamage)
+{
+	AShooterPlayerState* AttackerPlayerState{ InAttacker->GetPlayerState<AShooterPlayerState>() };
+	AShooterPlayerState* AttackedPlayerState{ InAttacked->GetPlayerState<AShooterPlayerState>() };
+
+	if (!AttackedPlayerState || !AttackedPlayerState)
+		return BaseDamage;
+
+	if (AttackerPlayerState == AttackedPlayerState)
+		return BaseDamage;
+
+	if (AttackerPlayerState->GetTeamType() == AttackedPlayerState->GetTeamType())
+		return 0;
+
+	return BaseDamage;
+}

@@ -47,6 +47,8 @@ public:
 	virtual void OnPlayerLeft(AShooterPlayerState* InPlayerLeaving);
 	virtual void RequestRespawn(ACharacter* InCharacter, AController* InController);
 
+	virtual float CalculateDamage(AController* InAttacker, AController* InAttacked, float BaseDamage);
+
 //protected methods
 protected:
 	//~ Begin AActor Interface

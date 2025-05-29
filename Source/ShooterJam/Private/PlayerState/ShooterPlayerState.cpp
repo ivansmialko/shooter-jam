@@ -15,9 +15,9 @@ void AShooterPlayerState::CheckInitMembers()
 		Character = Cast<AShooterCharacter>(GetPawn());
 	}
 
-	if (!PlayerController && Character)
+	if (!ShooterCharacterController && Character)
 	{
-		PlayerController = Cast<AShooterCharacterController>(Character->GetController());
+		ShooterCharacterController = Cast<AShooterCharacterController>(Character->GetController());
 	}
 } 
 
@@ -25,26 +25,26 @@ void AShooterPlayerState::UpdateScoreHud()
 {
 	CheckInitMembers();
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 
-	PlayerController->GetPlayerHud()->SetScore(GetScore());
+	ShooterCharacterController->GetPlayerHud()->SetScore(GetScore());
 }
 
 void AShooterPlayerState::UpdateDefeatsHud()
 {
 	CheckInitMembers();
 
-	if (!PlayerController)
+	if (!ShooterCharacterController)
 		return;
 
-	if (!PlayerController->GetPlayerHud())
+	if (!ShooterCharacterController->GetPlayerHud())
 		return;
 	
-	PlayerController->GetPlayerHud()->SetDefeats(GetDefeats());
+	ShooterCharacterController->GetPlayerHud()->SetDefeats(GetDefeats());
 }
 
 void AShooterPlayerState::ChangeTeamType(ETeamType InTeamType)
