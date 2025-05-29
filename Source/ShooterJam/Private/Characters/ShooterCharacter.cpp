@@ -250,6 +250,7 @@ void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float BaseDamage, 
 	if (!GetShooterGameMode())
 		return;
 
+	BaseDamage = GetShooterGameMode()->CalculateDamage(InstigatorController, Controller, BaseDamage);
 	float DamageToHealth = BaseDamage;
 	if (Shield > 0.f)
 	{
