@@ -18,7 +18,7 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UButton* ExitButton;
 
-	APlayerController* PlayerController{ nullptr };
+	APlayerController* ShooterCharacterController{ nullptr };
 	UMultiplayerSessionsSubsystem* MultiplayerSessionsSubsystem{ nullptr };
 
 public:

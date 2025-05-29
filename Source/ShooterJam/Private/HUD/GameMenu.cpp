@@ -20,13 +20,13 @@ void UGameMenu::MenuSetup()
 	if (!World)
 		return;
 
-	PlayerController = (!PlayerController ? World->GetFirstPlayerController() : PlayerController);
+	ShooterCharacterController = (!ShooterCharacterController ? World->GetFirstPlayerController() : ShooterCharacterController);
 
 	FInputModeGameAndUI InputModeData;
 	InputModeData.SetWidgetToFocus(TakeWidget());
 
-	PlayerController->SetInputMode(InputModeData);
-	PlayerController->SetShowMouseCursor(true);
+	ShooterCharacterController->SetInputMode(InputModeData);
+	ShooterCharacterController->SetShowMouseCursor(true);
 
 	UGameInstance* GameInstance = GetGameInstance();
 	if (!GameInstance)
@@ -52,11 +52,11 @@ void UGameMenu::MenuTeardown()
 	if (!World)
 		return;
 
-	PlayerController = (!PlayerController ? World->GetFirstPlayerController() : PlayerController);
+	ShooterCharacterController = (!ShooterCharacterController ? World->GetFirstPlayerController() : ShooterCharacterController);
 
 	FInputModeGameOnly InputModeData;
-	PlayerController->SetInputMode(InputModeData);
-	PlayerController->SetShowMouseCursor(false);
+	ShooterCharacterController->SetInputMode(InputModeData);
+	ShooterCharacterController->SetShowMouseCursor(false);
 
 	if (ExitButton)
 	{
@@ -92,10 +92,10 @@ void UGameMenu::OnDestroySession(bool bWasSuccessfull)
 	}
 	else
 	{
-		PlayerController = (!PlayerController ? World->GetFirstPlayerController() : PlayerController);
-		if (PlayerController)
+		ShooterCharacterController = (!ShooterCharacterController ? World->GetFirstPlayerController() : ShooterCharacterController);
+		if (ShooterCharacterController)
 		{
-			PlayerController->ClientReturnToMainMenuWithTextReason(FText());
+			ShooterCharacterController->ClientReturnToMainMenuWithTextReason(FText());
 		}
 	}
 }

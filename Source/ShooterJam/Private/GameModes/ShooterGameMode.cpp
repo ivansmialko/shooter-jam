@@ -148,6 +148,11 @@ void AShooterGameMode::RequestRespawn(ACharacter* InCharacter, AController* InCo
 	RestartPlayerAtPlayerStart(InController, PlayerStartsArray[RandomIndex]);
 }
 
+float AShooterGameMode::CalculateDamage(AController* InAttacker, AController* InAttacked, float BaseDamage)
+{
+	return BaseDamage;
+}
+
 void AShooterGameMode::BeginPlay()
 {
 	Super::BeginPlay();
