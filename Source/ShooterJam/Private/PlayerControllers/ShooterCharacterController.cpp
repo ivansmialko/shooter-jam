@@ -69,6 +69,7 @@ void AShooterCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimePro
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AShooterCharacterController, MatchState);
+	DOREPLIFETIME(AShooterCharacterController, bShowTeamsBattleWidget);
 }
 
 void AShooterCharacterController::Tick(float DeltaSeconds)
@@ -144,7 +145,7 @@ float AShooterCharacterController::GetServerTime()
 	return GetWorld()->GetTimeSeconds() + ClientServerDelta;
 }
 
-void AShooterCharacterController::OnMatchStateSet(FName InState)
+void AShooterCharacterController::OnMatchStateSet(FName InState, bool bInIsTeamsMatch /*= false*/)
 {
 	MatchState = InState;
 	HandleMatchState();
@@ -285,7 +286,7 @@ void AShooterCharacterController::UpdatePingWarning(float InDeltaTime)
 	PingWarningTimer = -1.0f;
 }
 
-void AShooterCharacterController::HandleMatchState()
+void AShooterCharacterController::HandleMatchState(bool bInIsTeamsMatch /*= false*/)
 {
 	if (MatchState == MatchState::WaitingToStart)
 	{
@@ -293,7 +294,7 @@ void AShooterCharacterController::HandleMatchState()
 	}
 	if (MatchState == MatchState::InProgress)
 	{
-		HandleInProgress();
+		HandleInProgress(bInIsTeamsMatch);
 	}
 	if (MatchState == MatchState::Cooldown)
 	{
@@ -303,7 +304,22 @@ void AShooterCharacterController::HandleMatchState()
 
 void AShooterCharacterController::OnRep_MatchState()
 {
+	if (!HasAuthority())
+		return;
+
 	HandleMatchState();
+}
+
+void AShooterCharacterController::OnRep_ShowTeamsBattleWidget()
+{
+	if (bShowTeamsBattleWidget)
+	{
+		ShooterHud->ShowTeamBattleWidget();
+	}
+	else
+	{
+		ShooterHud->HideTeamBattleWidget();
+	}
 }
 
 void AShooterCharacterController::OnInputExit(const FInputActionValue& InValue)
@@ -352,7 +368,7 @@ void AShooterCharacterController::HandleWaitingToStart()
 	UpdateCountdowns();
 }
 
-void AShooterCharacterController::HandleInProgress()
+void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= false*/)
 {
 	if (!CheckInitHud())
 		return;
@@ -360,6 +376,20 @@ void AShooterCharacterController::HandleInProgress()
 	ShooterHud->HideAnnouncementWidget();
 	ShooterHud->AddCharacterOverlay();
 	UpdateCountdowns();
+
+	if (!HasAuthority())
+		return;
+
+	if (bInIsTeamsMatch)
+	{
+		ShooterHud->ShowTeamBattleWidget();
+	}
+	else
+	{
+		ShooterHud->HideTeamBattleWidget();
+	}
+
+	bShowTeamsBattleWidget = bInIsTeamsMatch;
 }
 
 void AShooterCharacterController::HandleCooldown()

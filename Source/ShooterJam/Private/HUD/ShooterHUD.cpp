@@ -6,6 +6,7 @@
 #include "HUD/AnnouncementWidget.h"
 #include "HUD/GameMenu.h"
 #include "HUD/WorldChat.h"
+#include "HUD/TeamBattleWidget.h"
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
@@ -225,6 +226,28 @@ void AShooterHUD::HideGameMenu()
 	GameMenuWidget->MenuTeardown();
 }
 
+void AShooterHUD::ShowTeamBattleWidget()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->TeamBattle)
+		return;
+
+	CharacterOverlay->TeamBattle->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AShooterHUD::HideTeamBattleWidget()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->TeamBattle)
+		return;
+
+	CharacterOverlay->TeamBattle->SetVisibility(ESlateVisibility::Hidden);
+}
+
 bool AShooterHUD::GetIsGameMenuOpen()
 {
 	if (!GameMenuWidget)
@@ -239,6 +262,14 @@ UWorldChat* AShooterHUD::GetWorldChat() const
 		return nullptr;
 
 	return CharacterOverlay->WorldChat;
+}
+
+UTeamBattleWidget* AShooterHUD::GetTeamBattleWidget() const
+{
+	if (!CharacterOverlay)
+		return nullptr;
+
+	return CharacterOverlay->TeamBattle;
 }
 
 void AShooterHUD::SetCrosshairsPackage(FCrosshairsPackage& InCrosshairsPackage)
