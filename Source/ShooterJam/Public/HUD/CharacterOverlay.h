@@ -11,6 +11,7 @@ class UTextBlock;
 class UStackBox;
 class UImage;
 class UWorldChat;
+class UTeamBattleWidget;
 
 /**
  * C++ base for W_CharacterOverlay. Collection of widgets that represents user's HUD
@@ -46,6 +47,8 @@ public:
 	UImage* WifiImage;
 	UPROPERTY(meta = (BindWidget))
 	UWorldChat* WorldChat;
+	UPROPERTY(meta = (BindWidget))
+	UTeamBattleWidget* TeamBattle;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* WifiBlinkAnimation;

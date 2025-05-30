@@ -7,25 +7,10 @@
 
 #include "Kismet/GameplayStatics.h"
 
-void ATeamsGameMode::HandleMatchHasStarted()
+ATeamsGameMode::ATeamsGameMode()
+	:bIsTeamsMatch(true)
 {
-	Super::HandleMatchHasStarted();
 
-	AShooterGameState* ShooterGameState = Cast<AShooterGameState>(UGameplayStatics::GetGameState(this));
-	if (!ShooterGameState)
-		return;
-
-	for (const auto& PlayerState : ShooterGameState->PlayerArray)
-	{
-		AShooterPlayerState* ShooterPlayerState = Cast<AShooterPlayerState>(PlayerState.Get());
-		if (!ShooterPlayerState)
-			continue;
-
-		if (ShooterPlayerState->GetTeamType() != ETeamType::ETT_NoTeam)
-			continue;
-
-		ShooterPlayerState->ChangeTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
-	}
 }
 
 void ATeamsGameMode::PostLogin(APlayerController* InNewPlayer)
@@ -74,4 +59,25 @@ float ATeamsGameMode::CalculateDamage(AController* InAttacker, AController* InAt
 		return 0;
 
 	return BaseDamage;
+}
+
+void ATeamsGameMode::HandleMatchHasStarted()
+{
+	Super::HandleMatchHasStarted();
+
+	AShooterGameState* ShooterGameState = Cast<AShooterGameState>(UGameplayStatics::GetGameState(this));
+	if (!ShooterGameState)
+		return;
+
+	for (const auto& PlayerState : ShooterGameState->PlayerArray)
+	{
+		AShooterPlayerState* ShooterPlayerState = Cast<AShooterPlayerState>(PlayerState.Get());
+		if (!ShooterPlayerState)
+			continue;
+
+		if (ShooterPlayerState->GetTeamType() != ETeamType::ETT_NoTeam)
+			continue;
+
+		ShooterPlayerState->ChangeTeamType(ShooterGameState->DistributePlayerToTeam(ShooterPlayerState));
+	}
 }

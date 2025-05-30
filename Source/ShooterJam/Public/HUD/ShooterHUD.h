@@ -131,10 +131,17 @@ public:
 	/** Hides in-game menu */
 	void HideGameMenu();
 
+	/** Shows information about team progress on HUD */
+	void ShowTeamBattleWidget();
+
+	/** Hides information about team progress from HUD */
+	void HideTeamBattleWidget();
+
 //public getters/setters
 public:
 	bool GetIsGameMenuOpen();
 	UWorldChat* GetWorldChat() const;
+	UTeamBattleWidget* GetTeamBattleWidget() const;
 
 	FORCEINLINE bool IsOverlayInitialized() const { return CharacterOverlay != nullptr; }
 	FORCEINLINE UCharacterOverlay* GetCharacterOverlay() const { return CharacterOverlay; }

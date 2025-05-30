@@ -37,6 +37,9 @@ private:
 	float LevelStartingTime{ 0.f };
 	float CountdownTime{ -1.0f };
 
+	/** Match mode selector */
+	bool bIsTeamsMatch{ false };
+
 //public methods
 public:
 	AShooterGameMode();

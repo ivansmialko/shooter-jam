@@ -16,6 +16,8 @@ class SHOOTERJAM_API ATeamsGameMode : public AShooterGameMode
 
 //public methods
 public:
+	ATeamsGameMode();
+
 	virtual void PostLogin(APlayerController* InNewPlayer) override;
 	virtual void Logout(AController* InExitingPlayer) override;
 

@@ -169,6 +169,6 @@ void AShooterGameMode::OnMatchStateSet()
 		if (!ShooterController)
 			return;
 
-		ShooterController->OnMatchStateSet(MatchState);
+		ShooterController->OnMatchStateSet(MatchState, bIsTeamsMatch);
 	}
 }

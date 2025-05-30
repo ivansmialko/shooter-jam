@@ -95,6 +95,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_MatchState)
 	FName MatchState;
 
+	UPROPERTY(ReplicatedUsing = OnRep_ShowTeamsBattleWidget)
+	bool bShowTeamsBattleWidget{ false };
+
 //private methods
 private:
 	/** Sets current match time to HUD */
@@ -134,10 +137,13 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_WorldChatEliminaion(APlayerState* InAttacker, APlayerState* InAttacked);
 
-	void HandleMatchState();
+	void HandleMatchState(bool bInIsTeamsMatch = false);
 
 	UFUNCTION()
 	void OnRep_MatchState();
+
+	UFUNCTION()
+	void OnRep_ShowTeamsBattleWidget();
 
 	void OnInputExit(const FInputActionValue& InValue);
 
@@ -147,7 +153,7 @@ private:
 	void HandleWaitingToStart();
 
 	/** Handle changing match state to "InProgress" */
-	void HandleInProgress();
+	void HandleInProgress(bool bInIsTeamsMatch = false);
 
 	/** Handle changing match state to "Cooldown" */
 	void HandleCooldown();
@@ -185,7 +191,7 @@ public:
 	virtual float GetServerTime();
 
 	/** Handles match state changes */
-	void OnMatchStateSet(FName InState);
+	void OnMatchStateSet(FName InState, bool bInIsTeamsMatch = false);
 
 	/** If someone is eliminated - this method called, to display in chat */
 	void OnEliminationBroadcast(APlayerState* InAttacker, APlayerState* InAttacked);
