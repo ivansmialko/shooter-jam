@@ -8,9 +8,9 @@
 
 void UTeamBattleWidget::SetRedProgress(uint32 InProgress)
 {
-	ScoreRed->SetText(FText::FromString(FString::Printf("%d", InProgress)));
+	ScoreRed->SetText(FText::FromString(FString::Printf(TEXT("%d"), InProgress)));
 
-	float ProgressPercent{ (InProgress == 0 ? InProgress : (RedProgressMax / InProgress)) };
+	float ProgressPercent{ static_cast<float>((InProgress == 0 ? InProgress : (RedProgressMax / InProgress))) };
 	ProgressBarRed->SetPercent(ProgressPercent);
 }
 
@@ -21,9 +21,9 @@ void UTeamBattleWidget::SetRedProgressMax(uint32 InMaxProgress)
 
 void UTeamBattleWidget::SetBlueProgress(uint32 InProgress)
 {
-	ScoreBlue->SetText(FText::FromString(FString::Printf("%d", InProgress)));
+	ScoreBlue->SetText(FText::FromString(FString::Printf(TEXT("%d"), InProgress)));
 
-	float ProgressPercent{ (InProgress == 0 ? InProgress : (RedProgressMax / InProgress)) };
+	float ProgressPercent{ static_cast<float>((InProgress == 0 ? InProgress : (RedProgressMax / InProgress))) };
 	ProgressBarBlue->SetPercent(ProgressPercent);
 }
 
