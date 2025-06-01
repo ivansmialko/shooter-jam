@@ -25,6 +25,7 @@ class UCharacterOverlay;
 class UAnnouncementWidget;
 class UGameMenu;
 class UWorldChat;
+class UTeamBattleWidget;
 
 UCLASS()
 class SHOOTERJAM_API AShooterHUD : public AHUD

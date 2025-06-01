@@ -8,9 +8,8 @@
 #include "Kismet/GameplayStatics.h"
 
 ATeamsGameMode::ATeamsGameMode()
-	:bIsTeamsMatch(true)
 {
-
+	bIsTeamsMatch = true;
 }
 
 void ATeamsGameMode::PostLogin(APlayerController* InNewPlayer)

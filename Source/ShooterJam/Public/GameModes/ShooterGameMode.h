@@ -37,6 +37,8 @@ private:
 	float LevelStartingTime{ 0.f };
 	float CountdownTime{ -1.0f };
 
+//protected fields
+protected:
 	/** Match mode selector */
 	bool bIsTeamsMatch{ false };
 
