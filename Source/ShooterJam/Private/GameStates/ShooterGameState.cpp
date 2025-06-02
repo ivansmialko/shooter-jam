@@ -3,18 +3,29 @@
 
 #include "GameStates/ShooterGameState.h"
 
+#include "PlayerControllers/ShooterCharacterController.h"
 #include "PlayerState/ShooterPlayerState.h"
+#include "HUD/ShooterHUD.h"
+#include "HUD/TeamBattleWidget.h"
 
 #include "Net/UnrealNetwork.h"
 
 void AShooterGameState::OnRep_TeamRedScore()
 {
+	AShooterCharacterController* ShooterController = Cast<AShooterCharacterController>(GetWorld()->GetFirstPlayerController());
+	if (!ShooterController)
+		return;
 
+	ShooterController->GetPlayerHud()->GetTeamBattleWidget()->SetRedProgress(TeamRedScore);
 }
 
 void AShooterGameState::OnRep_TeamBlueScore()
 {
+	AShooterCharacterController* ShooterController = Cast<AShooterCharacterController>(GetWorld()->GetFirstPlayerController());
+	if (!ShooterController)
+		return;
 
+	ShooterController->GetPlayerHud()->GetTeamBattleWidget()->SetBlueProgress(TeamRedScore);
 }
 
 void AShooterGameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -111,17 +122,30 @@ void AShooterGameState::RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemo
 
 void AShooterGameState::TeamScore(ETeamType InTeamType)
 {
+	AShooterCharacterController* ShooterController = Cast<AShooterCharacterController>(GetWorld()->GetFirstPlayerController());
+	if (!ShooterController)
+		return;
+
 	switch (InTeamType)
 	{
 	case ETeamType::ETT_Red:
 	{
 		++TeamRedScore;
+		ShooterController->GetPlayerHud()->GetTeamBattleWidget()->SetRedProgress(TeamRedScore);
+
 	} break;
 	case ETeamType::ETT_Blue:
 	{
 		++TeamBlueScore;
+		ShooterController->GetPlayerHud()->GetTeamBattleWidget()->SetBlueProgress(TeamRedScore);
+
 	} break;
 	default:
 		break;
 	}
+
+
+
+
+
 }

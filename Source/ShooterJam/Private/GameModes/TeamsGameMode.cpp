@@ -4,6 +4,7 @@
 #include "GameModes/TeamsGameMode.h"
 #include "GameStates/ShooterGameState.h"
 #include "PlayerState/ShooterPlayerState.h"
+#include "PlayerControllers/ShooterCharacterController.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -41,6 +42,24 @@ void ATeamsGameMode::Logout(AController* InExitingPlayer)
 		return;
 
 	ShooterGameState->RemovePlayerFromTeam(ShooterPlayerState);
+}
+
+void ATeamsGameMode::OnPlayerEliminated(AShooterCharacter* InElimCharacter, AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController)
+{
+	if (!InAttackerController)
+		return;
+
+	Super::OnPlayerEliminated(InElimCharacter, InElimController, InAttackerController);
+
+	AShooterGameState* ShooterGameState = Cast<AShooterGameState>(UGameplayStatics::GetGameState(this));
+	if (!ShooterGameState)
+		return;
+
+	AShooterPlayerState* AttackerPlayerState = InAttackerController->GetPlayerState<AShooterPlayerState>();
+	if (!AttackerPlayerState)
+		return;
+
+	ShooterGameState->TeamScore(AttackerPlayerState->GetTeamType());
 }
 
 float ATeamsGameMode::CalculateDamage(AController* InAttacker, AController* InAttacked, float BaseDamage)

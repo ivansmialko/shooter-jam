@@ -21,6 +21,8 @@ public:
 	virtual void PostLogin(APlayerController* InNewPlayer) override;
 	virtual void Logout(AController* InExitingPlayer) override;
 
+	virtual void OnPlayerEliminated(AShooterCharacter* InElimCharacter, AShooterCharacterController* InElimController, AShooterCharacterController* InAttackerController) override;
+
 	virtual float CalculateDamage(AController* InAttacker, AController* InAttacked, float BaseDamage) override;
 
 //protected methods
