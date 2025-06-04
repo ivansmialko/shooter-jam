@@ -364,6 +364,14 @@ void UCombatComponent::OnStateSwapping()
 	Character->PlaySwapMontage();
 }
 
+void UCombatComponent::OnStateDancing()
+{
+	if (!Character)
+		return;
+
+	Character->PlayDancingMontage();
+}
+
 void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
 	if (bInDropPrevious)
@@ -994,4 +1002,19 @@ void UCombatComponent::PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount)
 void UCombatComponent::ChangeCombatState(ECombatState InCombatState)
 {
 	CombatState = InCombatState;
+}
+
+void UCombatComponent::Dance1()
+{
+	if (!Character)
+		return;
+
+	if (!GetIsUnoccupied())
+		return;
+
+	CombatState = ECombatState::ECS_Dancing;
+	if (Character->HasAuthority())
+	{
+		OnStateDancing();
+	}
 }

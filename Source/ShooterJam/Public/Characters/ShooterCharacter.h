@@ -74,6 +74,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = Animation)
 	UAnimMontage* SwapMontage;
 
+	UPROPERTY(EditAnywhere, Category = Animation)
+	UAnimMontage* DancingMontage;
+
 	/** Float curve that represents dissolving of character's mesh after dying */
 	UPROPERTY(EditAnywhere, Category = Effects)
 	UCurveFloat* DissolveCurve;
@@ -184,6 +187,8 @@ private:
 	UInputAction* ThrowAction;
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ExitAction;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Dance1Action;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* CameraBoom;
@@ -334,6 +339,7 @@ private:
 	void OnDropWeapon(const FInputActionValue& Value);
 	void OnReload(const FInputActionValue& Value);
 	void OnThrow(const FInputActionValue& Value);
+	void OnDance1(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
@@ -404,6 +410,7 @@ public:
 	void PlayReloadEndMontage();
 	void PlayThrowMontage();
 	void PlaySwapMontage();
+	void PlayDancingMontage();
 
 	void InitInputs();
 	void DisableInputs();
@@ -443,6 +450,7 @@ public:
 	FORCEINLINE bool GetUseAimOffsets() const { return GetIsUnoccupied(); }
 	FORCEINLINE bool GetUseRightHandTransform() const { return GetIsUnoccupied(); }
 	FORCEINLINE bool GetIsLeftGame() const { return bLeftGame; }
+	FORCEINLINE bool GetIsDancing() const { return (CombatComponent && CombatComponent->GetIsDancing()); }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }
