@@ -63,6 +63,8 @@ private:
 	bool bUseFabrik;
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	bool bUseAimOffsets;
+	UPROPERTY(BlueprintReadOnly, Category = Body, meta = (AllowPrivateAccess = "true"))
+	bool bIsDancing;
 	UPROPERTY(BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
 	bool bTransformRightHand;
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))

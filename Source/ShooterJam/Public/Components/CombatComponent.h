@@ -144,6 +144,7 @@ public:
 	void Throw();
 	void PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount);
 	void ChangeCombatState(ECombatState InCombatState);
+	void Dance1();
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	
@@ -243,6 +244,7 @@ protected:
 	void OnStateReload();
 	void OnStateThrow();
 	void OnStateSwapping();
+	void OnStateDancing();
 
 	void EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious = false);
 	void EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip);
@@ -255,6 +257,7 @@ public:
 	FORCEINLINE bool GetIsThrowing() const { return CombatState == ECombatState::ECS_Throwing; }
 	FORCEINLINE bool GetIsUnoccupied() const { return CombatState == ECombatState::ECS_Unoccupied; }
 	FORCEINLINE bool GetIsShouldSwapWeapons() const { return (EquippedWeapon != nullptr && SecondaryWeapon != nullptr); }
+	FORCEINLINE bool GetIsDancing() const { return (CombatState == ECombatState::ECS_Dancing); }
 	FORCEINLINE int32 GetCarriedAmmo() const { return CarriedAmmo; }
 	FORCEINLINE int32 GetWeaponAmmo() const { return (EquippedWeapon ? EquippedWeapon->GetWeaponAmmo() : 0); }
 	FORCEINLINE int32 GetGrenadesAmount() const { return GrenadesAmount; }

@@ -241,6 +241,14 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 	//PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there!");
 }
 
+void AShooterCharacter::OnDance1(const FInputActionValue& Value)
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->Dance1();
+}
+
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
 void AShooterCharacter::OnReceiveDamage(AActor* DamagedActor, float BaseDamage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser)
 {
@@ -1274,6 +1282,22 @@ void AShooterCharacter::PlaySwapMontage()
 	AnimInstance->Montage_Play(SwapMontage);
 }
 
+void AShooterCharacter::PlayDancingMontage()
+{
+	if (!GetMesh())
+		return;
+
+	if (!DancingMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Play(DancingMontage);
+	AnimInstance->Montage_JumpToSection("Dance_House");
+}
+
 void AShooterCharacter::OnAnimReloadFinished()
 {
 	if (!CombatComponent)
@@ -1533,6 +1557,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
 	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
+	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnDance1);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

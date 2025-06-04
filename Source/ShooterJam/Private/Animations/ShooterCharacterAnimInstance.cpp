@@ -48,6 +48,7 @@ void UShooterCharacterAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bUseFabrik = ShooterCharacter->GetUseFabrik();
 	bUseAimOffsets = ShooterCharacter->GetUseAimOffsets();
 	bTransformRightHand = ShooterCharacter->GetUseRightHandTransform();
+	bIsDancing = ShooterCharacter->GetIsDancing();
 	
 	//Offset yaw for strafing
 	FRotator AimRotation = ShooterCharacter->GetBaseAimRotation(); 
