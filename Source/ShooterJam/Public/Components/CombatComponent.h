@@ -144,7 +144,8 @@ public:
 	void Throw();
 	void PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount);
 	void ChangeCombatState(ECombatState InCombatState);
-	void Dance1();
+	void StartDancing();
+	void StopDancing();
 
 	void TraceUnderCrosshairs(FHitResult& TraceHitResult);
 	
@@ -183,6 +184,12 @@ public:
 
 	UFUNCTION(Server, Reliable)
 	void Server_ThrowGrenade(const FVector_NetQuantize& Target);
+
+	UFUNCTION(Server, Reliable)
+	void Server_StartDancing(FName EmotionName);
+
+	UFUNCTION(Server, Reliable)
+	void Server_StopDancing();
 
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_FireWeapon(const TArray<FVector_NetQuantize>& TraceHitTargets);

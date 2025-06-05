@@ -116,6 +116,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = Effects)
 	USoundCue* ElimbotSound;
 
+	UPROPERTY(EditAnywhere, Category = Effects)
+	TMap<FName, USoundCue*> DancingMusic;
+
+	UPROPERTY(VisibleAnywhere, Category = Effects)
+	UAudioComponent* DancingAudioComponent;
+
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UStaticMeshComponent* GrenadeMesh;
 
@@ -153,6 +159,9 @@ private:
 	/** Current value of player's shield */
 	UPROPERTY(ReplicatedUsing = OnRep_Shield, EditAnywhere, Category = "Player Stats")
 	float Shield{ MaxShield };
+
+	UPROPERTY(ReplicatedUsing = OnRep_CurrentEmotion, VisibleAnywhere);
+	FName CurrentEmotion;
 
 	/** Is user currently eliminated */
 	UPROPERTY(VisibleAnywhere)
@@ -267,6 +276,7 @@ private:
 	FRotator ProxyRotation;
 	FRotator ProxyRotationLastFrame;
 	FRotator StartingAimRotation;
+	FVector CameraBoomDefaultOffset;
 	
 	ETurningInPlace TurningInPlace{ ETurningInPlace::TIP_NotTurning };
 	
@@ -297,6 +307,9 @@ private:
 	void OnRep_Health(float LastHealth);
 	UFUNCTION()
 	void OnRep_Shield(float LastShield);
+	UFUNCTION()
+	void OnRep_CurrentEmotion();
+
 	virtual void OnRep_ReplicatedMovement() override;
 	UFUNCTION()
 	void OnReceiveDamage(AActor* DamagedActor, float BaseDamage, const UDamageType* DamageTypem, class AController* InstigatorController, AActor* DamageCauser);
@@ -316,6 +329,8 @@ private:
 	void Server_OnReload();
 	UFUNCTION(NetMulticast, Reliable)
 	void Multicast_OnEliminated(bool bInLeftGame);
+	UFUNCTION(Server, Reliable)
+	void Server_StartEmotion(FName EmotionName);
 
 	void ActionEquip();
 	void ActionAimStart();
@@ -323,6 +338,8 @@ private:
 	void ActionReceiveDamage();
 	void ActionReload();
 	void RequestThrow();
+	void ActionStartEmotion(FName EmotionName);
+	void ActionStopEmotion();
 
 	void DropWeapon();
 	void DropSecondaryWeapon();
@@ -339,7 +356,7 @@ private:
 	void OnDropWeapon(const FInputActionValue& Value);
 	void OnReload(const FInputActionValue& Value);
 	void OnThrow(const FInputActionValue& Value);
-	void OnDance1(const FInputActionValue& Value);
+	void OnDance(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
@@ -374,6 +391,8 @@ private:
 	void PostInitializeLagCompensationComponent();
 
 	void SpawnDefaultWeapon();
+
+	FName GetRandomDancingAnimation() const;
 
 //public methods
 public:
@@ -411,10 +430,12 @@ public:
 	void PlayThrowMontage();
 	void PlaySwapMontage();
 	void PlayDancingMontage();
+	void StopDancingMontage();
 
 	void InitInputs();
 	void DisableInputs();
 	void DisableGameplay();
+	void EnableGameplay();
 
 	void HudUpdate();
 	void HudUpdateHealth();

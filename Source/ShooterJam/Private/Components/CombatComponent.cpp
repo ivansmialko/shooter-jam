@@ -589,6 +589,10 @@ void UCombatComponent::OnRep_CombatState()
 	{
 		OnStateSwapping();
 	}
+	case ECombatState::ECS_Dancing:
+	{
+		OnStateDancing();
+	}
 	default:
 		break;
 	}
@@ -667,6 +671,22 @@ void UCombatComponent::Server_ThrowGrenade_Implementation(const FVector_NetQuant
 		return;
 
 	World->SpawnActor<AProjectile>(GrenadeProjectileClass, StartingLocation, Direction.Rotation(), SpawnParams);
+}
+
+void UCombatComponent::Server_StartDancing_Implementation(FName EmotionName)
+{
+	CombatState = ECombatState::ECS_Dancing;
+	OnStateDancing();
+}
+
+void UCombatComponent::Server_StopDancing_Implementation()
+{
+	CombatState = ECombatState::ECS_Unoccupied;
+
+	if (!Character)
+		return;
+
+	Character->StopDancingMontage();
 }
 
 void UCombatComponent::Multicast_FireWeapon_Implementation(const TArray<FVector_NetQuantize>& TraceHitTargets)
@@ -1004,7 +1024,7 @@ void UCombatComponent::ChangeCombatState(ECombatState InCombatState)
 	CombatState = InCombatState;
 }
 
-void UCombatComponent::Dance1()
+void UCombatComponent::StartDancing()
 {
 	if (!Character)
 		return;
@@ -1013,8 +1033,17 @@ void UCombatComponent::Dance1()
 		return;
 
 	CombatState = ECombatState::ECS_Dancing;
-	if (Character->HasAuthority())
-	{
-		OnStateDancing();
-	}
+	OnStateDancing();
+}
+
+void UCombatComponent::StopDancing()
+{
+	if (!Character)
+		return;
+
+	if (!GetIsDancing())
+		return;
+
+	CombatState = ECombatState::ECS_Unoccupied;
+	Character->StopDancingMontage();
 }
