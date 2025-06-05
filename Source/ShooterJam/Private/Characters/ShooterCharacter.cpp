@@ -81,7 +81,10 @@ void AShooterCharacter::OnMove(const FInputActionValue& Value)
 	if (!GetController())
 		return;
 
-	ActionStopEmotion();
+	if (CombatComponent && CombatComponent->GetIsDancing())
+	{
+		Server_StartEmotion("");
+	}
 
 	if (!bGameplayEnabled)
 		return;
