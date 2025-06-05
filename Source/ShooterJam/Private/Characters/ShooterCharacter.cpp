@@ -23,6 +23,7 @@
 #include "Components/WidgetComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "Net/UnrealNetwork.h"
@@ -79,6 +80,8 @@ void AShooterCharacter::OnMove(const FInputActionValue& Value)
 {
 	if (!GetController())
 		return;
+
+	ActionStopEmotion();
 
 	if (!bGameplayEnabled)
 		return;
@@ -241,12 +244,12 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 	//PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there!");
 }
 
-void AShooterCharacter::OnDance1(const FInputActionValue& Value)
+void AShooterCharacter::OnDance(const FInputActionValue& Value)
 {
 	if (!CombatComponent)
 		return;
 
-	CombatComponent->Dance1();
+	Server_StartEmotion((CombatComponent->GetIsDancing() ?  "" : GetRandomDancingAnimation()));
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -489,6 +492,7 @@ void AShooterCharacter::InitializeCameraBoom()
 	CameraBoom->SetupAttachment(GetMesh());
 	CameraBoom->TargetArmLength = 600;
 	CameraBoom->bUsePawnControlRotation = true;
+	CameraBoomDefaultOffset = CameraBoom->SocketOffset;
 }
 
 void AShooterCharacter::InitializeFollowCamera()
@@ -747,6 +751,18 @@ void AShooterCharacter::OnRep_Shield(float LastShield)
 	HudUpdateShield();
 }
 
+void AShooterCharacter::OnRep_CurrentEmotion()
+{
+	if (CurrentEmotion.IsNone())
+	{
+		ActionStopEmotion();
+	}
+	else
+	{
+		ActionStartEmotion(CurrentEmotion);
+	}
+}
+
 void AShooterCharacter::OnRep_ReplicatedMovement()
 {
 	Super::OnRep_ReplicatedMovement();
@@ -851,6 +867,23 @@ void AShooterCharacter::Multicast_OnEliminated_Implementation(bool bInLeftGame)
 	ShooterCharacterController->GetPlayerHud()->SetWeaponAmmo(0);
 }
 
+void AShooterCharacter::Server_StartEmotion_Implementation(FName EmotionName)
+{
+	CurrentEmotion = EmotionName;
+
+	if (!HasAuthority())
+		return;
+
+	if (EmotionName.IsNone())
+	{
+		ActionStopEmotion();
+	}
+	else
+	{
+		ActionStartEmotion(EmotionName);
+	}
+}
+
 void AShooterCharacter::ActionEquip()
 {
 	if (!CombatComponent)
@@ -903,6 +936,39 @@ void AShooterCharacter::RequestThrow()
 		return;
 
 	CombatComponent->Throw();
+}
+
+void AShooterCharacter::ActionStartEmotion(FName EmotionName)
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->StartDancing();
+	DisableGameplay();
+
+	if (!DancingMusic.Contains(EmotionName))
+		return;
+
+	DancingAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, DancingMusic[EmotionName], GetActorLocation());
+	if (!DancingAudioComponent)
+		return;
+
+	DancingAudioComponent->SetIsReplicated(true);
+}
+
+void AShooterCharacter::ActionStopEmotion()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->StopDancing();
+	EnableGameplay();
+
+	if (DancingAudioComponent)
+	{
+		DancingAudioComponent->Stop();
+		DancingAudioComponent->DestroyComponent();
+	}
 }
 
 void AShooterCharacter::DisableInputs()
@@ -1051,6 +1117,15 @@ void AShooterCharacter::DisableGameplay()
 	CombatComponent->SetIsAiming(false);
 	CombatComponent->SetIsFiring(false);
 	bUseControllerRotationYaw = false;
+	TurningInPlace = ETurningInPlace::TIP_NotTurning;
+}
+
+void AShooterCharacter::EnableGameplay()
+{
+	bGameplayEnabled = true;
+	CombatComponent->SetIsAiming(false);
+	CombatComponent->SetIsFiring(false);
+	bUseControllerRotationYaw = true;
 	TurningInPlace = ETurningInPlace::TIP_NotTurning;
 }
 
@@ -1246,6 +1321,17 @@ void AShooterCharacter::SpawnDefaultWeapon()
 
 }
 
+FName AShooterCharacter::GetRandomDancingAnimation() const
+{
+	if (!DancingMontage)
+		return FName();
+
+	if (DancingMontage->GetNumSections() == 0)
+		return FName();
+
+	return DancingMontage->GetSectionName(FMath::RandRange(0, DancingMontage->GetNumSections() - 1));
+}
+
 void AShooterCharacter::PlayReloadEndMontage()
 {
 	PlayReloadMontage(true);
@@ -1295,7 +1381,22 @@ void AShooterCharacter::PlayDancingMontage()
 		return;
 
 	AnimInstance->Montage_Play(DancingMontage);
-	AnimInstance->Montage_JumpToSection("Dance_House");
+	AnimInstance->Montage_JumpToSection(CurrentEmotion);
+}
+
+void AShooterCharacter::StopDancingMontage()
+{
+	if (!GetMesh())
+		return;
+
+	if (!DancingMontage)
+		return;
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (!AnimInstance)
+		return;
+
+	AnimInstance->Montage_Stop(0.1f, DancingMontage);
 }
 
 void AShooterCharacter::OnAnimReloadFinished()
@@ -1557,7 +1658,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
 	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
-	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnDance1);
+	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnDance);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
@@ -1568,6 +1669,7 @@ void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	DOREPLIFETIME(AShooterCharacter, Health);
 	DOREPLIFETIME(AShooterCharacter, Shield);
 	DOREPLIFETIME(AShooterCharacter, bGameplayEnabled);
+	DOREPLIFETIME(AShooterCharacter, CurrentEmotion);
 }
 
 void AShooterCharacter::PostInitializeComponents()
