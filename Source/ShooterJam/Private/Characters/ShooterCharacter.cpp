@@ -247,12 +247,32 @@ void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 	//PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there!");
 }
 
-void AShooterCharacter::OnDance(const FInputActionValue& Value)
+void AShooterCharacter::OnEmotionPicker(const FInputActionValue& Value)
+{
+
+}
+
+void AShooterCharacter::OnEmotion1(const FInputActionValue& Value)
 {
 	if (!CombatComponent)
 		return;
 
 	Server_StartEmotion((CombatComponent->GetIsDancing() ?  "" : GetRandomDancingAnimation()));
+}
+
+void AShooterCharacter::OnEmotion2(const FInputActionValue& Value)
+{
+
+}
+
+void AShooterCharacter::OnEmotion3(const FInputActionValue& Value)
+{
+
+}
+
+void AShooterCharacter::OnEmotion4(const FInputActionValue& Value)
+{
+
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -1670,7 +1690,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
 	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
-	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnDance);
+	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion1);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
