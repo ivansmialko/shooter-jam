@@ -120,7 +120,7 @@ private:
 	TMap<FName, USoundCue*> DancingMusic;
 
 	UPROPERTY(VisibleAnywhere, Category = Effects)
-	UAudioComponent* DancingAudioComponent;
+	UAudioComponent* EmotionAudioComponent;						//Currently playing emotion sound
 
 	UPROPERTY(VisibleAnywhere, Category = Effects)
 	UStaticMeshComponent* GrenadeMesh;
@@ -318,6 +318,8 @@ private:
 	void OnEliminatedTimerFinished();
 	UFUNCTION()
 	void TimelineUpdateDissolveMaterial(float InDissolveValue);
+	UFUNCTION()
+	void OnEmotionSoundFinished();
 
 	UFUNCTION(Server, Reliable)
 	void Server_OnEquip();
