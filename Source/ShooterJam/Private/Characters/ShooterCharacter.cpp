@@ -952,11 +952,12 @@ void AShooterCharacter::ActionStartEmotion(FName EmotionName)
 	if (!DancingMusic.Contains(EmotionName))
 		return;
 
-	DancingAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, DancingMusic[EmotionName], GetActorLocation());
-	if (!DancingAudioComponent)
+	EmotionAudioComponent = UGameplayStatics::SpawnSoundAtLocation(this, DancingMusic[EmotionName], GetActorLocation());
+	if (!EmotionAudioComponent)
 		return;
 
-	DancingAudioComponent->SetIsReplicated(true);
+	EmotionAudioComponent->OnAudioFinished.AddDynamic(this, &AShooterCharacter::OnEmotionSoundFinished);
+	EmotionAudioComponent->SetIsReplicated(true);
 }
 
 void AShooterCharacter::ActionStopEmotion()
@@ -967,10 +968,10 @@ void AShooterCharacter::ActionStopEmotion()
 	CombatComponent->StopDancing();
 	EnableGameplay();
 
-	if (DancingAudioComponent)
+	if (EmotionAudioComponent)
 	{
-		DancingAudioComponent->Stop();
-		DancingAudioComponent->DestroyComponent();
+		EmotionAudioComponent->Stop();
+		EmotionAudioComponent->DestroyComponent();
 	}
 }
 
@@ -1595,6 +1596,14 @@ void AShooterCharacter::TimelineUpdateDissolveMaterial(float InDissolveValue)
 		return;
 
 	DissolveMaterialInstanceDynamic->SetScalarParameterValue(TEXT("Dissolve"), InDissolveValue);
+}
+
+void AShooterCharacter::OnEmotionSoundFinished()
+{
+	if (!EmotionAudioComponent)
+		return;
+
+	Server_StartEmotion("");
 }
 
 AShooterGameMode* AShooterCharacter::GetShooterGameMode()
