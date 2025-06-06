@@ -358,7 +358,11 @@ private:
 	void OnDropWeapon(const FInputActionValue& Value);
 	void OnReload(const FInputActionValue& Value);
 	void OnThrow(const FInputActionValue& Value);
-	void OnDance(const FInputActionValue& Value);
+	void OnEmotionPicker(const FInputActionValue& Value);
+	void OnEmotion1(const FInputActionValue& Value);
+	void OnEmotion2(const FInputActionValue& Value);
+	void OnEmotion3(const FInputActionValue& Value);
+	void OnEmotion4(const FInputActionValue& Value);
 
 	void CalculateAimOffset(float DeltaTime);
 	void CalculateAimOffset_SimProxies();
