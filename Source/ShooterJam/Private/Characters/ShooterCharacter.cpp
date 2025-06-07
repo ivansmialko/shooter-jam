@@ -243,13 +243,22 @@ void AShooterCharacter::OnReload(const FInputActionValue& Value)
 void AShooterCharacter::OnThrow(const FInputActionValue& Value)
 {
 	RequestThrow();
-
-	//PlayerController->GetPlayerHud()->GetWorldChat()->AddMessage("Hello there!");
 }
 
-void AShooterCharacter::OnEmotionPicker(const FInputActionValue& Value)
+void AShooterCharacter::OnEmotionPickerStarted(const FInputActionValue& Value)
 {
+	if (!ShooterCharacterController)
+		return;
 
+	ShooterCharacterController->GetPlayerHud()->ShowEmotionPickerWidget();
+}
+
+void AShooterCharacter::OnEmotionPickerCompleted(const FInputActionValue& Value)
+{
+	if (!ShooterCharacterController)
+		return;
+
+	ShooterCharacterController->GetPlayerHud()->HideEmotionPickerWidget();
 }
 
 void AShooterCharacter::OnEmotion1(const FInputActionValue& Value)
@@ -257,22 +266,55 @@ void AShooterCharacter::OnEmotion1(const FInputActionValue& Value)
 	if (!CombatComponent)
 		return;
 
-	Server_StartEmotion((CombatComponent->GetIsDancing() ?  "" : GetRandomDancingAnimation()));
+	if (!ShooterCharacterController)
+		return;
+
+	if (!ShooterCharacterController->GetPlayerHud()->GetIsEmotionPickerOpen())
+		return;
+
+	Server_StartEmotion(CombatComponent->GetIsDancing() ? "" : "Dance_Swing");
 }
 
 void AShooterCharacter::OnEmotion2(const FInputActionValue& Value)
 {
+	if (!CombatComponent)
+		return;
 
+	if (!ShooterCharacterController)
+		return;
+
+	if (!ShooterCharacterController->GetPlayerHud()->GetIsEmotionPickerOpen())
+		return;
+
+	Server_StartEmotion(CombatComponent->GetIsDancing() ? "" : "Dance_House");
 }
 
 void AShooterCharacter::OnEmotion3(const FInputActionValue& Value)
 {
+	if (!CombatComponent)
+		return;
 
+	if (!ShooterCharacterController)
+		return;
+
+	if (!ShooterCharacterController->GetPlayerHud()->GetIsEmotionPickerOpen())
+		return;
+
+	Server_StartEmotion(CombatComponent->GetIsDancing() ? "" : "Dance_Samba");
 }
 
 void AShooterCharacter::OnEmotion4(const FInputActionValue& Value)
 {
+	if (!CombatComponent)
+		return;
 
+	if (!ShooterCharacterController)
+		return;
+
+	if (!ShooterCharacterController->GetPlayerHud()->GetIsEmotionPickerOpen())
+		return;
+
+	Server_StartEmotion(CombatComponent->GetIsDancing() ? "" : "Dance_Arms");
 }
 
 //Received only on the server. Clients receive damage as replication of Health variable. See OnRep_Health
@@ -1690,7 +1732,12 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	EnhancedInput->BindAction(DropWeaponAction, ETriggerEvent::Triggered, this, &AShooterCharacter::OnDropWeapon);
 	EnhancedInput->BindAction(ReloadAction, ETriggerEvent::Started, this, &AShooterCharacter::OnReload);
 	EnhancedInput->BindAction(ThrowAction, ETriggerEvent::Started, this, &AShooterCharacter::OnThrow);
-	EnhancedInput->BindAction(Dance1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion1);
+	EnhancedInput->BindAction(Emotion1Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion1);
+	EnhancedInput->BindAction(Emotion2Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion2);
+	EnhancedInput->BindAction(Emotion3Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion3);
+	EnhancedInput->BindAction(Emotion4Action, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotion4);
+	EnhancedInput->BindAction(EmotionPickerAction, ETriggerEvent::Started, this, &AShooterCharacter::OnEmotionPickerStarted);
+	EnhancedInput->BindAction(EmotionPickerAction, ETriggerEvent::Completed, this, &AShooterCharacter::OnEmotionPickerCompleted);
 }
 
 void AShooterCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const

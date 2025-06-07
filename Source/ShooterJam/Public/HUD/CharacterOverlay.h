@@ -12,6 +12,7 @@ class UStackBox;
 class UImage;
 class UWorldChat;
 class UTeamBattleWidget;
+class UEmotionPickerWidget;
 
 /**
  * C++ base for W_CharacterOverlay. Collection of widgets that represents user's HUD
@@ -49,6 +50,8 @@ public:
 	UWorldChat* WorldChat;
 	UPROPERTY(meta = (BindWidget))
 	UTeamBattleWidget* TeamBattle;
+	UPROPERTY(meta = (BindWidget))
+	UEmotionPickerWidget* EmotionPicker;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* WifiBlinkAnimation;
