@@ -197,7 +197,15 @@ private:
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputAction* ExitAction;
 	UPROPERTY(EditAnywhere, Category = Input)
-	UInputAction* Dance1Action;
+	UInputAction* Emotion1Action;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Emotion2Action;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Emotion3Action;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* Emotion4Action;
+	UPROPERTY(EditAnywhere, Category = Input)
+	UInputAction* EmotionPickerAction;
 
 	UPROPERTY(VisibleAnywhere, Category = Camera)
 	USpringArmComponent* CameraBoom;
@@ -358,7 +366,8 @@ private:
 	void OnDropWeapon(const FInputActionValue& Value);
 	void OnReload(const FInputActionValue& Value);
 	void OnThrow(const FInputActionValue& Value);
-	void OnEmotionPicker(const FInputActionValue& Value);
+	void OnEmotionPickerStarted(const FInputActionValue& Value);
+	void OnEmotionPickerCompleted(const FInputActionValue& Value);
 	void OnEmotion1(const FInputActionValue& Value);
 	void OnEmotion2(const FInputActionValue& Value);
 	void OnEmotion3(const FInputActionValue& Value);

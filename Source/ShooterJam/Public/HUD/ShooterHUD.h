@@ -138,9 +138,16 @@ public:
 	/** Hides information about team progress from HUD */
 	void HideTeamBattleWidget();
 
+	/** Shows emotion picker widget */
+	void ShowEmotionPickerWidget();
+
+	/** Hides emotion picker widget */
+	void HideEmotionPickerWidget();
+
 //public getters/setters
 public:
 	bool GetIsGameMenuOpen();
+	bool GetIsEmotionPickerOpen();
 	UWorldChat* GetWorldChat() const;
 	UTeamBattleWidget* GetTeamBattleWidget() const;
 

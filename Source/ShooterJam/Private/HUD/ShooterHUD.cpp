@@ -7,11 +7,34 @@
 #include "HUD/GameMenu.h"
 #include "HUD/WorldChat.h"
 #include "HUD/TeamBattleWidget.h"
+#include "HUD/EmotionPickerWidget.h"
 
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
 #include "GameFramework/PlayerController.h"
+
+void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread, const FLinearColor& CrosshairsColor)
+{
+	if (!InCrosshair)
+		return;
+
+	const float TextureW{ static_cast<float>(InCrosshair->GetSizeX()) };
+	const float TextureH{ static_cast<float>(InCrosshair->GetSizeY()) };
+
+	const FVector2D TextureDrawPoint
+	{
+		InViewportCenter.X - (TextureW * 0.5f) + Spread.X,
+		InViewportCenter.Y - (TextureH * 0.5f) + Spread.Y
+	};
+
+	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, CrosshairsColor);
+}
+
+void AShooterHUD::BeginPlay()
+{
+	Super::BeginPlay();
+}
 
 void AShooterHUD::DrawHUD()
 {
@@ -64,23 +87,6 @@ void AShooterHUD::DrawHUD()
 
 		DrawCrosshair(CrosshairsPackage.CrosshairsBottom, VieportCenter, CurrSpread, CrosshairsPackage.CrosshairsColor);
 	}
-}
-
-void AShooterHUD::DrawCrosshair(UTexture2D* InCrosshair, const FVector2D InViewportCenter, const FVector2D Spread, const FLinearColor& CrosshairsColor)
-{
-	if (!InCrosshair)
-		return;
-
-	const float TextureW{ static_cast<float>(InCrosshair->GetSizeX()) };
-	const float TextureH{ static_cast<float>(InCrosshair->GetSizeY()) };
-
-	const FVector2D TextureDrawPoint
-	{
-		InViewportCenter.X - (TextureW * 0.5f) + Spread.X,
-		InViewportCenter.Y - (TextureH * 0.5f) + Spread.Y
-	};
-
-	DrawTexture(InCrosshair, TextureDrawPoint.X, TextureDrawPoint.Y, TextureW, TextureH, 0.f, 0.f, 1.f, 1.f, CrosshairsColor);
 }
 
 void AShooterHUD::AddCharacterOverlay()
@@ -152,11 +158,6 @@ void AShooterHUD::HideAnnouncementInfoText()
 		return;
 
 	AnnouncementWidget->InfoText->SetVisibility(ESlateVisibility::Hidden);
-}
-
-void AShooterHUD::BeginPlay()
-{
-	Super::BeginPlay();
 }
 
 void AShooterHUD::ShowPingAnimation()
@@ -248,12 +249,45 @@ void AShooterHUD::HideTeamBattleWidget()
 	CharacterOverlay->TeamBattle->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void AShooterHUD::ShowEmotionPickerWidget()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->EmotionPicker)
+		return;
+
+	CharacterOverlay->EmotionPicker->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AShooterHUD::HideEmotionPickerWidget()
+{
+	if (!CharacterOverlay)
+		return;
+
+	if (!CharacterOverlay->EmotionPicker)
+		return;
+
+	CharacterOverlay->EmotionPicker->SetVisibility(ESlateVisibility::Hidden);
+}
+
 bool AShooterHUD::GetIsGameMenuOpen()
 {
 	if (!GameMenuWidget)
 		return false;
 
 	return GameMenuWidget->IsInViewport();
+}
+
+bool AShooterHUD::GetIsEmotionPickerOpen()
+{
+	if (!CharacterOverlay)
+		return false;
+
+	if (!CharacterOverlay->EmotionPicker)
+		return false;
+
+	return (CharacterOverlay->EmotionPicker->GetVisibility() == ESlateVisibility::Visible);
 }
 
 UWorldChat* AShooterHUD::GetWorldChat() const
