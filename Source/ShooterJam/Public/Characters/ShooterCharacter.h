@@ -487,6 +487,7 @@ public:
 	FORCEINLINE bool GetUseRightHandTransform() const { return GetIsUnoccupied(); }
 	FORCEINLINE bool GetIsLeftGame() const { return bLeftGame; }
 	FORCEINLINE bool GetIsDancing() const { return (CombatComponent && CombatComponent->GetIsDancing()); }
+	FORCEINLINE bool GetIsLocalControlled() const { return IsLocallyControlled(); }
 	FORCEINLINE float GetAoYaw() const { return AO_Yaw; };
 	FORCEINLINE float GetAoPitch() const { return AO_Pitch; };
 	FORCEINLINE float GetHealth() const { return Health; }

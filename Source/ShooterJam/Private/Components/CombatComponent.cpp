@@ -213,10 +213,15 @@ void UCombatComponent::OnAnimThrowLaunched()
 
 void UCombatComponent::OnAnimSwapSwapped()
 {
+	if (!Character)
+		return;
+
+	if (!Character->HasAuthority())
+		return;
+
 	AWeaponBase* TempWeapon = EquippedWeapon;
 	EquipPrimaryWeapon(SecondaryWeapon);
 	EquipSecondaryWeapon(TempWeapon);
-
 }
 
 void UCombatComponent::OnAnimSwapFinished()
@@ -374,6 +379,8 @@ void UCombatComponent::OnStateDancing()
 
 void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to primary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
+
 	if (bInDropPrevious)
 	{
 		DropWeapon();
@@ -391,7 +398,13 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bIn
 
 void UCombatComponent::EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip)
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to secondary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
+
 	SecondaryWeapon = InWeaponToEquip;
+
+	if (!SecondaryWeapon)
+		return;
+
 	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_EquippedSecondary);
 	SecondaryWeapon->SetOwner(Character);
 
@@ -430,6 +443,8 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
+
 	if (!GetIsUnoccupied())
 		return;
 
@@ -525,6 +540,11 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	if (!EquippedWeapon)
 		return;
 
+	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component replicated equipped weapon to %s"),
+		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
+		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
+		(*EquippedWeapon->GetActorLabel()));
+
 	//Equipped weapon is replicated, just as attaching an actor in Equip function.
 	//There's no guarantee that EquippedWeapon will replicate earlier than attaching weapon to character.
 	//So we'll also do these thing in this rep notify, just to be sure
@@ -545,12 +565,17 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (!SecondaryWeapon)
 		return;
 
+	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component replicated equipped weapon to %s"),
+		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
+		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
+		(*SecondaryWeapon->GetActorLabel()));
+
 	//Secondary weapon is replicated, just as attaching an actor in Equip function.
 	//There's no guarantee that SecondaryWeapon will replicate earlier than attaching weapon to character.
 	//So we'll also do these thing in this rep notify, just to be sure
 	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_Equipped);
 
-	AttachActorToRightHand(SecondaryWeapon);
+	AttachActorToBackpack(SecondaryWeapon);
 	PlayEquipSound(SecondaryWeapon);
 }
 
@@ -946,14 +971,23 @@ void UCombatComponent::DropWeapon()
 	EquippedWeapon = nullptr;
 }
 
-void UCombatComponent::DropWeaponLaunch()
+bool UCombatComponent::DropWeaponLaunch()
 {
 	if (!EquippedWeapon)
-		return;
+		return false;
 
+	//Do not drop equipped weapon, if there are no secondary weapon
+	if (!SecondaryWeapon)
+		return false;
+
+	//Drop weapon
 	EquippedWeapon->OnDropped();
 	EquippedWeapon->GetWeaponMesh()->AddImpulse(Character->GetActorForwardVector() * WeaponDropImpulse);
 	EquippedWeapon = nullptr;
+
+	SwapWeapons();
+
+	return true;
 }
 
 void UCombatComponent::ReloadWeapon()
