@@ -129,6 +129,8 @@ void AShooterCharacter::OnEquip(const FInputActionValue& Value)
 	if (!CombatComponent->GetIsUnoccupied())
 		return;
 
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Equip pressed"), (GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")));
+
 	Server_OnEquip();
 
 	if (!CombatComponent->GetIsShouldSwapWeapons())
@@ -951,6 +953,8 @@ void AShooterCharacter::Server_StartEmotion_Implementation(FName EmotionName)
 
 void AShooterCharacter::ActionEquip()
 {
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Action equip"), (GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")));
+
 	if (!CombatComponent)
 		return;
 

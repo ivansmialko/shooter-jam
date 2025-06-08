@@ -139,7 +139,7 @@ public:
 	void EquipWeapon(AWeaponBase* InWeaponToEquip);
 	void SwapWeapons();
 	void DropWeapon();
-	void DropWeaponLaunch();
+	bool DropWeaponLaunch();
 	void ReloadWeapon();
 	void Throw();
 	void PickupAmmo(EWeaponType InWeaponType, int32 InAmmoAmount);
