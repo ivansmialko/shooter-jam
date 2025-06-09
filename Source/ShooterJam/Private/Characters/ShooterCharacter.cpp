@@ -212,11 +212,6 @@ void AShooterCharacter::OnFireEnd(const FInputActionValue& Value)
 
 void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 {
-	if (!CombatComponent)
-		return;
-
-	CombatComponent->DropWeaponLaunch();
-
 	if (!ShooterCharacterController)
 		return;
 
@@ -225,6 +220,8 @@ void AShooterCharacter::OnDropWeapon(const FInputActionValue& Value)
 
 	ShooterCharacterController->GetPlayerHud()->SetWeaponAmmoEmpty();
 	ShooterCharacterController->GetPlayerHud()->SetCarriedAmmoEmpty();
+
+	Server_OnDrop();
 }
 
 void AShooterCharacter::OnReload(const FInputActionValue& Value)
@@ -844,6 +841,11 @@ void AShooterCharacter::Server_OnEquip_Implementation()
 	ActionEquip();
 }
 
+void AShooterCharacter::Server_OnDrop_Implementation()
+{
+	ActionDrop();
+}
+
 void AShooterCharacter::Server_OnAimStart_Implementation()
 {
 	ActionAimStart();
@@ -966,6 +968,14 @@ void AShooterCharacter::ActionEquip()
 	{
 		CombatComponent->SwapWeapons();
 	}
+}
+
+void AShooterCharacter::ActionDrop()
+{
+	if (!CombatComponent)
+		return;
+
+	CombatComponent->DropWeaponLaunch();
 }
 
 void AShooterCharacter::ActionAimStart()
@@ -1428,7 +1438,7 @@ void AShooterCharacter::PlaySwapMontage()
 	if (!GetMesh())
 		return;
 
-	if (!ThrowMontage)
+	if (!SwapMontage)
 		return;
 
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -1505,6 +1515,11 @@ void AShooterCharacter::OnAnimSwapSwapped()
 {
 	if (!CombatComponent)
 		return;
+
+	//UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Playing swapped anim notify %s"),
+	//	(GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
+	//	(IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
+	//	(*GetActorLabel()));
 
 	CombatComponent->OnAnimSwapSwapped();
 }
