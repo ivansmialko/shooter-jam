@@ -111,7 +111,7 @@ void AShooterGameState::RemovePlayerFromTeam(AShooterPlayerState* InPlayerToRemo
 {
 	if (TeamRed.Contains(InPlayerToRemove))
 	{
-		TeamRed.Contains(InPlayerToRemove);
+		TeamRed.Remove(InPlayerToRemove);
 	}
 
 	if (TeamBlue.Contains(InPlayerToRemove))
