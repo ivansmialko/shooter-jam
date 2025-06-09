@@ -332,6 +332,8 @@ private:
 	UFUNCTION(Server, Reliable)
 	void Server_OnEquip();
 	UFUNCTION(Server, Reliable)
+	void Server_OnDrop();
+	UFUNCTION(Server, Reliable)
 	void Server_OnAimStart();
 	UFUNCTION(Server, Reliable)
 	void Server_OnAimEnd();
@@ -343,6 +345,7 @@ private:
 	void Server_StartEmotion(FName EmotionName);
 
 	void ActionEquip();
+	void ActionDrop();
 	void ActionAimStart();
 	void ActionAimEnd();
 	void ActionReceiveDamage();

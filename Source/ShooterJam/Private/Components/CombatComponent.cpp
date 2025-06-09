@@ -363,6 +363,8 @@ void UCombatComponent::OnStateSwapping()
 	if (!Character)
 		return;
 
+	//Play swap montage only on simulated proxies.
+	//Server, as well as owning client playing animation by themselves
 	if (Character->IsLocallyControlled())
 		return;
 
@@ -398,12 +400,12 @@ void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bIn
 
 void UCombatComponent::EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to secondary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
-
 	SecondaryWeapon = InWeaponToEquip;
 
 	if (!SecondaryWeapon)
 		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to secondary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
 
 	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_EquippedSecondary);
 	SecondaryWeapon->SetOwner(Character);
