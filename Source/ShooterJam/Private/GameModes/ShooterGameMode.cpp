@@ -19,6 +19,7 @@ namespace MatchState
 AShooterGameMode::AShooterGameMode()
 {
 	bDelayedStart = true;
+	bUseSeamlessTravel = true;
 }
 
 void AShooterGameMode::Tick(float DeltaSeconds)

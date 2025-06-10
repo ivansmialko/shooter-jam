@@ -158,6 +158,9 @@ private:
 	/** Handle changing match state to "Cooldown" */
 	void HandleCooldown();
 
+	/** Handle leaving map. Creates a widget to "mask" transition */
+	void HandleLeavingMap();
+
 //protected methods
 protected:
 //~ Begin AActor Inteface
