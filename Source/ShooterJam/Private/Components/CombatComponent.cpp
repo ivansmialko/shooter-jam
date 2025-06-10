@@ -542,11 +542,6 @@ void UCombatComponent::OnRep_EquippedWeapon()
 	if (!EquippedWeapon)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component replicated equipped weapon to %s"),
-		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
-		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
-		(*EquippedWeapon->GetActorLabel()));
-
 	//Equipped weapon is replicated, just as attaching an actor in Equip function.
 	//There's no guarantee that EquippedWeapon will replicate earlier than attaching weapon to character.
 	//So we'll also do these thing in this rep notify, just to be sure
@@ -567,11 +562,6 @@ void UCombatComponent::OnRep_SecondaryWeapon()
 	if (!SecondaryWeapon)
 		return;
 
-	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component replicated equipped weapon to %s"),
-		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
-		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
-		(*SecondaryWeapon->GetActorLabel()));
-
 	//Secondary weapon is replicated, just as attaching an actor in Equip function.
 	//There's no guarantee that SecondaryWeapon will replicate earlier than attaching weapon to character.
 	//So we'll also do these thing in this rep notify, just to be sure
@@ -591,8 +581,6 @@ void UCombatComponent::OnRep_CarriedAmmo()
 
 void UCombatComponent::OnRep_CombatState()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Repping combat state to %d, Is locally controlled: %d"), static_cast<uint32>(CombatState), Character->IsLocallyControlled());
-
 	switch (CombatState)
 	{
 	case ECombatState::ECS_Unoccupied:
@@ -854,6 +842,11 @@ void UCombatComponent::AttachActorToBackpack(AActor* InActor)
 	const USkeletalMeshSocket* BackpackSocket{ Character->GetMesh()->GetSocketByName(FName("BackpackSocket")) };
 	if (!BackpackSocket)
 		return;
+
+	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component attaching %s to backpack"),
+		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
+		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
+		(*InActor->GetActorLabel()));
 
 	BackpackSocket->AttachActor(InActor, Character->GetMesh());
 }

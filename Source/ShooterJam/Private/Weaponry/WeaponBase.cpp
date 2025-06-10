@@ -39,6 +39,15 @@ AWeaponBase::AWeaponBase()
 
 void AWeaponBase::OnRep_WeaponState()
 {
+	if (OwnerCharacter)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Weapon %s changed it's state to %d"),
+			(OwnerCharacter->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
+			(OwnerCharacter->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
+			(*GetActorLabel()),
+			static_cast<uint32>(WeaponState));
+	}
+
 	switch (WeaponState)
 	{
 	case EWeaponState::EWS_Equipped:
@@ -450,10 +459,6 @@ void AWeaponBase::ShowPickUpWidget(bool bShowWidget)
 void AWeaponBase::ChangeWeaponState(EWeaponState InState)
 {
 	WeaponState = InState;
-
-	if (!HasAuthority())
-		return;
-
 	OnRep_WeaponState();
 }
 
