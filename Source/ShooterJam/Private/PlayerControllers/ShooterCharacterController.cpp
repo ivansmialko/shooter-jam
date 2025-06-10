@@ -300,13 +300,14 @@ void AShooterCharacterController::HandleMatchState(bool bInIsTeamsMatch /*= fals
 	{
 		HandleCooldown();
 	}
+	if (MatchState == MatchState::LeavingMap)
+	{
+		HandleLeavingMap();
+	}
 }
 
 void AShooterCharacterController::OnRep_MatchState()
 {
-	if (!HasAuthority())
-		return;
-
 	HandleMatchState();
 }
 
@@ -429,6 +430,14 @@ void AShooterCharacterController::HandleCooldown()
 	{
 		ShooterCharacter->DisableGameplay();
 	}
+}
+
+void AShooterCharacterController::HandleLeavingMap()
+{
+	if (!CheckInitHud())
+		return;
+
+	ShooterHud->ShowTransitionOverlayWidget();
 }
 
 void AShooterCharacterController::BeginPlay()

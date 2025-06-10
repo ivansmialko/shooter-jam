@@ -271,6 +271,25 @@ void AShooterHUD::HideEmotionPickerWidget()
 	CharacterOverlay->EmotionPicker->SetVisibility(ESlateVisibility::Hidden);
 }
 
+void AShooterHUD::ShowTransitionOverlayWidget()
+{
+	if (!TransitionOverlayWidgetBlueprint)
+		return;
+
+	APlayerController* ShooterCharacterController = GetOwningPlayerController();
+	if (!ShooterCharacterController)
+		return;
+
+	if (!GameMenuWidgetBlueprint)
+		return;
+
+	TransitionOverlayWidget = CreateWidget<UUserWidget>(ShooterCharacterController, TransitionOverlayWidgetBlueprint);
+	if (!TransitionOverlayWidget)
+		return;
+
+	TransitionOverlayWidget->AddToViewport();
+}
+
 bool AShooterHUD::GetIsGameMenuOpen()
 {
 	if (!GameMenuWidget)

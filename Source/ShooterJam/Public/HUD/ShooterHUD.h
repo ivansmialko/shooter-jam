@@ -49,6 +49,9 @@ private:
 	/** Instance of in-game chat */
 	UWorldChat* WorldChatWidget{ nullptr };
 
+	/** Instance of widget that overlays transition between matches */
+	UUserWidget* TransitionOverlayWidget{ nullptr };
+
 	//** Class of Overlay Widget to create
 	UPROPERTY(EditAnywhere, Category = "HUD")
 	TSubclassOf<class UUserWidget> CharacterOverlayBlueprint;
@@ -63,6 +66,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Chat")
 	TSubclassOf<UUserWidget> WorldChatItemWidgetBlueprint;
+
+	UPROPERTY(EditAnywhere, Category = "HUD")
+	TSubclassOf<UUserWidget> TransitionOverlayWidgetBlueprint;
 
 	/** Max crosshair spread */
 	UPROPERTY(EditAnywhere)
@@ -143,6 +149,9 @@ public:
 
 	/** Hides emotion picker widget */
 	void HideEmotionPickerWidget();
+
+	/** Shows transition overlay widget */
+	void ShowTransitionOverlayWidget();
 
 //public getters/setters
 public:
