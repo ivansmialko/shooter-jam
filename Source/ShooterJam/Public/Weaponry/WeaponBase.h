@@ -8,6 +8,7 @@
 
 #include "WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWeaponPickedUp);
 
 class USphereComponent;
 class UWidgetComponent;
@@ -106,6 +107,10 @@ private:
 	//Calculated at beginplay, based on FireRate (bullets per minute)
 	float FireDelay{ 0 };
 
+//public members
+public:
+	FOnWeaponPickedUp OnWeaponPickedUp;
+
 //protected members
 protected:
 	UPROPERTY(EditAnywhere, Category = "Weapon Properties")
@@ -145,7 +150,7 @@ protected:
 
 	UPROPERTY()
 	AShooterCharacterController* OwnerController;
-
+	
 //private methods
 private:
 	UFUNCTION()
