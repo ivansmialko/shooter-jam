@@ -108,6 +108,11 @@ void AWeaponBase::OnStateEquipped()
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
+
+	if (!HasAuthority())
+		return;
+
+	OnWeaponPickedUp.Broadcast();
 }
 
 void AWeaponBase::OnStateDropped()
@@ -149,6 +154,11 @@ void AWeaponBase::OnStateEquippedSecondary()
 		WeaponMesh->SetEnableGravity(true);
 		WeaponMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 	}
+
+	if (!HasAuthority())
+		return;
+
+	OnWeaponPickedUp.Broadcast();
 }
 
 void AWeaponBase::SpawnBulletShell()
