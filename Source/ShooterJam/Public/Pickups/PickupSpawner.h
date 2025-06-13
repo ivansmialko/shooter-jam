@@ -7,6 +7,7 @@
 #include "PickupSpawner.generated.h"
 
 class APickup;
+class UNiagaraComponent;
 
 UCLASS()
 class SHOOTERJAM_API APickupSpawner : public AActor
@@ -30,6 +31,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	APickup* SpawnedPickup;
 
+	UPROPERTY(VisibleAnywhere)
+	UNiagaraComponent* SpawnerParticlesComponent;
+
 public:
 	APickupSpawner();
 	virtual void Tick(float DeltaTime) override;
@@ -41,6 +45,9 @@ protected:
 	void StartSpawnPickupTimer();
 
 	void OnSpawnTimerFinished();
+
+	void DisableParticles();
+	void EnableParticles();
 
 	UFUNCTION()
 	void OnSpawnedPickupDestroyed(AActor* DestroyedActor);
