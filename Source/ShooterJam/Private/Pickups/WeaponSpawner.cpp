@@ -3,6 +3,7 @@
 
 #include "Pickups/WeaponSpawner.h"
 #include "Weaponry/WeaponBase.h"
+#include "Net/UnrealNetwork.h"
 #include "NiagaraComponent.h"
 #include "NiagaraSystemInstanceController.h"
 
@@ -20,11 +21,18 @@ AWeaponSpawner::AWeaponSpawner()
 void AWeaponSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!HasAuthority())
+		return;
+
 	SpawnWeapon();
 }
 
 void AWeaponSpawner::SpawnWeapon()
 {
+	if (!HasAuthority())
+		return;
+
 	int32 NumWeaponClasses{ WeaponClasses.Num() };
 	if (NumWeaponClasses == 0)
 		return;
@@ -55,6 +63,8 @@ void AWeaponSpawner::DisableParticles()
 		return;
 
 	SpawnerParticlesComponent->SetVisibility(false);
+
+	bShowParticles = false;
 }
 
 void AWeaponSpawner::EnableParticles()
@@ -63,6 +73,15 @@ void AWeaponSpawner::EnableParticles()
 		return;
 
 	SpawnerParticlesComponent->SetVisibility(true);
+
+	bShowParticles = true;
+}
+
+void AWeaponSpawner::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AWeaponSpawner, bShowParticles);
 }
 
 void AWeaponSpawner::OnSpawnTimerFinished()
@@ -70,16 +89,28 @@ void AWeaponSpawner::OnSpawnTimerFinished()
 	if (!HasAuthority())
 		return;
 
+	DisableParticles();
 	SpawnWeapon();
+}
+
+void AWeaponSpawner::OnRep_ShowParticles()
+{
+	if (bShowParticles)
+	{
+		EnableParticles();
+	}
+	else
+	{
+		DisableParticles();
+	}
 }
 
 void AWeaponSpawner::OnSpawnerWeaponPickedUp()
 {
-	EnableParticles();
-
 	if (!HasAuthority())
 		return;
 
+	EnableParticles();
 	StartWeaponSpawnTimer();
 }
 
