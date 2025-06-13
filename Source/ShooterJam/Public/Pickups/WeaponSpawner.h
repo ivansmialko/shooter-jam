@@ -33,6 +33,9 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	UNiagaraComponent* SpawnerParticlesComponent;
 
+	UPROPERTY(ReplicatedUsing = OnRep_ShowParticles)
+	bool bShowParticles;
+
 public:
 	AWeaponSpawner();
 	virtual void Tick(float DeltaTime) override;
@@ -44,8 +47,12 @@ protected:
 	void StartWeaponSpawnTimer();
 	void DisableParticles();
 	void EnableParticles();
+	void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	void OnSpawnTimerFinished();
+
+	UFUNCTION()
+	void OnRep_ShowParticles();
 
 	UFUNCTION()
 	void OnSpawnerWeaponPickedUp();

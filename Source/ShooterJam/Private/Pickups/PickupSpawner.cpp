@@ -17,11 +17,18 @@ APickupSpawner::APickupSpawner()
 void APickupSpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (!HasAuthority())
+		return;
+
 	SpawnPickup();
 }
 
 void APickupSpawner::SpawnPickup()
 {
+	if (!HasAuthority())
+		return;
+
 	int32 NumPickupClasses{ PickupClasses.Num() };
 	if (NumPickupClasses == 0)
 		return;
@@ -48,6 +55,8 @@ void APickupSpawner::StartSpawnPickupTimer()
 
 void APickupSpawner::OnSpawnTimerFinished()
 {
+	DisableParticles();
+
 	if (!HasAuthority())
 		return;
 
@@ -73,7 +82,6 @@ void APickupSpawner::EnableParticles()
 void APickupSpawner::OnSpawnedPickupDestroyed(AActor* DestroyedActor)
 {
 	StartSpawnPickupTimer();
-
 	EnableParticles();
 }
 
