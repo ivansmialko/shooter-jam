@@ -3,17 +3,20 @@
 
 #include "Pickups/PickupSpawner.h"
 #include "Pickups/Pickup.h"
+#include "NiagaraComponent.h"
 
 APickupSpawner::APickupSpawner()
 {
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
+
+	SpawnerParticlesComponent = CreateDefaultSubobject<UNiagaraComponent>(TEXT("SpawnerParticlesComponent"));
+	SpawnerParticlesComponent->SetupAttachment(RootComponent);
 }
 
 void APickupSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
 	SpawnPickup();
 }
 
@@ -25,6 +28,8 @@ void APickupSpawner::SpawnPickup()
 
 	int32 RandomIndex{ FMath::RandRange(0, NumPickupClasses - 1) };
 	SpawnedPickup = GetWorld()->SpawnActor<APickup>(PickupClasses[RandomIndex], GetActorTransform());
+
+	DisableParticles();
 
 	if (!HasAuthority())
 		return;
@@ -49,9 +54,27 @@ void APickupSpawner::OnSpawnTimerFinished()
 	SpawnPickup();
 }
 
+void APickupSpawner::DisableParticles()
+{
+	if (!SpawnerParticlesComponent)
+		return;
+
+	SpawnerParticlesComponent->SetVisibility(false);
+}
+
+void APickupSpawner::EnableParticles()
+{
+	if (!SpawnerParticlesComponent)
+		return;
+
+	SpawnerParticlesComponent->SetVisibility(true);
+}
+
 void APickupSpawner::OnSpawnedPickupDestroyed(AActor* DestroyedActor)
 {
 	StartSpawnPickupTimer();
+
+	EnableParticles();
 }
 
 void APickupSpawner::Tick(float DeltaTime)
