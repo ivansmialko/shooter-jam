@@ -8,23 +8,9 @@
 void AMainMenuPlayerController::OnPossess(APawn* InPawn)
 {
 	CreateMenu();
-	InitializeInput();
 }
 
-void AMainMenuPlayerController::InitializeInput()
-{
-	if (!MainMenuWidget)
-		return;
-
-	FInputModeUIOnly InputModeData;
-	InputModeData.SetWidgetToFocus(MainMenuWidget->TakeWidget());
-	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-
-	SetInputMode(InputModeData);
-	SetShowMouseCursor(true);
-}
-
-void AMainMenuPlayerController::CreateMenu()
+void AMainMenuPlayerController::InitializeMenu()
 {
 	if (!MainMenuBlueprint)
 		return;
@@ -39,35 +25,64 @@ void AMainMenuPlayerController::CreateMenu()
 	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 	MainMenuWidget->AddToViewport();
 
-	if (!MainMenuWidget->OnMenuClickedHost.IsBound())
-	{
-		MainMenuWidget->OnMenuClickedHost.AddDynamic(this, &AMainMenuPlayerController::OnClickedHost);
-	}
+	if (!MainMenuWidget)
+		return;
 
-	if (!MainMenuWidget->OnMenuClickedJoin.IsBound())
-	{
-		MainMenuWidget->OnMenuClickedJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoin);
-	}
+	FInputModeUIOnly InputModeData;
+	InputModeData.SetWidgetToFocus(MainMenuWidget->TakeWidget());
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
 
-	if (!MainMenuWidget->OnMenuClickedTraining.IsBound())
-	{
-		MainMenuWidget->OnMenuClickedTraining.AddDynamic(this, &AMainMenuPlayerController::OnClickedTraining);
-	}
+	SetInputMode(InputModeData);
+	SetShowMouseCursor(true);
+}
 
-	if (!MainMenuWidget->OnMenuClickedSettings.IsBound())
-	{
-		MainMenuWidget->OnMenuClickedSettings.AddDynamic(this, &AMainMenuPlayerController::OnClickedSettings);
-	}
+void AMainMenuPlayerController::InitializeListeners()
+{
+	if (!MainMenuWidget)
+		return;
 
-	if (!MainMenuWidget->OnMenuClickedExit.IsBound())
-	{
-		MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
-	}
+	MainMenuWidget->OnMenuClickedHost.AddDynamic(this, &AMainMenuPlayerController::OnClickedHost);
+	MainMenuWidget->OnMenuHostCreate.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCreate);
+	MainMenuWidget->OnMenuHostCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCancel);
+
+	MainMenuWidget->OnMenuClickedJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoin);
+	MainMenuWidget->OnMenuClickedTraining.AddDynamic(this, &AMainMenuPlayerController::OnClickedTraining);
+	MainMenuWidget->OnMenuClickedSettings.AddDynamic(this, &AMainMenuPlayerController::OnClickedSettings);
+	MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
+}
+
+void AMainMenuPlayerController::CreateMenu()
+{
+	InitializeMenu();
+	InitializeListeners();
 }
 
 void AMainMenuPlayerController::OnClickedHost()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Clicked host"));
+	if (!MainMenuWidget)
+		return;
+
+	FCreateWidgetData WidgetData;
+	WidgetData.LastMatchName = "Pdidy party";
+	WidgetData.MatchModesList.Add("Deathmatch");
+	WidgetData.MatchModesList.Add("Teams");
+	MainMenuWidget->ShowCreateWidget(WidgetData);
+}
+
+void AMainMenuPlayerController::OnClickedHostCreate()
+{
+	if (!MainMenuWidget)
+		return;
+
+	MainMenuWidget->HideCreateWidget();
+}
+
+void AMainMenuPlayerController::OnClickedHostCancel()
+{
+	if (!MainMenuWidget)
+		return;
+
+	MainMenuWidget->HideCreateWidget();
 }
 
 void AMainMenuPlayerController::OnClickedJoin()

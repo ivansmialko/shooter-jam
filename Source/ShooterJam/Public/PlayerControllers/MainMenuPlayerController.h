@@ -25,11 +25,16 @@ public:
 
 //protected methods
 protected:
-	void InitializeInput();
+	void InitializeMenu();
+	void InitializeListeners();
 	void CreateMenu();
 
 	UFUNCTION()
 	void OnClickedHost();
+	UFUNCTION()
+	void OnClickedHostCreate();
+	UFUNCTION()
+	void OnClickedHostCancel();
 	UFUNCTION()
 	void OnClickedJoin();
 	UFUNCTION()
