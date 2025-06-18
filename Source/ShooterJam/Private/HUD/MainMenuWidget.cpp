@@ -63,6 +63,7 @@ void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
 		return;
 
 	CreateMatchWidget->SetVisibility(ESlateVisibility::Hidden);
+	UnbindAllFromAnimationFinished(AnimShowCreateWidget);
 }
 
 void UMainMenuWidget::OnAnimationBlurFinishedHandler()
@@ -71,5 +72,6 @@ void UMainMenuWidget::OnAnimationBlurFinishedHandler()
 		return;
 
 	BackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
+	UnbindAllFromAnimationFinished(AnimShowBackgroundBlur);
 }
 
