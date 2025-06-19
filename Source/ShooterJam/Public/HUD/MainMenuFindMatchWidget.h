@@ -7,6 +7,15 @@
 #include "MainMenuFindMatchWidget.generated.h"
 
 class UScrollBox;
+class UMainMenuFindMatchWidgetItem;
+struct FJoinWidgetItemData;
+
+USTRUCT()
+struct FJoinWidgetData
+{
+	GENERATED_BODY()
+	TArray<FJoinWidgetItemData> MatchesList;
+};
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuFindMatchWidget : public UUserWidget
@@ -16,10 +25,16 @@ class SHOOTERJAM_API UMainMenuFindMatchWidget : public UUserWidget
 //private fields
 private:
 	UPROPERTY(meta = (BindWidget))
-	UScrollBox* ScrollBox;
+	UScrollBox* MatchesList;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UMainMenuFindMatchWidgetItem> ListItemBlueprint;
 
 //public methods
 public:
-	void 
+	void SetData(const FJoinWidgetData& InData);
+
+//private methods
+private:
+	void UpdateMatchesList(const TArray<FJoinWidgetItemData>& InMatchesList);
 };

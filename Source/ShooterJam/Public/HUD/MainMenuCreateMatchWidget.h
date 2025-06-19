@@ -9,6 +9,16 @@
 class UComboBoxString;
 class UEditableTextBox;
 
+
+USTRUCT()
+struct FCreateWidgetData
+{
+	GENERATED_BODY()
+
+	FString LastMatchName;
+	TArray<FString> MatchModesList;
+};
+
 UCLASS()
 class SHOOTERJAM_API UMainMenuCreateMatchWidget : public UUserWidget
 {
@@ -25,6 +35,9 @@ private:
 
 //public methods
 public:
+	void SetData(const FCreateWidgetData& InData);
+
+private:
 	void SetMatchName(const FString& InMatchName);
 	void SetMatchTypes(const TArray<FString>& InMatchTypes);
 };
