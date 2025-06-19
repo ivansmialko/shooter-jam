@@ -4,6 +4,7 @@
 #include "HUD/MainMenuWidget.h"
 
 #include "HUD/MainMenuCreateMatchWidget.h"
+#include "HUD/MainMenuFindMatchWidget.h"
 
 #include "Components/BackgroundBlur.h"
 #include "Components/Widget.h"
@@ -55,6 +56,27 @@ void UMainMenuWidget::HideCreateWidget()
 
 void UMainMenuWidget::ShowJoinWidget(const FJoinWidgetData& InData)
 {
+	if (!FindMatchWidget)
+		return;
+
+	if (!AnimShowFindWidget)
+		return;
+
+	if (!AnimShowBackgroundBlur)
+		return;
+
+	FindMatchWidget->SetVisibility(ESlateVisibility::Visible);
+	BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
+
+	PlayAnimation(AnimShowFindWidget);
+	PlayAnimation(AnimShowBackgroundBlur);
+
+	Fin
+}
+
+void UMainMenuWidget::HideJointWidget()
+{
+
 }
 
 void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()

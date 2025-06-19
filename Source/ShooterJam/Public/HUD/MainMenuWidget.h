@@ -44,6 +44,7 @@ struct FJoinWidgetData
 
 class UBackgroundBlur;
 class UMainMenuCreateMatchWidget;
+class UMainMenuFindMatchWidget;
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
@@ -76,6 +77,9 @@ private:
 	UMainMenuCreateMatchWidget* CreateMatchWidget;
 
 	UPROPERTY(meta = (BindWidget))
+	UMainMenuFindMatchWidget* FindMatchWidget;
+
+	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;
 
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
@@ -94,6 +98,7 @@ public:
 	void ShowCreateWidget(const FCreateWidgetData& InData);
 	void HideCreateWidget();
 	void ShowJoinWidget(const FJoinWidgetData& InData);
+	void HideJointWidget();
 
 //private methods
 private:
