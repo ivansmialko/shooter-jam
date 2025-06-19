@@ -4,6 +4,9 @@
 #include "PlayerControllers/MainMenuPlayerController.h"
 
 #include "HUD/MainMenuWidget.h"
+#include "HUD/MainMenuCreateMatchWidget.h"
+#include "HUD/MainMenuFindMatchWidget.h"
+#include "HUD/MainMenuFindMatchWidgetItem.h"
 
 void AMainMenuPlayerController::OnPossess(APawn* InPawn)
 {
@@ -46,6 +49,9 @@ void AMainMenuPlayerController::InitializeListeners()
 	MainMenuWidget->OnMenuHostCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCancel);
 
 	MainMenuWidget->OnMenuClickedJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoin);
+	MainMenuWidget->OnMenuJoinJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinJoin);
+	MainMenuWidget->OnMenuJoinCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinCancel);
+
 	MainMenuWidget->OnMenuClickedTraining.AddDynamic(this, &AMainMenuPlayerController::OnClickedTraining);
 	MainMenuWidget->OnMenuClickedSettings.AddDynamic(this, &AMainMenuPlayerController::OnClickedSettings);
 	MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
@@ -87,7 +93,40 @@ void AMainMenuPlayerController::OnClickedHostCancel()
 
 void AMainMenuPlayerController::OnClickedJoin()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Clicked join"));
+	if (!MainMenuWidget)
+		return;
+
+	FJoinWidgetData JoinWidget;
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
+	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
+
+	MainMenuWidget->ShowJoinWidget(JoinWidget);
+}
+
+void AMainMenuPlayerController::OnClickedJoinJoin()
+{
+	if (!MainMenuWidget)
+		return;
+
+	MainMenuWidget->HideJoinWidget();
+}
+
+void AMainMenuPlayerController::OnClickedJoinCancel()
+{
+	if (!MainMenuWidget)
+		return;
+
+	MainMenuWidget->HideJoinWidget();
 }
 
 void AMainMenuPlayerController::OnClickedTraining()

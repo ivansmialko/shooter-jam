@@ -30,8 +30,7 @@ void UMainMenuWidget::ShowCreateWidget(const FCreateWidgetData& InData)
 	PlayAnimation(AnimShowBackgroundBlur);
 	PlayAnimation(AnimShowCreateWidget);
 
-	CreateMatchWidget->SetMatchTypes(InData.MatchModesList);
-	CreateMatchWidget->SetMatchName(InData.LastMatchName);
+	CreateMatchWidget->SetData(InData);
 }
 
 void UMainMenuWidget::HideCreateWidget()
@@ -71,12 +70,27 @@ void UMainMenuWidget::ShowJoinWidget(const FJoinWidgetData& InData)
 	PlayAnimation(AnimShowFindWidget);
 	PlayAnimation(AnimShowBackgroundBlur);
 
-	Fin
+	FindMatchWidget->SetData(InData);
 }
 
-void UMainMenuWidget::HideJointWidget()
+void UMainMenuWidget::HideJoinWidget()
 {
+	if (!AnimShowBackgroundBlur)
+		return;
 
+	if (!AnimShowFindWidget)
+		return;
+
+	PlayAnimation(AnimShowBackgroundBlur, 0.f, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimation(AnimShowFindWidget, 0.f, 1, EUMGSequencePlayMode::Reverse);
+
+	FWidgetAnimationDynamicEvent OnAnimationBlurFinished;
+	OnAnimationBlurFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationBlurFinishedHandler);
+	FWidgetAnimationDynamicEvent OnAnimationFindWidgetFinished;
+	OnAnimationFindWidgetFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationFindWidgetFinishedHandler);
+
+	BindToAnimationFinished(AnimShowBackgroundBlur, OnAnimationBlurFinished);
+	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
 }
 
 void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
@@ -84,8 +98,31 @@ void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
 	if (!CreateMatchWidget)
 		return;
 
+	if (!BackgroundBlur)
+		return;
+
+	if (!AnimShowCreateWidget)
+		return;
+
 	CreateMatchWidget->SetVisibility(ESlateVisibility::Hidden);
+	BackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
 	UnbindAllFromAnimationFinished(AnimShowCreateWidget);
+}
+
+void UMainMenuWidget::OnAnimationFindWidgetFinishedHandler()
+{
+	if (!FindMatchWidget)
+		return;
+
+	if (!BackgroundBlur)
+		return;
+
+	if (!AnimShowFindWidget)
+		return;
+
+	FindMatchWidget->SetVisibility(ESlateVisibility::Hidden);
+	BackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
+	UnbindAllFromAnimationFinished(AnimShowFindWidget);
 }
 
 void UMainMenuWidget::OnAnimationBlurFinishedHandler()

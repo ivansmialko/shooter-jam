@@ -6,6 +6,12 @@
 #include "Components/EditableTextBox.h"
 #include "Components/ComboBoxString.h"
 
+void UMainMenuCreateMatchWidget::SetData(const FCreateWidgetData& InData)
+{
+	SetMatchTypes(InData.MatchModesList);
+	SetMatchName(InData.LastMatchName);
+}
+
 void UMainMenuCreateMatchWidget::SetMatchName(const FString& InMatchName)
 {
 	if (!FieldMatchName)

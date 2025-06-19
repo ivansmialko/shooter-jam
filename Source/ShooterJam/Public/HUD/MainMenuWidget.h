@@ -11,40 +11,18 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCancel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCreate);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedJoin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuJoinJoin);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuJoinCancel);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedTraining);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedSettings);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedExit);
 
-
-USTRUCT()
-struct FCreateWidgetData
-{
-	GENERATED_BODY()
-
-	FString LastMatchName;
-	TArray<FString> MatchModesList;
-};
-
-USTRUCT()
-struct FJoinWidgetItemData
-{
-	GENERATED_BODY()
-
-	FString MatchMode;
-	FName MatchName;
-	uint32 Ping;
-};
-
-USTRUCT()
-struct FJoinWidgetData
-{
-	GENERATED_BODY()
-	TArray<FJoinWidgetItemData> MatchesList;
-};
-
 class UBackgroundBlur;
 class UMainMenuCreateMatchWidget;
 class UMainMenuFindMatchWidget;
+struct FCreateWidgetData;
+struct FJoinWidgetData;
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
@@ -67,17 +45,18 @@ public:
 	FMenuHostCancel OnMenuHostCancel;
 	UPROPERTY(BlueprintCallable, Category = "Events")
 	FMenuHostCreate OnMenuHostCreate;
+	UPROPERTY(BlueprintCallable, Category = "Events")
+	FMenuJoinJoin OnMenuJoinJoin;
+	UPROPERTY(BlueprintCallable, Category = "Events")
+	FMenuJoinCancel OnMenuJoinCancel;
 
 //private fields
 private:
 	UPROPERTY(meta = (BindWidget))
-	UUserWidget* FindMatchWidget;
+	UMainMenuFindMatchWidget* FindMatchWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuCreateMatchWidget* CreateMatchWidget;
-
-	UPROPERTY(meta = (BindWidget))
-	UMainMenuFindMatchWidget* FindMatchWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;
@@ -98,12 +77,15 @@ public:
 	void ShowCreateWidget(const FCreateWidgetData& InData);
 	void HideCreateWidget();
 	void ShowJoinWidget(const FJoinWidgetData& InData);
-	void HideJointWidget();
+	void HideJoinWidget();
 
 //private methods
 private:
 	UFUNCTION()
 	void OnAnimationCreateWidgetFinishedHandler();
 	UFUNCTION()
+	void OnAnimationFindWidgetFinishedHandler();
+	UFUNCTION()
 	void OnAnimationBlurFinishedHandler();
+
 };

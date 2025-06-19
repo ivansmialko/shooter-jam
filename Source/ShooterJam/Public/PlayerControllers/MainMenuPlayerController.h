@@ -38,6 +38,10 @@ protected:
 	UFUNCTION()
 	void OnClickedJoin();
 	UFUNCTION()
+	void OnClickedJoinJoin();
+	UFUNCTION()
+	void OnClickedJoinCancel();
+	UFUNCTION()
 	void OnClickedTraining();
 	UFUNCTION()
 	void OnClickedSettings();
