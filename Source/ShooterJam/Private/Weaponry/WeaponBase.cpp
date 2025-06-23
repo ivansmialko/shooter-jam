@@ -41,11 +41,13 @@ void AWeaponBase::OnRep_WeaponState()
 {
 	if (OwnerCharacter)
 	{
+#if WITH_EDITOR
 		UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Weapon %s changed it's state to %d"),
 			(OwnerCharacter->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
 			(OwnerCharacter->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
 			(*GetActorLabel()),
 			static_cast<uint32>(WeaponState));
+#endif
 	}
 
 	switch (WeaponState)

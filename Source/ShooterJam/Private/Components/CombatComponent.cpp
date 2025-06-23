@@ -381,8 +381,10 @@ void UCombatComponent::OnStateDancing()
 
 void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
-	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to primary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
 
+#if WITH_EDITOR
+	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to primary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
+#endif
 	if (bInDropPrevious)
 	{
 		DropWeapon();
@@ -405,8 +407,9 @@ void UCombatComponent::EquipSecondaryWeapon(AWeaponBase* InWeaponToEquip)
 	if (!SecondaryWeapon)
 		return;
 
+#if WITH_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to secondary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
-
+#endif
 	SecondaryWeapon->ChangeWeaponState(EWeaponState::EWS_EquippedSecondary);
 	SecondaryWeapon->SetOwner(Character);
 
@@ -445,7 +448,9 @@ void UCombatComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Out
 
 void UCombatComponent::EquipWeapon(class AWeaponBase* InWeaponToEquip)
 {
+#if WITH_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
+#endif
 
 	if (!GetIsUnoccupied())
 		return;
@@ -843,10 +848,12 @@ void UCombatComponent::AttachActorToBackpack(AActor* InActor)
 	if (!BackpackSocket)
 		return;
 
+#if WITH_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("[%s][%s] Combat component attaching %s to backpack"),
 		(Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")),
 		(Character->IsLocallyControlled() ? TEXT("Local") : TEXT("Remote")),
 		(*InActor->GetActorLabel()));
+#endif
 
 	BackpackSocket->AttachActor(InActor, Character->GetMesh());
 }
