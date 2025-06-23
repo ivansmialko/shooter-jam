@@ -83,6 +83,7 @@ void AMainMenuPlayerController::CreateMenu()
 {
 	InitializeMenu();
 	InitializeListeners();
+	InitializeMultiplayerSubsystem();
 }
 
 void AMainMenuPlayerController::OnClickedHost()
@@ -97,7 +98,7 @@ void AMainMenuPlayerController::OnClickedHost()
 	MainMenuWidget->ShowCreateWidget(WidgetData);
 }
 
-void AMainMenuPlayerController::OnClickedHostCreate(const FCreateWidgetUserData& InCreateData)
+void AMainMenuPlayerController::OnClickedHostCreate()
 {
 	if (!MainMenuWidget)
 		return;
@@ -107,7 +108,11 @@ void AMainMenuPlayerController::OnClickedHostCreate(const FCreateWidgetUserData&
 	if (!MultiplayerSubsystem)
 		return;
 
-	MultiplayerSubsystem->CreateSession(InCreateData.MaxPlayers, InCreateData.MatchMode);
+	FCreateWidgetUserData CreateSessionData;
+	if (!MainMenuWidget->GetCreateWidgetUserData(CreateSessionData))
+		return;
+
+	MultiplayerSubsystem->CreateSession(CreateSessionData.MaxPlayers, CreateSessionData.MatchMode);
 }
 
 void AMainMenuPlayerController::OnClickedHostCancel()

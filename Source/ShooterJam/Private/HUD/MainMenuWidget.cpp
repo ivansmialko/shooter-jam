@@ -93,6 +93,15 @@ void UMainMenuWidget::HideJoinWidget()
 	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
 }
 
+bool UMainMenuWidget::GetCreateWidgetUserData(FCreateWidgetUserData& OutUserData)
+{
+	if (!CreateMatchWidget)
+		return false;
+
+	 CreateMatchWidget->GetUserData(OutUserData);
+	 return true;
+}
+
 void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
 {
 	if (!CreateMatchWidget)

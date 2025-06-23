@@ -15,7 +15,7 @@ struct FJoinWidgetData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedHost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCancel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMenuHostCreate, const FCreateWidgetUserData&, CreateData);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCreate);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedJoin);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuJoinJoin);
@@ -79,6 +79,8 @@ public:
 	void HideCreateWidget();
 	void ShowJoinWidget(const FJoinWidgetData& InData);
 	void HideJoinWidget();
+
+	bool GetCreateWidgetUserData(FCreateWidgetUserData& OutUserData);
 
 //private methods
 private:
