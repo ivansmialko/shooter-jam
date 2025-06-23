@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "OnlineSessionSettings.h"
 #include "Interfaces/OnlineSessionInterface.h"
 
 #include "MainMenuPlayerController.generated.h"
@@ -39,7 +38,7 @@ protected:
 	UFUNCTION()
 	void OnClickedHost();
 	UFUNCTION()
-	void OnClickedHostCreate(const FCreateWidgetUserData& InCreateData);
+	void OnClickedHostCreate();
 	UFUNCTION()
 	void OnClickedHostCancel();
 	UFUNCTION()
@@ -57,9 +56,7 @@ protected:
 
 	UFUNCTION()
 	void OnMpCreateSession(bool bWasSuccessfull);
-	UFUNCTION()
 	void OnMpFindSession(const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessfull);
-	UFUNCTION()
 	void OnMpJoinSession(EOnJoinSessionCompleteResult::Type Result);
 	UFUNCTION()
 	void OnMpDestroySession(bool bWasSuccessfull);

@@ -12,6 +12,13 @@ void UMainMenuCreateMatchWidget::SetData(const FCreateWidgetData& InData)
 	SetMatchName(InData.LastMatchName);
 }
 
+void UMainMenuCreateMatchWidget::GetUserData(FCreateWidgetUserData& OutUserData)
+{
+	OutUserData.MatchName = FieldMatchName->GetText().ToString();
+	OutUserData.MatchMode = ComboMatchType->GetSelectedOption();
+	OutUserData.MaxPlayers = 3;
+}
+
 void UMainMenuCreateMatchWidget::SetMatchName(const FString& InMatchName)
 {
 	if (!FieldMatchName)

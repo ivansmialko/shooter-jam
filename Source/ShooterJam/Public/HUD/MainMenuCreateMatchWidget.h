@@ -46,6 +46,7 @@ private:
 //public methods
 public:
 	void SetData(const FCreateWidgetData& InData);
+	void GetUserData(FCreateWidgetUserData& OutUserData);
 
 private:
 	void SetMatchName(const FString& InMatchName);
