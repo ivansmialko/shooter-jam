@@ -20,7 +20,7 @@ protected:
 
 	virtual void BeginPlay() override;
 	
-#ifdef WITH_EDITOR
+#if WITH_EDITOR
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
 #endif // WITH_EDITOR
 

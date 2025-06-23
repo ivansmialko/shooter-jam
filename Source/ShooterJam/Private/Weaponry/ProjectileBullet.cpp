@@ -63,7 +63,7 @@ void AProjectileBullet::BeginPlay()
 	//UGameplayStatics::PredictProjectilePath(this, PathParams, PathResult);
 }
 
-#ifdef WITH_EDITOR
+#if WITH_EDITOR
 void AProjectileBullet::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	Super::PostEditChangeProperty(PropertyChangedEvent);
