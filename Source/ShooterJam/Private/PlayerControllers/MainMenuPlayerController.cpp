@@ -3,6 +3,8 @@
 
 #include "PlayerControllers/MainMenuPlayerController.h"
 
+#include "MultiplayerSessionsSubsystem.h"
+
 #include "HUD/MainMenuWidget.h"
 #include "HUD/MainMenuCreateMatchWidget.h"
 #include "HUD/MainMenuFindMatchWidget.h"
@@ -57,6 +59,26 @@ void AMainMenuPlayerController::InitializeListeners()
 	MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
 }
 
+void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
+{
+	if (MultiplayerSubsystem)
+		return;
+
+	UGameInstance* GameInstance{ GetGameInstance() };
+	if (!GameInstance)
+		return;
+
+	MultiplayerSubsystem = GameInstance->GetSubsystem<UMultiplayerSessionsSubsystem>();
+	if (!MultiplayerSubsystem)
+		return;
+
+	MultiplayerSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &AMainMenuPlayerController::OnMpCreateSession);
+	MultiplayerSubsystem->MultiplayerOnFindSessionComplete.AddUObject(this, &AMainMenuPlayerController::OnMpFindSession);
+	MultiplayerSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &AMainMenuPlayerController::OnMpJoinSession);
+	MultiplayerSubsystem->MultiplayerOnDestroySessionComplete.AddDynamic(this, &AMainMenuPlayerController::OnMpDestroySession);
+	MultiplayerSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &AMainMenuPlayerController::OnMpStartSession);
+}
+
 void AMainMenuPlayerController::CreateMenu()
 {
 	InitializeMenu();
@@ -75,12 +97,17 @@ void AMainMenuPlayerController::OnClickedHost()
 	MainMenuWidget->ShowCreateWidget(WidgetData);
 }
 
-void AMainMenuPlayerController::OnClickedHostCreate()
+void AMainMenuPlayerController::OnClickedHostCreate(const FCreateWidgetUserData& InCreateData)
 {
 	if (!MainMenuWidget)
 		return;
 
-	MainMenuWidget->HideCreateWidget();
+	//MainMenuWidget->HideCreateWidget();
+
+	if (!MultiplayerSubsystem)
+		return;
+
+	MultiplayerSubsystem->CreateSession(InCreateData.MaxPlayers, InCreateData.MatchMode);
 }
 
 void AMainMenuPlayerController::OnClickedHostCancel()
@@ -142,4 +169,29 @@ void AMainMenuPlayerController::OnClickedSettings()
 void AMainMenuPlayerController::OnClickedExit()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Clicked exit"));
+}
+
+void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
+{
+
+}
+
+void AMainMenuPlayerController::OnMpFindSession(const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessfull)
+{
+
+}
+
+void AMainMenuPlayerController::OnMpJoinSession(EOnJoinSessionCompleteResult::Type Result)
+{
+
+}
+
+void AMainMenuPlayerController::OnMpDestroySession(bool bWasSuccessfull)
+{
+
+}
+
+void AMainMenuPlayerController::OnMpStartSession(bool bWasSuccessfull)
+{
+
 }
