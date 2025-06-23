@@ -6,9 +6,16 @@
 #include "Blueprint/UserWidget.h"
 #include "MainMenuWidget.generated.h"
 
+class UBackgroundBlur;
+class UMainMenuCreateMatchWidget;
+class UMainMenuFindMatchWidget;
+struct FCreateWidgetData;
+struct FCreateWidgetUserData;
+struct FJoinWidgetData;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedHost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCancel);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuHostCreate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FMenuHostCreate, const FCreateWidgetUserData&, CreateData);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedJoin);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuJoinJoin);
@@ -17,12 +24,6 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuJoinCancel);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedTraining);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedSettings);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMenuClickedExit);
-
-class UBackgroundBlur;
-class UMainMenuCreateMatchWidget;
-class UMainMenuFindMatchWidget;
-struct FCreateWidgetData;
-struct FJoinWidgetData;
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget

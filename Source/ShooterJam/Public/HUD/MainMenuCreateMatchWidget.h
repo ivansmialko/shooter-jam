@@ -19,6 +19,16 @@ struct FCreateWidgetData
 	TArray<FString> MatchModesList;
 };
 
+USTRUCT()
+struct FCreateWidgetUserData
+{
+	GENERATED_BODY()
+
+	FString MatchName;
+	FString MatchMode;
+	uint32 MaxPlayers{ 0 };
+};
+
 UCLASS()
 class SHOOTERJAM_API UMainMenuCreateMatchWidget : public UUserWidget
 {
