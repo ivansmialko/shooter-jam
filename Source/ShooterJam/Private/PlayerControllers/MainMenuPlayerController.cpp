@@ -46,17 +46,19 @@ void AMainMenuPlayerController::InitializeListeners()
 	if (!MainMenuWidget)
 		return;
 
-	MainMenuWidget->OnMenuClickedHost.AddDynamic(this, &AMainMenuPlayerController::OnClickedHost);
-	MainMenuWidget->OnMenuHostCreate.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCreate);
-	MainMenuWidget->OnMenuHostCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCancel);
+	MainMenuWidget->OnCreateMatchDlg.AddDynamic(this, &AMainMenuPlayerController::On)
 
-	MainMenuWidget->OnMenuClickedJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoin);
-	MainMenuWidget->OnMenuJoinJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinJoin);
-	MainMenuWidget->OnMenuJoinCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinCancel);
+	//MainMenuWidget->OnMenuClickedHost.AddDynamic(this, &AMainMenuPlayerController::OnClickedHost);
+	//MainMenuWidget->OnMenuHostCreate.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCreate);
+	//MainMenuWidget->OnMenuHostCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedHostCancel);
 
-	MainMenuWidget->OnMenuClickedTraining.AddDynamic(this, &AMainMenuPlayerController::OnClickedTraining);
-	MainMenuWidget->OnMenuClickedSettings.AddDynamic(this, &AMainMenuPlayerController::OnClickedSettings);
-	MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
+	//MainMenuWidget->OnMenuClickedJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoin);
+	//MainMenuWidget->OnMenuJoinJoin.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinJoin);
+	//MainMenuWidget->OnMenuJoinCancel.AddDynamic(this, &AMainMenuPlayerController::OnClickedJoinCancel);
+
+	//MainMenuWidget->OnMenuClickedTraining.AddDynamic(this, &AMainMenuPlayerController::OnClickedTraining);
+	//MainMenuWidget->OnMenuClickedSettings.AddDynamic(this, &AMainMenuPlayerController::OnClickedSettings);
+	//MainMenuWidget->OnMenuClickedExit.AddDynamic(this, &AMainMenuPlayerController::OnClickedExit);
 }
 
 void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
@@ -86,16 +88,22 @@ void AMainMenuPlayerController::CreateMenu()
 	InitializeMultiplayerSubsystem();
 }
 
-void AMainMenuPlayerController::OnClickedHost()
+void AMainMenuPlayerController::OnMenuCreateMatch(FCreateWidgetUserData InUserData)
 {
-	if (!MainMenuWidget)
+	if (!MultiplayerSubsystem)
 		return;
 
+	MultiplayerSubsystem->CreateSession(InUserData.MaxPlayers, InUserData.MatchMode);
+}
+
+void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
+{
+	//TODO: Get last user's settings from save
 	FCreateWidgetData WidgetData;
-	WidgetData.LastMatchName = "Pdidy party";
-	WidgetData.MatchModesList.Add("Deathmatch");
+	WidgetData.LastMatchName = "Test party";
+	WidgetData.MatchModesList.Add("Death match");
 	WidgetData.MatchModesList.Add("Teams");
-	MainMenuWidget->ShowCreateWidget(WidgetData);
+	MainMenuWidget->SetCreateParams(WidgetData);
 }
 
 void AMainMenuPlayerController::OnClickedHostCreate()
@@ -142,7 +150,7 @@ void AMainMenuPlayerController::OnClickedJoin()
 	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
 	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
 
-	MainMenuWidget->ShowJoinWidget(JoinWidget);
+	//MainMenuWidget->ShowJoinWidget(JoinWidget);
 }
 
 void AMainMenuPlayerController::OnClickedJoinJoin()
@@ -150,7 +158,7 @@ void AMainMenuPlayerController::OnClickedJoinJoin()
 	if (!MainMenuWidget)
 		return;
 
-	MainMenuWidget->HideJoinWidget();
+	//MainMenuWidget->HideJoinWidget();
 }
 
 void AMainMenuPlayerController::OnClickedJoinCancel()
@@ -158,7 +166,7 @@ void AMainMenuPlayerController::OnClickedJoinCancel()
 	if (!MainMenuWidget)
 		return;
 
-	MainMenuWidget->HideJoinWidget();
+	//MainMenuWidget->HideJoinWidget();
 }
 
 void AMainMenuPlayerController::OnClickedTraining()

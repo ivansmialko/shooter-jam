@@ -381,7 +381,6 @@ void UCombatComponent::OnStateDancing()
 
 void UCombatComponent::EquipPrimaryWeapon(AWeaponBase* InWeaponToEquip, bool bInDropPrevious /*= false*/)
 {
-
 #if WITH_EDITOR
 	UE_LOG(LogTemp, Warning, TEXT("[%s] Combat component equips weapon %s to primary"), (Character->GetLocalRole() == ENetRole::ROLE_Authority ? TEXT("Server") : TEXT("Client")), (*InWeaponToEquip->GetActorLabel()));
 #endif
