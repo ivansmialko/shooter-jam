@@ -6,6 +6,8 @@
 #include "GameFramework/PlayerController.h"
 #include "Interfaces/OnlineSessionInterface.h"
 
+#include "HUD/MainMenuCreateMatchWidget.h"
+
 #include "MainMenuPlayerController.generated.h"
 
 class UMainMenuWidget;
@@ -35,25 +37,12 @@ protected:
 	void InitializeMultiplayerSubsystem();
 	void CreateMenu();
 
+	//Handlers for MainMenu
 	UFUNCTION()
-	void OnClickedHost();
-	UFUNCTION()
-	void OnClickedHostCreate();
-	UFUNCTION()
-	void OnClickedHostCancel();
-	UFUNCTION()
-	void OnClickedJoin();
-	UFUNCTION()
-	void OnClickedJoinJoin();
-	UFUNCTION()
-	void OnClickedJoinCancel();
-	UFUNCTION()
-	void OnClickedTraining();
-	UFUNCTION()
-	void OnClickedSettings();
-	UFUNCTION()
-	void OnClickedExit();
+	void OnMenuCreateMatch(FCreateWidgetUserData InUserData);
+	void OnMenuCreateMatchGetParams();
 
+	//Handlers for MultiplayerSubsystem
 	UFUNCTION()
 	void OnMpCreateSession(bool bWasSuccessfull);
 	void OnMpFindSession(const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessfull);

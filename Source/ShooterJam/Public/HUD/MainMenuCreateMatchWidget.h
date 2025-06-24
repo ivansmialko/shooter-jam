@@ -9,6 +9,8 @@
 class UComboBoxString;
 class UEditableTextBox;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchCreate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchClose);
 
 USTRUCT()
 struct FCreateWidgetData
@@ -34,21 +36,32 @@ class SHOOTERJAM_API UMainMenuCreateMatchWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+//public fields
+public:
+	UPROPERTY(BlueprintCallable)
+	FWidgetCreateMatchCreate OnCreateDlg;
+	UPROPERTY(BlueprintCallable)
+	FWidgetCreateMatchCreate OnCloseDlg;
+
 //private fields
 private:
-
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* ComboMatchType;
 
 	UPROPERTY(meta = (BindWidget))
 	UEditableTextBox* FieldMatchName;
 
+	FCreateWidgetData CreateWidgetData;
+	
+
 //public methods
 public:
-	void SetData(const FCreateWidgetData& InData);
+	void SetWidgetData(const FCreateWidgetData& InData);
 	void GetUserData(FCreateWidgetUserData& OutUserData);
 
+//private methods
 private:
 	void SetMatchName(const FString& InMatchName);
 	void SetMatchTypes(const TArray<FString>& InMatchTypes);
+
 };
