@@ -48,7 +48,7 @@ void UMainMenuWidget::ShowCreateWidget()
 	PlayAnimation(AnimShowCreateWidget);
 
 	//Request data from whoever is controlling this menu
-	OnCreateMatchGetParamsDlg.Broadcast();
+	OnCreateMatchGetParamsDlg.ExecuteIfBound();
 }
 
 void UMainMenuWidget::HideCreateWidget()
@@ -113,7 +113,7 @@ void UMainMenuWidget::HideCreateWidget()
 
 void UMainMenuWidget::OnCreateMatchCreate(FCreateWidgetUserData InUserData)
 {
-	OnCreateMatchDlg.Broadcast(InUserData);
+	OnCreateMatchDlg.Execute(InUserData);
 }
 
 void UMainMenuWidget::OnCreateMatchClose()
