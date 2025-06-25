@@ -40,6 +40,7 @@ protected:
 	//Handlers for MainMenu
 	UFUNCTION()
 	void OnMenuCreateMatch(FCreateWidgetUserData InUserData);
+	UFUNCTION()
 	void OnMenuCreateMatchGetParams();
 
 	//Handlers for MultiplayerSubsystem
