@@ -25,7 +25,6 @@ public:
 	FMainMenuCreate OnCreateMatchDlg;
 	FMainMenuCreateGetParams OnCreateMatchGetParamsDlg;
 
-
 //private fields
 private:
 	UPROPERTY(meta = (BindWidget))
