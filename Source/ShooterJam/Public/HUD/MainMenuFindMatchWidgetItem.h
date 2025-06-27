@@ -9,12 +9,12 @@
 class UTextBlock;
 
 USTRUCT()
-struct FJoinWidgetItemData
+struct FFindWidgetItemData
 {
 	GENERATED_BODY()
 
-	FJoinWidgetItemData();
-	FJoinWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing);
+	FFindWidgetItemData();
+	FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing);
 
 	FString MatchMode;
 	FString MatchName;
@@ -39,5 +39,5 @@ private:
 	UTextBlock* TextPing;
 
 public:
-	void SetData(const FJoinWidgetItemData& InData);
+	void SetData(const FFindWidgetItemData& InData);
 };

@@ -42,6 +42,8 @@ protected:
 	void OnMenuCreateMatch(FCreateWidgetUserData InUserData);
 	UFUNCTION()
 	void OnMenuCreateMatchGetParams();
+	UFUNCTION()
+	void OnMenuFindMatchGetParams();
 
 	//Handlers for MultiplayerSubsystem
 	UFUNCTION()

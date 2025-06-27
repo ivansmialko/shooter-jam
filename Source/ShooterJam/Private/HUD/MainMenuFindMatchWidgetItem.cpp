@@ -5,13 +5,13 @@
 
 #include "Components/TextBlock.h"
 
-FJoinWidgetItemData::FJoinWidgetItemData():
+FFindWidgetItemData::FFindWidgetItemData():
 	MatchMode("none"), MatchName("none"), Ping(-1)
 {
 
 }
 
-void UMainMenuFindMatchWidgetItem::SetData(const FJoinWidgetItemData& InData)
+void UMainMenuFindMatchWidgetItem::SetData(const FFindWidgetItemData& InData)
 {
 	if (TextMatchName)
 	{

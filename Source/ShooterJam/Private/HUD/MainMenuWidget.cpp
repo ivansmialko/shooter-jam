@@ -23,6 +23,14 @@ void UMainMenuWidget::SetCreateParams(const FCreateWidgetData& InCreateParams)
 	CreateMatchWidget->SetWidgetData(InCreateParams);
 }
 
+void UMainMenuWidget::SetFindParams(const FFindWidgetData& InFindParams)
+{
+	if (!FindMatchWidget)
+		return;
+
+	FindMatchWidget->SetWidgetData(InFindParams);
+}
+
 void UMainMenuWidget::InitializeListeners()
 {
 	if (CreateMatchWidget)
@@ -72,45 +80,43 @@ void UMainMenuWidget::HideCreateWidget()
 	BindToAnimationFinished(AnimShowCreateWidget, OnAnimationCreateWidgetFinished);
 }
 
-//void UMainMenuWidget::ShowJoinWidget(const FJoinWidgetData& InData)
-//{
-//	if (!FindMatchWidget)
-//		return;
-//
-//	if (!AnimShowFindWidget)
-//		return;
-//
-//	if (!AnimShowBackgroundBlur)
-//		return;
-//
-//	FindMatchWidget->SetVisibility(ESlateVisibility::Visible);
-//	BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
-//
-//	PlayAnimation(AnimShowFindWidget);
-//	PlayAnimation(AnimShowBackgroundBlur);
-//
-//	FindMatchWidget->SetData(InData);
-//}
+void UMainMenuWidget::ShowJoinWidget()
+{
+	if (!FindMatchWidget)
+		return;
 
-//void UMainMenuWidget::HideJoinWidget()
-//{
-//	if (!AnimShowBackgroundBlur)
-//		return;
-//
-//	if (!AnimShowFindWidget)
-//		return;
-//
-//	PlayAnimation(AnimShowBackgroundBlur, 0.f, 1, EUMGSequencePlayMode::Reverse);
-//	PlayAnimation(AnimShowFindWidget, 0.f, 1, EUMGSequencePlayMode::Reverse);
-//
-//	FWidgetAnimationDynamicEvent OnAnimationBlurFinished;
-//	OnAnimationBlurFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationBlurFinishedHandler);
-//	FWidgetAnimationDynamicEvent OnAnimationFindWidgetFinished;
-//	OnAnimationFindWidgetFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationFindWidgetFinishedHandler);
-//
-//	BindToAnimationFinished(AnimShowBackgroundBlur, OnAnimationBlurFinished);
-//	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
-//}
+	if (!AnimShowFindWidget)
+		return;
+
+	if (!AnimShowBackgroundBlur)
+		return;
+
+	FindMatchWidget->SetVisibility(ESlateVisibility::Visible);
+	BackgroundBlur->SetVisibility(ESlateVisibility::Visible);
+
+	PlayAnimation(AnimShowFindWidget);
+	PlayAnimation(AnimShowBackgroundBlur);
+}
+
+void UMainMenuWidget::HideJoinWidget()
+{
+	if (!AnimShowBackgroundBlur)
+		return;
+
+	if (!AnimShowFindWidget)
+		return;
+
+	PlayAnimation(AnimShowBackgroundBlur, 0.f, 1, EUMGSequencePlayMode::Reverse);
+	PlayAnimation(AnimShowFindWidget, 0.f, 1, EUMGSequencePlayMode::Reverse);
+
+	FWidgetAnimationDynamicEvent OnAnimationBlurFinished;
+	OnAnimationBlurFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationBlurFinishedHandler);
+	FWidgetAnimationDynamicEvent OnAnimationFindWidgetFinished;
+	OnAnimationFindWidgetFinished.BindDynamic(this, &UMainMenuWidget::OnAnimationFindWidgetFinishedHandler);
+
+	BindToAnimationFinished(AnimShowBackgroundBlur, OnAnimationBlurFinished);
+	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
+}
 
 
 void UMainMenuWidget::OnCreateMatchCreate()
@@ -146,21 +152,21 @@ void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
 	UnbindAllFromAnimationFinished(AnimShowCreateWidget);
 }
 
-//void UMainMenuWidget::OnAnimationFindWidgetFinishedHandler()
-//{
-//	if (!FindMatchWidget)
-//		return;
-//
-//	if (!BackgroundBlur)
-//		return;
-//
-//	if (!AnimShowFindWidget)
-//		return;
-//
-//	FindMatchWidget->SetVisibility(ESlateVisibility::Hidden);
-//	BackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
-//	UnbindAllFromAnimationFinished(AnimShowFindWidget);
-//}
+void UMainMenuWidget::OnAnimationFindWidgetFinishedHandler()
+{
+	if (!FindMatchWidget)
+		return;
+
+	if (!BackgroundBlur)
+		return;
+
+	if (!AnimShowFindWidget)
+		return;
+
+	FindMatchWidget->SetVisibility(ESlateVisibility::Hidden);
+	BackgroundBlur->SetVisibility(ESlateVisibility::Hidden);
+	UnbindAllFromAnimationFinished(AnimShowFindWidget);
+}
 
 void UMainMenuWidget::OnAnimationBlurFinishedHandler()
 {
