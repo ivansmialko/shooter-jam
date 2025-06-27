@@ -53,7 +53,6 @@ private:
 
 	FCreateWidgetData CreateWidgetData;
 	
-
 //public methods
 public:
 	void SetWidgetData(const FCreateWidgetData& InData);
