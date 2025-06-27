@@ -10,6 +10,11 @@
 #include "Components/Widget.h"
 #include "Animation/WidgetAnimation.h"
 
+void UMainMenuWidget::NativeConstruct()
+{
+	InitializeListeners();
+}
+
 void UMainMenuWidget::SetCreateParams(const FCreateWidgetData& InCreateParams)
 {
 	if (!CreateMatchWidget)
@@ -18,16 +23,12 @@ void UMainMenuWidget::SetCreateParams(const FCreateWidgetData& InCreateParams)
 	CreateMatchWidget->SetWidgetData(InCreateParams);
 }
 
-void UMainMenuWidget::MenuSetup()
-{
-
-}
-
 void UMainMenuWidget::InitializeListeners()
 {
 	if (CreateMatchWidget)
 	{
-		//CreateMatchWidget->OnCreateDlg.
+		CreateMatchWidget->OnCreateDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchCreate);
+		CreateMatchWidget->OnCloseDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchClose);
 	}
 }
 
@@ -111,9 +112,17 @@ void UMainMenuWidget::HideCreateWidget()
 //	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
 //}
 
-void UMainMenuWidget::OnCreateMatchCreate(FCreateWidgetUserData InUserData)
+
+void UMainMenuWidget::OnCreateMatchCreate()
 {
-	OnCreateMatchDlg.Execute(InUserData);
+	if (!CreateMatchWidget)
+		return;
+
+	FCreateWidgetUserData UserData;
+	CreateMatchWidget->GetUserData(UserData);
+
+	OnCreateMatchDlg.Execute(UserData);
+
 }
 
 void UMainMenuWidget::OnCreateMatchClose()

@@ -117,6 +117,20 @@ void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
 
 void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 {
+	if (!bWasSuccessfull)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Failed to create session"));
+		return;
+	}
+
+	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, FString("Match created, traveling to map"));
+	const FString MatchMap("/Game/Maps/CityMap?listen");
+
+	UWorld* World = GetWorld();
+	if (!World)
+		return;
+
+	World->ServerTravel(MatchMap);
 
 }
 

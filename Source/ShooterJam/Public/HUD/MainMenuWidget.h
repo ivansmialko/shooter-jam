@@ -12,13 +12,15 @@ class UBackgroundBlur;
 class UMainMenuCreateMatchWidget;
 class UMainMenuFindMatchWidget;
 
-DECLARE_DYNAMIC_DELEGATE_OneParam(FMainMenuCreate, FCreateWidgetUserData, CreateSessionData);
-DECLARE_DYNAMIC_DELEGATE(FMainMenuCreateGetParams);
+
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
+
+	DECLARE_DELEGATE_OneParam(FMainMenuCreate, FCreateWidgetUserData);
+	DECLARE_DELEGATE(FMainMenuCreateGetParams);
 	
 //public fields
 public:
@@ -41,12 +43,12 @@ private:
 
 //public methods
 public:
+	void NativeConstruct();
+
 	void SetCreateParams(const FCreateWidgetData& InCreateParams);
 
 //private methods
 private:
-
-	void MenuSetup();
 	void InitializeListeners();
 
 	UFUNCTION(BlueprintCallable)
@@ -57,7 +59,7 @@ private:
 	//void HideJoinWidget();
 
 	UFUNCTION()
-	void OnCreateMatchCreate(FCreateWidgetUserData InUserData);
+	void OnCreateMatchCreate();
 	UFUNCTION()
 	void OnCreateMatchClose();
 
