@@ -112,6 +112,9 @@ private:
 	/** Update ping check timer, check an actual ping, show warning */
 	void CheckPing(float InDeltaTime);
 
+	/* Set input mode for controller as Game */
+	void SetupInputForGame();
+
 	/** Requests the current server time, passing in the client's time when the request was sent */
 	UFUNCTION(Server, Reliable)
 	void Server_RequestServerTime(float InTimeOfClientRequest);

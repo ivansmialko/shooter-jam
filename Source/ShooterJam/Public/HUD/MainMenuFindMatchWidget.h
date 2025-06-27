@@ -8,13 +8,13 @@
 
 class UScrollBox;
 class UMainMenuFindMatchWidgetItem;
-struct FJoinWidgetItemData;
+struct FFindWidgetItemData;
 
 USTRUCT()
-struct FJoinWidgetData
+struct FFindWidgetData
 {
 	GENERATED_BODY()
-	TArray<FJoinWidgetItemData> MatchesList;
+	TArray<FFindWidgetItemData> MatchesList;
 };
 
 UCLASS()
@@ -32,9 +32,9 @@ private:
 
 //public methods
 public:
-	void SetData(const FJoinWidgetData& InData);
+	void SetWidgetData(const FFindWidgetData& InData);
 
 //private methods
 private:
-	void UpdateMatchesList(const TArray<FJoinWidgetItemData>& InMatchesList);
+	void UpdateMatchesList(const TArray<FFindWidgetItemData>& InMatchesList);
 };

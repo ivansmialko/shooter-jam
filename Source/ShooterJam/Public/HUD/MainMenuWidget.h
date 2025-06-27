@@ -5,14 +5,13 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "HUD/MainMenuCreateMatchWidget.h"
+#include "HUD/MainMenuFindMatchWidget.h"
 
 #include "MainMenuWidget.generated.h"
 
 class UBackgroundBlur;
 class UMainMenuCreateMatchWidget;
 class UMainMenuFindMatchWidget;
-
-
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
@@ -21,16 +20,21 @@ class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
 
 	DECLARE_DELEGATE_OneParam(FMainMenuCreate, FCreateWidgetUserData);
 	DECLARE_DELEGATE(FMainMenuCreateGetParams);
+	DECLARE_DELEGATE(FMainMenuFindGetParams);
 	
 //public fields
 public:
 	FMainMenuCreate OnCreateMatchDlg;
 	FMainMenuCreateGetParams OnCreateMatchGetParamsDlg;
+	FMainMenuFindGetParams OnFindMatchGetParamsDlg;
 
 //private fields
 private:
 	UPROPERTY(meta = (BindWidget))
 	UMainMenuCreateMatchWidget* CreateMatchWidget;
+
+	UPROPERTY(meta = (BindWidget))
+	UMainMenuFindMatchWidget* FindMatchWidget;
 
 	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;
@@ -41,22 +45,24 @@ private:
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* AnimShowCreateWidget;
 
+	UPROPERTY(meta = (BindWidgetAnim), Transient)
+	UWidgetAnimation* AnimShowFindWidget;
+
 //public methods
 public:
 	void NativeConstruct();
+	void InitializeListeners();
 
 	void SetCreateParams(const FCreateWidgetData& InCreateParams);
+	void SetFindParams(const FFindWidgetData& InFindParams);
+
+	void ShowCreateWidget();
+	void HideCreateWidget();
+	void ShowJoinWidget();
+	void HideJoinWidget();
 
 //private methods
 private:
-	void InitializeListeners();
-
-	UFUNCTION(BlueprintCallable)
-	void ShowCreateWidget();
-	UFUNCTION(BlueprintCallable)
-	void HideCreateWidget();
-	//void ShowJoinWidget(const FJoinWidgetData& InData);
-	//void HideJoinWidget();
 
 	UFUNCTION()
 	void OnCreateMatchCreate();
@@ -65,8 +71,8 @@ private:
 
 	UFUNCTION()
 	void OnAnimationCreateWidgetFinishedHandler();
-	//UFUNCTION()
-	//void OnAnimationFindWidgetFinishedHandler();
+	UFUNCTION()
+	void OnAnimationFindWidgetFinishedHandler();
 	UFUNCTION()
 	void OnAnimationBlurFinishedHandler();
 

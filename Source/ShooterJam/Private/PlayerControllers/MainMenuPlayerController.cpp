@@ -46,6 +46,7 @@ void AMainMenuPlayerController::InitializeListeners()
 
 	MainMenuWidget->OnCreateMatchDlg.BindUFunction(this, FName("OnMenuCreateMatch"));
 	MainMenuWidget->OnCreateMatchGetParamsDlg.BindUFunction(this, FName("OnMenuCreateMatchGetParams"));
+	MainMenuWidget->OnFindMatchGetParamsDlg.BindUFunction(this, FName("OnMenuFindMatchGetParams"));
 }
 
 void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
@@ -93,6 +94,14 @@ void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
 	MainMenuWidget->SetCreateParams(WidgetData);
 }
 
+void AMainMenuPlayerController::OnMenuFindMatchGetParams()
+{
+	if (!MultiplayerSubsystem)
+		return;
+
+	MultiplayerSubsystem->FindSessions(999);
+}
+
 //void AMainMenuPlayerController::OnClickedJoin()
 //{
 //	if (!MainMenuWidget)
@@ -124,7 +133,7 @@ void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 	}
 
 	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, FString("Match created, traveling to map"));
-	const FString MatchMap("/Game/Maps/CityMap?listen");
+	const FString MatchMap("/Game/Maps/CityMap_Deathmatch?listen");
 
 	UWorld* World = GetWorld();
 	if (!World)
@@ -136,7 +145,11 @@ void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 
 void AMainMenuPlayerController::OnMpFindSession(const TArray<FOnlineSessionSearchResult>& SearchResults, bool bWasSuccessfull)
 {
-
+	if (!bWasSuccessfull)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Failed to find sessions"));
+		MainMenuWidget->HideJoinWidget();
+	}
 }
 
 void AMainMenuPlayerController::OnMpJoinSession(EOnJoinSessionCompleteResult::Type Result)

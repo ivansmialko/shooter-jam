@@ -7,12 +7,12 @@
 
 #include "Components/ScrollBox.h"
 
-void UMainMenuFindMatchWidget::SetData(const FJoinWidgetData& InData)
+void UMainMenuFindMatchWidget::SetWidgetData(const FFindWidgetData& InData)
 {
 	UpdateMatchesList(InData.MatchesList);
 }
 
-void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FJoinWidgetItemData>& InMatchesList)
+void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FFindWidgetItemData>& InMatchesList)
 {
 	if (!ListItemBlueprint)
 		return;
@@ -34,7 +34,7 @@ void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FJoinWidgetItemDat
 	}
 }
 
-FJoinWidgetItemData::FJoinWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing)
+FFindWidgetItemData::FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing)
 	:MatchMode(InMatchMode), MatchName(InMatchName), Ping(InPing)
 {
 

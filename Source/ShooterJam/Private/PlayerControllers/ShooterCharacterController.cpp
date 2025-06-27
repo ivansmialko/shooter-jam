@@ -64,6 +64,13 @@ void AShooterCharacterController::CheckPing(float InDeltaTime)
 	CheckPingTimer = CheckPingTime;
 }
 
+void AShooterCharacterController::SetupInputForGame()
+{
+	FInputModeGameOnly InputModeData;
+	SetInputMode(InputModeData);
+	SetShowMouseCursor(false);
+}
+
 void AShooterCharacterController::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
@@ -125,6 +132,7 @@ void AShooterCharacterController::OnPossess(APawn* InPawn)
 		return;
 
 	DefaultInitHud(ShooterCharacter);
+	SetupInputForGame();
 }
 
 void AShooterCharacterController::ReceivedPlayer()
