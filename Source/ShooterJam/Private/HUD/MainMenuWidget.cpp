@@ -37,6 +37,7 @@ void UMainMenuWidget::InitializeListeners()
 	{
 		CreateMatchWidget->OnCreateDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchCreate);
 		CreateMatchWidget->OnCloseDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchClose);
+		FindMatchWidget->OnCloseDlg.AddDynamic(this, &UMainMenuWidget::OnFindMatchClose);
 	}
 }
 
@@ -80,7 +81,7 @@ void UMainMenuWidget::HideCreateWidget()
 	BindToAnimationFinished(AnimShowCreateWidget, OnAnimationCreateWidgetFinished);
 }
 
-void UMainMenuWidget::ShowJoinWidget()
+void UMainMenuWidget::ShowFindWidget()
 {
 	if (!FindMatchWidget)
 		return;
@@ -96,9 +97,11 @@ void UMainMenuWidget::ShowJoinWidget()
 
 	PlayAnimation(AnimShowFindWidget);
 	PlayAnimation(AnimShowBackgroundBlur);
+
+	OnFindMatchGetParamsDlg.ExecuteIfBound();
 }
 
-void UMainMenuWidget::HideJoinWidget()
+void UMainMenuWidget::HideFindWidget()
 {
 	if (!AnimShowBackgroundBlur)
 		return;
@@ -134,6 +137,11 @@ void UMainMenuWidget::OnCreateMatchCreate()
 void UMainMenuWidget::OnCreateMatchClose()
 {
 	HideCreateWidget();
+}
+
+void UMainMenuWidget::OnFindMatchClose()
+{
+	HideFindWidget();
 }
 
 void UMainMenuWidget::OnAnimationCreateWidgetFinishedHandler()
