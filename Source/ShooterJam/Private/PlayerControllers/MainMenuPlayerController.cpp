@@ -62,6 +62,7 @@ void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
 	if (!MultiplayerSubsystem)
 		return;
 
+	MultiplayerSubsystem->SetLogToScreen(true);
 	MultiplayerSubsystem->MultiplayerOnCreateSessionComplete.AddDynamic(this, &AMainMenuPlayerController::OnMpCreateSession);
 	MultiplayerSubsystem->MultiplayerOnFindSessionComplete.AddUObject(this, &AMainMenuPlayerController::OnMpFindSession);
 	MultiplayerSubsystem->MultiplayerOnJoinSessionComplete.AddUObject(this, &AMainMenuPlayerController::OnMpJoinSession);
@@ -147,9 +148,26 @@ void AMainMenuPlayerController::OnMpFindSession(const TArray<FOnlineSessionSearc
 {
 	if (!bWasSuccessfull)
 	{
-		GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Failed to find sessions"));
-		MainMenuWidget->HideJoinWidget();
+		if (SearchResults.IsEmpty())
+		{
+			GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("No sessions found"));
+		}
+		else
+		{
+			GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Search failed"));
+
+		}
+		MainMenuWidget->HideFindWidget();
 	}
+
+	FFindWidgetData WidgetData;
+	WidgetData.MatchesList.Add(FFindWidgetItemData("DeathMatch", "Epstein Island", 23));
+	WidgetData.MatchesList.Add(FFindWidgetItemData("DeathMatch", "Epstein Island", 23));
+
+	if(!MainMenuWidget)
+		return;
+
+	MainMenuWidget->SetFindParams(WidgetData);
 }
 
 void AMainMenuPlayerController::OnMpJoinSession(EOnJoinSessionCompleteResult::Type Result)

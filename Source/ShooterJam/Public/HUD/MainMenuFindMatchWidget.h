@@ -22,6 +22,13 @@ class SHOOTERJAM_API UMainMenuFindMatchWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetFindMatchClose);
+
+//public fields
+public:
+	UPROPERTY(BlueprintCallable)
+	FWidgetFindMatchClose OnCloseDlg;
+
 //private fields
 private:
 	UPROPERTY(meta = (BindWidget))

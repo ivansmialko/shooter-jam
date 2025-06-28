@@ -56,10 +56,12 @@ public:
 	void SetCreateParams(const FCreateWidgetData& InCreateParams);
 	void SetFindParams(const FFindWidgetData& InFindParams);
 
+	UFUNCTION(BlueprintCallable)
 	void ShowCreateWidget();
+	UFUNCTION(BlueprintCallable)
+	void ShowFindWidget();
 	void HideCreateWidget();
-	void ShowJoinWidget();
-	void HideJoinWidget();
+	void HideFindWidget();
 
 //private methods
 private:
@@ -68,6 +70,8 @@ private:
 	void OnCreateMatchCreate();
 	UFUNCTION()
 	void OnCreateMatchClose();
+	UFUNCTION()
+	void OnFindMatchClose();
 
 	UFUNCTION()
 	void OnAnimationCreateWidgetFinishedHandler();

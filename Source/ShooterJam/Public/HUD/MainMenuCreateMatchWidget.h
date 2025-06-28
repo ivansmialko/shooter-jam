@@ -9,9 +9,6 @@
 class UComboBoxString;
 class UEditableTextBox;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchCreate);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchClose);
-
 USTRUCT()
 struct FCreateWidgetData
 {
@@ -36,12 +33,15 @@ class SHOOTERJAM_API UMainMenuCreateMatchWidget : public UUserWidget
 {
 	GENERATED_BODY()
 
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchCreate);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetCreateMatchClose);
+
 //public fields
 public:
 	UPROPERTY(BlueprintCallable)
 	FWidgetCreateMatchCreate OnCreateDlg;
 	UPROPERTY(BlueprintCallable)
-	FWidgetCreateMatchCreate OnCloseDlg;
+	FWidgetCreateMatchClose OnCloseDlg;
 
 //private fields
 private:
