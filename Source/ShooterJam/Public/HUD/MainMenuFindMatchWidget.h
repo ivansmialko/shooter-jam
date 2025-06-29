@@ -23,11 +23,15 @@ class SHOOTERJAM_API UMainMenuFindMatchWidget : public UUserWidget
 	GENERATED_BODY()
 
 	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetFindMatchClose);
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWidgetFindMatchJoin);
 
 //public fields
 public:
 	UPROPERTY(BlueprintCallable)
 	FWidgetFindMatchClose OnCloseDlg;
+
+	UPROPERTY(BlueprintCallable)
+	FWidgetFindMatchJoin OnJoinDlg;
 
 //private fields
 private:
@@ -40,6 +44,7 @@ private:
 //public methods
 public:
 	void SetWidgetData(const FFindWidgetData& InData);
+	FString GetSessionId();
 
 //private methods
 private:

@@ -12,6 +12,18 @@ void UMainMenuFindMatchWidget::SetWidgetData(const FFindWidgetData& InData)
 	UpdateMatchesList(InData.MatchesList);
 }
 
+FString UMainMenuFindMatchWidget::GetSessionId()
+{
+	for (uint32 i = 0; i < MatchesList->GetChildrenCount(); ++i)
+	{
+		UMainMenuFindMatchWidgetItem* ListItem = Cast<UMainMenuFindMatchWidgetItem>(MatchesList->GetChildAt(i));
+		if(!ListItem)
+			continue;
+
+
+	}
+}
+
 void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FFindWidgetItemData>& InMatchesList)
 {
 	if (!ListItemBlueprint)
@@ -32,10 +44,4 @@ void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FFindWidgetItemDat
 		NewItem->SetData(MatchData);
 		MatchesList->AddChild(NewItem);
 	}
-}
-
-FFindWidgetItemData::FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing)
-	:MatchMode(InMatchMode), MatchName(InMatchName), Ping(InPing)
-{
-
 }

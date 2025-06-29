@@ -37,6 +37,7 @@ void UMainMenuWidget::InitializeListeners()
 	{
 		CreateMatchWidget->OnCreateDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchCreate);
 		CreateMatchWidget->OnCloseDlg.AddDynamic(this, &UMainMenuWidget::OnCreateMatchClose);
+		FindMatchWidget->OnJoinDlg.AddDynamic(this, &UMainMenuWidget::OnFindMatchJoin);
 		FindMatchWidget->OnCloseDlg.AddDynamic(this, &UMainMenuWidget::OnFindMatchClose);
 	}
 }
@@ -137,6 +138,14 @@ void UMainMenuWidget::OnCreateMatchCreate()
 void UMainMenuWidget::OnCreateMatchClose()
 {
 	HideCreateWidget();
+}
+
+void UMainMenuWidget::OnFindMatchJoin()
+{
+	if (!FindMatchWidget)
+		return;
+
+	FString SessionId = FindMatchWidget->Getsess
 }
 
 void UMainMenuWidget::OnFindMatchClose()
