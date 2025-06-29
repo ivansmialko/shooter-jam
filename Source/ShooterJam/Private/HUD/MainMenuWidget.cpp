@@ -131,7 +131,7 @@ void UMainMenuWidget::OnCreateMatchCreate()
 	FCreateWidgetUserData UserData;
 	CreateMatchWidget->GetUserData(UserData);
 
-	OnCreateMatchDlg.Execute(UserData);
+	OnCreateMatchDlg.ExecuteIfBound(UserData);
 
 }
 
@@ -145,7 +145,11 @@ void UMainMenuWidget::OnFindMatchJoin()
 	if (!FindMatchWidget)
 		return;
 
-	FString SessionId = FindMatchWidget->Getsess
+	FString SessionId;
+	if (FindMatchWidget->GetSessionId(SessionId))
+	{
+		OnJoinMatchDlg.ExecuteIfBound(SessionId);
+	}
 }
 
 void UMainMenuWidget::OnFindMatchClose()

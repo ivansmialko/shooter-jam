@@ -12,16 +12,13 @@ void UMainMenuFindMatchWidget::SetWidgetData(const FFindWidgetData& InData)
 	UpdateMatchesList(InData.MatchesList);
 }
 
-FString UMainMenuFindMatchWidget::GetSessionId()
+bool UMainMenuFindMatchWidget::GetSessionId(FString& OutSessionId) const
 {
-	for (uint32 i = 0; i < MatchesList->GetChildrenCount(); ++i)
-	{
-		UMainMenuFindMatchWidgetItem* ListItem = Cast<UMainMenuFindMatchWidgetItem>(MatchesList->GetChildAt(i));
-		if(!ListItem)
-			continue;
+	if (!CurrentItem)
+		return false;
 
-
-	}
+	OutSessionId = CurrentItem->GetSessionId();
+	return true;
 }
 
 void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FFindWidgetItemData>& InMatchesList)
@@ -42,6 +39,22 @@ void UMainMenuFindMatchWidget::UpdateMatchesList(const TArray<FFindWidgetItemDat
 			continue;
 
 		NewItem->SetData(MatchData);
+		NewItem->OnSelectedDlg.AddDynamic(this, &UMainMenuFindMatchWidget::OnItemSelected);
 		MatchesList->AddChild(NewItem);
 	}
+}
+
+void UMainMenuFindMatchWidget::OnItemSelected(UMainMenuFindMatchWidgetItem* InSelectedItem)
+{
+	if (!InSelectedItem)
+		return;
+
+	InSelectedItem->SetActive(true);
+
+	if (CurrentItem)
+	{
+		CurrentItem->SetActive(false);
+	}
+
+	CurrentItem = InSelectedItem;
 }

@@ -4,6 +4,7 @@
 #include "HUD/MainMenuFindMatchWidgetItem.h"
 
 #include "Components/TextBlock.h"
+#include "Components/Image.h"
 
 FFindWidgetItemData::FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing, const FString& InSessionId)
 	:MatchMode(InMatchMode), MatchName(InMatchName), Ping(InPing), SessionId(InSessionId)
@@ -31,4 +32,17 @@ void UMainMenuFindMatchWidgetItem::SetData(const FFindWidgetItemData& InData)
 	}
 
 	SessionId = InData.SessionId;
+}
+
+void UMainMenuFindMatchWidgetItem::SetActive(bool bInIsActive)
+{
+	if (!BackgroundActive)
+		return;
+
+	BackgroundActive->SetVisibility(bInIsActive ? ESlateVisibility::Visible : ESlateVisibility::Hidden);
+}
+
+bool UMainMenuFindMatchWidgetItem::GetIsActive() const
+{
+	return (BackgroundActive && BackgroundActive->GetVisibility() == ESlateVisibility::Visible);
 }
