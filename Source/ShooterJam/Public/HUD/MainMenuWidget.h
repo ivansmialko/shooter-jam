@@ -19,12 +19,14 @@ class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
 	GENERATED_BODY()
 
 	DECLARE_DELEGATE_OneParam(FMainMenuCreate, FCreateWidgetUserData);
+	DECLARE_DELEGATE_OneParam(FMainMenuJoin, FString);
 	DECLARE_DELEGATE(FMainMenuCreateGetParams);
 	DECLARE_DELEGATE(FMainMenuFindGetParams);
 	
 //public fields
 public:
 	FMainMenuCreate OnCreateMatchDlg;
+	FMainMenuJoin OnJoinMatchDlg;
 	FMainMenuCreateGetParams OnCreateMatchGetParamsDlg;
 	FMainMenuFindGetParams OnFindMatchGetParamsDlg;
 
@@ -70,6 +72,8 @@ private:
 	void OnCreateMatchCreate();
 	UFUNCTION()
 	void OnCreateMatchClose();
+	UFUNCTION()
+	void OnFindMatchJoin();
 	UFUNCTION()
 	void OnFindMatchClose();
 

@@ -5,11 +5,13 @@
 
 #include "Components/TextBlock.h"
 
-FFindWidgetItemData::FFindWidgetItemData():
-	MatchMode("none"), MatchName("none"), Ping(-1)
+FFindWidgetItemData::FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing, const FString& InSessionId)
+	:MatchMode(InMatchMode), MatchName(InMatchName), Ping(InPing), SessionId(InSessionId)
 {
 
 }
+
+FFindWidgetItemData::FFindWidgetItemData() {}
 
 void UMainMenuFindMatchWidgetItem::SetData(const FFindWidgetItemData& InData)
 {
@@ -27,4 +29,6 @@ void UMainMenuFindMatchWidgetItem::SetData(const FFindWidgetItemData& InData)
 	{
 		TextPing->SetText(FText::FromString(FString::FromInt(InData.Ping)));
 	}
+
+	SessionId = InData.SessionId;
 }

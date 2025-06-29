@@ -4,6 +4,7 @@
 #include "PlayerControllers/MainMenuPlayerController.h"
 
 #include "MultiplayerSessionsSubsystem.h"
+#include "OnlineSessionSettings.h"
 
 #include "HUD/MainMenuWidget.h"
 #include "HUD/MainMenuCreateMatchWidget.h"
@@ -82,7 +83,12 @@ void AMainMenuPlayerController::OnMenuCreateMatch(FCreateWidgetUserData InUserDa
 	if (!MultiplayerSubsystem)
 		return;
 
-	MultiplayerSubsystem->CreateSession(InUserData.MaxPlayers, InUserData.MatchMode);
+	FMultiplayerMatchSettings MatchSettings;
+	MatchSettings.PublicConnections = InUserData.MaxPlayers;
+	MatchSettings.MatchType = InUserData.MatchMode;
+	MatchSettings.MatchName = InUserData.MatchName;
+
+	MultiplayerSubsystem->CreateSession(MatchSettings);
 }
 
 void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
@@ -100,30 +106,8 @@ void AMainMenuPlayerController::OnMenuFindMatchGetParams()
 	if (!MultiplayerSubsystem)
 		return;
 
-	MultiplayerSubsystem->FindSessions(999);
+	MultiplayerSubsystem->FindSessions(200000);
 }
-
-//void AMainMenuPlayerController::OnClickedJoin()
-//{
-//	if (!MainMenuWidget)
-//		return;
-//
-//	FJoinWidgetData JoinWidget;
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "PdidyParty", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
-//	JoinWidget.MatchesList.Add(FJoinWidgetItemData("DeathMatch", "Epstein Island", 23));
-//
-//	//MainMenuWidget->ShowJoinWidget(JoinWidget);
-//}
 
 void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 {
@@ -158,11 +142,23 @@ void AMainMenuPlayerController::OnMpFindSession(const TArray<FOnlineSessionSearc
 
 		}
 		MainMenuWidget->HideFindWidget();
+
+		return;
 	}
 
+	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString::Printf(TEXT("Found %d sessions"), SearchResults.Num()));
+
 	FFindWidgetData WidgetData;
-	WidgetData.MatchesList.Add(FFindWidgetItemData("DeathMatch", "Epstein Island", 23));
-	WidgetData.MatchesList.Add(FFindWidgetItemData("DeathMatch", "Epstein Island", 23));
+	for (const FOnlineSessionSearchResult& SearchResult : SearchResults)
+	{
+		FString MatchType;
+		SearchResult.Session.SessionSettings.Get(FName("MatchType"), MatchType);
+
+		FString MatchName;
+		SearchResult.Session.SessionSettings.Get(FName("MatchName"), MatchName);
+
+		WidgetData.MatchesList.Add(FFindWidgetItemData(MatchType, MatchName, SearchResult.PingInMs, SearchResult.GetSessionIdStr()));
+	}
 
 	if(!MainMenuWidget)
 		return;

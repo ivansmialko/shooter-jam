@@ -14,10 +14,11 @@ struct FFindWidgetItemData
 	GENERATED_BODY()
 
 	FFindWidgetItemData();
-	FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing);
+	FFindWidgetItemData(const FString& InMatchMode, const FString& InMatchName, const UINT32& InPing, const FString& SessionId);
 
 	FString MatchMode;
 	FString MatchName;
+	FString SessionId;
 	uint32 Ping;
 };
 
@@ -38,6 +39,10 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* TextPing;
 
+	FString SessionId;
+
 public:
 	void SetData(const FFindWidgetItemData& InData);
+
+	FORCEINLINE FString GetSessionId() const { return SessionId; }
 };
