@@ -41,12 +41,17 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UMainMenuFindMatchWidgetItem> ListItemBlueprint;
 
+	UMainMenuFindMatchWidgetItem* CurrentItem{ nullptr };
+
 //public methods
 public:
 	void SetWidgetData(const FFindWidgetData& InData);
-	FString GetSessionId();
+	bool GetSessionId(FString& OutSessionId) const;
 
 //private methods
 private:
 	void UpdateMatchesList(const TArray<FFindWidgetItemData>& InMatchesList);
+
+	UFUNCTION()
+	void OnItemSelected(UMainMenuFindMatchWidgetItem* InSelectedItem);
 };

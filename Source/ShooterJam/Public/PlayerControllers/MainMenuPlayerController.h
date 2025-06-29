@@ -43,6 +43,8 @@ protected:
 	UFUNCTION()
 	void OnMenuCreateMatchGetParams();
 	UFUNCTION()
+	void OnMenuFindMatchJoin(const FString& InSessionId);
+	UFUNCTION()
 	void OnMenuFindMatchGetParams();
 
 	//Handlers for MultiplayerSubsystem

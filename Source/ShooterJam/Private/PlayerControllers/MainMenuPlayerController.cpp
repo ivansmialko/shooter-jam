@@ -47,6 +47,7 @@ void AMainMenuPlayerController::InitializeListeners()
 
 	MainMenuWidget->OnCreateMatchDlg.BindUFunction(this, FName("OnMenuCreateMatch"));
 	MainMenuWidget->OnCreateMatchGetParamsDlg.BindUFunction(this, FName("OnMenuCreateMatchGetParams"));
+	MainMenuWidget->OnJoinMatchDlg.BindUFunction(this, FName("OnMenuFindMatchJoin"));
 	MainMenuWidget->OnFindMatchGetParamsDlg.BindUFunction(this, FName("OnMenuFindMatchGetParams"));
 }
 
@@ -101,12 +102,33 @@ void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
 	MainMenuWidget->SetCreateParams(WidgetData);
 }
 
-void AMainMenuPlayerController::OnMenuFindMatchGetParams()
+void AMainMenuPlayerController::OnMenuFindMatchJoin(const FString& InSessionId)
 {
 	if (!MultiplayerSubsystem)
 		return;
 
+	MultiplayerSubsystem->JoinSession(InSessionId);
+}
+
+void AMainMenuPlayerController::OnMenuFindMatchGetParams()
+{
+#ifdef WITH_EDITOR
+	if (!MainMenuWidget)
+		return;
+
+	FFindWidgetData FindWidgetData;
+	FindWidgetData.MatchesList.Add(FFindWidgetItemData("TestMatch 1", "Testik", 9, "TestSessionId1"));
+	FindWidgetData.MatchesList.Add(FFindWidgetItemData("TestMatch 2", "Testik", 9, "TestSessionId2"));
+	FindWidgetData.MatchesList.Add(FFindWidgetItemData("TestMatch 3", "Testik", 9, "TestSessionId3"));
+	FindWidgetData.MatchesList.Add(FFindWidgetItemData("TestMatch 4", "Testik", 9, "TestSessionId4"));
+
+	MainMenuWidget->SetFindParams(FindWidgetData);
+#else
+	if (!MultiplayerSubsystem)
+		return;
+
 	MultiplayerSubsystem->FindSessions(200000);
+#endif // WITH_EDITOR
 }
 
 void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
