@@ -6,6 +6,9 @@
 #include "MultiplayerSessionsSubsystem.h"
 #include "OnlineSessionSettings.h"
 
+#include "Kismet/GameplayStatics.h"
+#include "GameFramework/GameModeBase.h"
+
 #include "HUD/MainMenuWidget.h"
 #include "HUD/MainMenuCreateMatchWidget.h"
 #include "HUD/MainMenuFindMatchWidget.h"
@@ -112,7 +115,7 @@ void AMainMenuPlayerController::OnMenuFindMatchJoin(const FString& InSessionId)
 
 void AMainMenuPlayerController::OnMenuFindMatchGetParams()
 {
-#ifdef WITH_EDITOR
+#if WITH_EDITOR
 	if (!MainMenuWidget)
 		return;
 
@@ -138,6 +141,8 @@ void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 		GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Failed to create session"));
 		return;
 	}
+
+	UGameplayStatics::GetGameMode(this)->bUseSeamlessTravel = true;
 
 	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, FString("Match created, traveling to map"));
 	const FString MatchMap("/Game/Maps/CityMap_Deathmatch?listen");
@@ -190,7 +195,20 @@ void AMainMenuPlayerController::OnMpFindSession(const TArray<FOnlineSessionSearc
 
 void AMainMenuPlayerController::OnMpJoinSession(EOnJoinSessionCompleteResult::Type Result)
 {
+	if (!MultiplayerSubsystem)
+		return;
 
+	if (Result != EOnJoinSessionCompleteResult::Success)
+	{
+		GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Red, FString("Failed to join session"));
+		return;
+	}
+
+	APlayerController* PlayerController{ GetGameInstance()->GetFirstLocalPlayerController() };
+	if (!PlayerController)
+		return;
+
+	PlayerController->ClientTravel(MultiplayerSubsystem->GetSessionAddress(), ETravelType::TRAVEL_Absolute);
 }
 
 void AMainMenuPlayerController::OnMpDestroySession(bool bWasSuccessfull)
