@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.6",
+	"EngineAssociation": "{0830C443-4B5F-615A-B7BA-A983C7FE0929}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -263,7 +263,7 @@
 			"Enabled": false
 		},
 		{
-			"Name": "SteamSockets",
+			"Name": "OnlineSubsystemSteam",
 			"Enabled": true
 		}
 	]

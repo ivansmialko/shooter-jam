@@ -142,8 +142,6 @@ void AMainMenuPlayerController::OnMpCreateSession(bool bWasSuccessfull)
 		return;
 	}
 
-	UGameplayStatics::GetGameMode(this)->bUseSeamlessTravel = true;
-
 	GEngine->AddOnScreenDebugMessage(0, 5.f, FColor::Green, FString("Match created, traveling to map"));
 	const FString MatchMap("/Game/Maps/CityMap_Deathmatch?listen");
 
