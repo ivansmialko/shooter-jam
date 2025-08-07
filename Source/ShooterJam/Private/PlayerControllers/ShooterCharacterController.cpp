@@ -319,6 +319,16 @@ void AShooterCharacterController::OnRep_MatchState()
 	HandleMatchState();
 }
 
+void AShooterCharacterController::OnRep_Pawn()
+{
+	Super::OnRep_Pawn();
+
+	if (!IsLocalController())
+		return;
+
+	SetupInputForGame();
+}
+
 void AShooterCharacterController::OnRep_ShowTeamsBattleWidget()
 {
 	if (bShowTeamsBattleWidget)
