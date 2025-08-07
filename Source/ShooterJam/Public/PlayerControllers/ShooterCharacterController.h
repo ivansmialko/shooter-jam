@@ -145,6 +145,9 @@ private:
 	UFUNCTION()
 	void OnRep_MatchState();
 
+	/** Called when client's PlayerController posesses pawn */
+	virtual void OnRep_Pawn() override;
+
 	UFUNCTION()
 	void OnRep_ShowTeamsBattleWidget();
 
