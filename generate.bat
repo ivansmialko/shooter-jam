@@ -1,1 +1,1 @@
-F:\Developer\UE\UnrealEngine\Engine/Build/BatchFiles/Build.bat  -projectfiles -project="F:\Developer\UE\shooter-jam\ShooterJam.uproject" -game -rocket -progress
+%UE_HOME%/Engine/Build/BatchFiles/Build.bat  -projectfiles -project="%~dp0ShooterJam.uproject" -game -rocket -progress
