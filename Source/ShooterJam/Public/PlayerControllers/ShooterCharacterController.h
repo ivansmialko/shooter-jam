@@ -103,14 +103,8 @@ private:
 	/** Sets current match time to HUD */
 	void UpdateCountdowns();
 
-	/** Checks if it's the time to hide warning timer */
-	void UpdatePingWarning(float InDeltaTime);
-
 	/** Initialized hud variables */
 	bool CheckInitHud();
-
-	/** Update ping check timer, check an actual ping, show warning */
-	void CheckPing(float InDeltaTime);
 
 	/* Set input mode for controller as Game */
 	void SetupInputForGame();
@@ -118,20 +112,15 @@ private:
 	/** Requests the current server time, passing in the client's time when the request was sent */
 	UFUNCTION(Server, Reliable)
 	void Server_RequestServerTime(float InTimeOfClientRequest);
-
-	/**  Request game settings, such as match time, warmup time, current match state.
-		Used to deliver settings for server's version of a character */
+	/**  Request game settings, such as match time, warmup time, current match state. Used to deliver settings for server's version of a character */
 	UFUNCTION(Server, Reliable)
 	void Server_RequestGameSettings();
-
 	/** Reports to server, if local ping is too high */
 	UFUNCTION(Server, Reliable)
 	void Server_ReportPingStatus(bool bHighPing);
-
 	/**  Same as Server_RequestGameSettings, but delivers settings from server's to client's version of a character */
 	UFUNCTION(Client, Reliable)
 	void Client_ReportGameSettings(FName InMatchState, float InWarmupDuration, float InMatchDuration, float InCooldownDuration, float InLevelStartingTime);
-
 	/** Reports the current time to the client, in response to Server_RequestServerTime */
 	UFUNCTION(Client, Reliable)
 	void Client_ReportServerTime(float InTimeOfClientRequest, float InServerTime);
@@ -140,7 +129,6 @@ private:
 	UFUNCTION(Client, Reliable)
 	void Client_WorldChatEliminaion(APlayerState* InAttacker, APlayerState* InAttacked);
 
-	void HandleMatchState(bool bInIsTeamsMatch = false);
 
 	UFUNCTION()
 	void OnRep_MatchState();
@@ -155,21 +143,31 @@ private:
 
 	void DefaultInitHud(AShooterCharacter* ShooterCharacter);
 
+	/** Handles match state change. Calls one of the methods below */
+	void HandleMatchState(bool bInIsTeamsMatch = false);
 	/** Handle changing match state to "WaitingToStart" */
 	void HandleWaitingToStart();
-
 	/** Handle changing match state to "InProgress" */
 	void HandleInProgress(bool bInIsTeamsMatch = false);
-
 	/** Handle changing match state to "Cooldown" */
 	void HandleCooldown();
-
 	/** Handle leaving map. Creates a widget to "mask" transition */
 	void HandleLeavingMap();
 
+	/** Part of a Tick() method. Updates countdown update timer */
+	void TickCountdown(const float InDeltaSeconds);
+	/** Part of a Tick() method. When timer is out - synchronizes local time with server's */
+	void TickTimeSync(const float InDeltaSeconds);
+	/** Part of a Tick() method. When timer is out - checks an actual ping, show warnings */
+	void TickCheckPing(float InDeltaSeconds);
+	/** Partf of a Tick() method.  Checks if it's the time to hide warning timer */
+	void TickPingWarning(float InDeltaSeconds);
+	/** Part of a Tick() method. When timer is out - checks if HUD is available, initializes variable if so */
+	void PollInitHud(float DeltaSeconds);
+
 //protected methods
 protected:
-//~ Begin AActor Inteface
+//~ Begin AActor Interface
 	virtual void BeginPlay() override;
 //~ End AActor Interface
 
@@ -183,7 +181,7 @@ public:
 
 //~ Begin UObject Interface
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-//~ End UObject Interface
+	//~ End UObject Interface
 
 //~ Begin AActor Interface
 	virtual void Tick(float DeltaSeconds) override;

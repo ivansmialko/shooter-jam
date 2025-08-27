@@ -26,44 +26,6 @@ bool AShooterCharacterController::CheckInitHud()
 	return ShooterHud != nullptr;
 }
 
-void AShooterCharacterController::CheckPing(float InDeltaTime)
-{
-	if (CheckPingTimer <= 0.f)
-		return;
-
-	CheckPingTimer -= InDeltaTime;
-
-	if (CheckPingTimer > 0.f)
-		return;
-
-	if (!PlayerState)
-	{
-		PlayerState = GetPlayerState<APlayerState>();
-		if (!PlayerState)
-			return;
-	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Player ping: %.0f"), PlayerState->GetPingInMilliseconds());
-
-	if (PlayerState->GetPingInMilliseconds() < HighPingTreshold)
-	{
-		CheckPingTimer = CheckPingTime;
-
-		Server_ReportPingStatus(false);
-		return;
-	}
-
-	if (!GetPlayerHud())
-		return;
-
-	GetPlayerHud()->ShowPingAnimation();
-
-	Server_ReportPingStatus(true);
-
-	PingWarningTimer = PingWarningDuration;
-	CheckPingTimer = CheckPingTime;
-}
-
 void AShooterCharacterController::SetupInputForGame()
 {
 	FInputModeGameOnly InputModeData;
@@ -83,44 +45,13 @@ void AShooterCharacterController::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 
-	if (IsLocalController())
-	{
-		TimeSyncTimer -= DeltaSeconds;
-		if (TimeSyncTimer <= 0.f)
-		{
-			Server_RequestServerTime(GetWorld()->GetTimeSeconds());
-			TimeSyncTimer = TimeSyncFrequency;
-		}
-	}
+	TickTimeSync(DeltaSeconds);
+	TickCountdown(DeltaSeconds);
+	TickCheckPing(DeltaSeconds);
+	TickPingWarning(DeltaSeconds);
 
-	if (CountdownTimer > 0.f)
-	{
-		CountdownTimer -= DeltaSeconds;
-		if (CountdownTimer <= 0.f)
-		{
-			UpdateCountdowns();
-			CountdownTimer = CountdownTimerFrequency;
-		}
-	}
+	PollInitHud(DeltaSeconds);
 
-	if (PollInitHudTimer > 0.f)
-	{
-		PollInitHudTimer -= DeltaSeconds;
-		if (PollInitHudTimer <= 0.f)
-		{
-			if (CheckInitHud())
-			{
-				HandleMatchState();
-			}
-			else
-			{
-				PollInitHudTimer = PollInitHudTimerFrequency;
-			}
-		}
-	}
-
-	CheckPing(DeltaSeconds);
-	UpdatePingWarning(DeltaSeconds);
 }
 
 void AShooterCharacterController::OnPossess(APawn* InPawn)
@@ -274,24 +205,6 @@ void AShooterCharacterController::UpdateCountdowns()
 		float TimeLeft = CooldownDuration + WarmupDuration + MatchDuration - GetServerTime() + LevelStartingTime + CountdownTimer;
 		GetPlayerHud()->SetWarmupCountdown(TimeLeft);
 	}
-}
-
-void AShooterCharacterController::UpdatePingWarning(float InDeltaTime)
-{
-	if (PingWarningTimer <= 0.f)
-		return;
-
-	PingWarningTimer -= InDeltaTime;
-
-	if (PingWarningTimer > 0.f)
-		return;
-
-	if (!GetPlayerHud())
-		return;
-
-	GetPlayerHud()->HidePingAnimation();
-
-	PingWarningTimer = -1.0f;
 }
 
 void AShooterCharacterController::HandleMatchState(bool bInIsTeamsMatch /*= false*/)
@@ -456,6 +369,109 @@ void AShooterCharacterController::HandleLeavingMap()
 		return;
 
 	ShooterHud->ShowTransitionOverlayWidget();
+}
+
+void AShooterCharacterController::TickCountdown(const float InDeltaSeconds)
+{
+	if (CountdownTimer <= 0.f)
+		return;
+
+	CountdownTimer -= InDeltaSeconds;
+	if (CountdownTimer > 0.f)
+		return;
+
+	CountdownTimer = CountdownTimerFrequency;
+
+	UpdateCountdowns();
+}
+
+void AShooterCharacterController::TickTimeSync(const float InDeltaSeconds)
+{
+	if (!IsLocalController())
+		return;
+
+	TimeSyncTimer -= InDeltaSeconds;
+	if (TimeSyncTimer > 0.f)
+		return;
+
+	TimeSyncTimer = TimeSyncFrequency;
+
+	Server_RequestServerTime(GetWorld()->GetTimeSeconds());
+}
+
+void AShooterCharacterController::TickCheckPing(float InDeltaTime)
+{
+	if (CheckPingTimer <= 0.f)
+		return;
+
+	CheckPingTimer -= InDeltaTime;
+
+	if (CheckPingTimer > 0.f)
+		return;
+
+	if (!PlayerState)
+	{
+		PlayerState = GetPlayerState<APlayerState>();
+		if (!PlayerState)
+			return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Player ping: %.0f"), PlayerState->GetPingInMilliseconds());
+
+	if (PlayerState->GetPingInMilliseconds() < HighPingTreshold)
+	{
+		CheckPingTimer = CheckPingTime;
+
+		Server_ReportPingStatus(false);
+		return;
+	}
+
+	if (!GetPlayerHud())
+		return;
+
+	GetPlayerHud()->ShowPingAnimation();
+
+	Server_ReportPingStatus(true);
+
+	PingWarningTimer = PingWarningDuration;
+	CheckPingTimer = CheckPingTime;
+}
+
+void AShooterCharacterController::TickPingWarning(float InDeltaSeconds)
+{
+	if (PingWarningTimer <= 0.f)
+		return;
+
+	PingWarningTimer -= InDeltaSeconds;
+
+	if (PingWarningTimer > 0.f)
+		return;
+
+	if (!GetPlayerHud())
+		return;
+
+	GetPlayerHud()->HidePingAnimation();
+
+	PingWarningTimer = -1.0f;
+}
+
+void AShooterCharacterController::PollInitHud(float InDeltaSeconds)
+{
+	if (PollInitHudTimer > 0.f)
+	{
+		PollInitHudTimer -= InDeltaSeconds;
+		if (PollInitHudTimer <= 0.f)
+		{
+			if (CheckInitHud())
+			{
+				HandleMatchState();
+			}
+			else
+			{
+				PollInitHudTimer = PollInitHudTimerFrequency;
+			}
+		}
+	}
 }
 
 void AShooterCharacterController::BeginPlay()
