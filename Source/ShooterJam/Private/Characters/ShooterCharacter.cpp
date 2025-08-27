@@ -1380,10 +1380,6 @@ void AShooterCharacter::SpawnDefaultWeapon()
 	if (!DefaultWeaponClass)
 		return;
 
-	AShooterGameMode* GameMode = Cast<AShooterGameMode>(UGameplayStatics::GetGameMode(this));
-	if (!GameMode)
-		return;
-
 	UWorld* World = GetWorld();
 	if (!World)
 		return;
