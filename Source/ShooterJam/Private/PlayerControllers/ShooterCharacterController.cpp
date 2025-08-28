@@ -336,7 +336,7 @@ void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= fals
 			bShowTeamsBattleWidget = bInIsTeamsMatch;
 		};
 
-	GetWorldTimerManager().SetTimer(HandleInProgressTimerHandle, UpdateGui, 1.0f, true);
+	GetWorldTimerManager().SetTimer(HandleInProgressTimerHandle, UpdateGui, 0.1f, true);
 }
 
 void AShooterCharacterController::HandleCooldown()
