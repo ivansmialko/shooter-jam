@@ -98,6 +98,9 @@ private:
 	UPROPERTY(ReplicatedUsing = OnRep_ShowTeamsBattleWidget)
 	bool bShowTeamsBattleWidget{ false };
 
+	FTimerHandle HandleWaitingToStartTimerHandle;
+	FTimerHandle HandleInProgressTimerHandle;
+
 //private methods
 private:
 	/** Sets current match time to HUD */
@@ -160,7 +163,7 @@ private:
 	void TickTimeSync(const float InDeltaSeconds);
 	/** Part of a Tick() method. When timer is out - checks an actual ping, show warnings */
 	void TickCheckPing(float InDeltaSeconds);
-	/** Partf of a Tick() method.  Checks if it's the time to hide warning timer */
+	/** Part of a Tick() method.  Checks if it's the time to hide warning timer */
 	void TickPingWarning(float InDeltaSeconds);
 	/** Part of a Tick() method. When timer is out - checks if HUD is available, initializes variable if so */
 	void PollInitHud(float DeltaSeconds);
