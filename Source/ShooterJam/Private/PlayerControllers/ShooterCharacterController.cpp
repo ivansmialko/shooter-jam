@@ -295,9 +295,19 @@ void AShooterCharacterController::HandleWaitingToStart()
 	if (!CheckInitHud())
 		return;
 
-	CountdownTimer = CountdownTimerFrequency;
-	ShooterHud->AddAnnouncementWidget();
-	UpdateCountdowns();
+	auto UpdateGui = [this]()
+		{
+			if (!CheckInitHud())
+				return;
+
+			CountdownTimer = CountdownTimerFrequency;
+			ShooterHud->AddAnnouncementWidget();
+			UpdateCountdowns();
+
+			GetWorldTimerManager().ClearTimer(HandleWaitingToStartTimerHandle);
+		};
+
+	GetWorldTimerManager().SetTimer(HandleWaitingToStartTimerHandle, UpdateGui, 1.0f, true);
 }
 
 void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= false*/)
@@ -305,23 +315,28 @@ void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= fals
 	if (!CheckInitHud())
 		return;
 
-	ShooterHud->HideAnnouncementWidget();
-	ShooterHud->AddCharacterOverlay();
-	UpdateCountdowns();
+	auto UpdateGui = [this, bInIsTeamsMatch]()
+		{
+			ShooterHud->HideAnnouncementWidget();
+			ShooterHud->AddCharacterOverlay();
+			UpdateCountdowns();
 
-	if (!HasAuthority())
-		return;
+			if (!HasAuthority())
+				return;
 
-	if (bInIsTeamsMatch)
-	{
-		ShooterHud->ShowTeamBattleWidget();
-	}
-	else
-	{
-		ShooterHud->HideTeamBattleWidget();
-	}
+			if (bInIsTeamsMatch)
+			{
+				ShooterHud->ShowTeamBattleWidget();
+			}
+			else
+			{
+				ShooterHud->HideTeamBattleWidget();
+			}
 
-	bShowTeamsBattleWidget = bInIsTeamsMatch;
+			bShowTeamsBattleWidget = bInIsTeamsMatch;
+		};
+
+	GetWorldTimerManager().SetTimer(HandleInProgressTimerHandle, UpdateGui, 1.0f, true);
 }
 
 void AShooterCharacterController::HandleCooldown()
