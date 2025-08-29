@@ -59,7 +59,11 @@ void AShooterCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	SetGrenadeVisibility(false);
-	SpawnDefaultWeapon();
+
+	if (bSpawnDefaultWeapon)
+	{
+		SpawnDefaultWeapon();
+	}
 	
 	if (!HasAuthority())
 		return;

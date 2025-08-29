@@ -171,6 +171,10 @@ private:
 	UPROPERTY(VisibleAnywhere, Replicated)
 	bool bGameplayEnabled{ true };
 
+	/** If true - player will spawn with default weapon (pistol) */
+	UPROPERTY(EditAnywhere)
+	bool bSpawnDefaultWeapon{ false };
+
 	//User input
 	UPROPERTY(EditAnywhere, Category = Input)
 	UInputMappingContext* InputMappingContext;

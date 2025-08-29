@@ -307,7 +307,7 @@ void AShooterCharacterController::HandleWaitingToStart()
 			GetWorldTimerManager().ClearTimer(HandleWaitingToStartTimerHandle);
 		};
 
-	GetWorldTimerManager().SetTimer(HandleWaitingToStartTimerHandle, UpdateGui, 1.0f, true);
+	GetWorldTimerManager().SetTimer(HandleWaitingToStartTimerHandle, UpdateGui, 0.1f, true);
 }
 
 void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= false*/)
