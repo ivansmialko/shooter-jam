@@ -99,9 +99,8 @@ void AMainMenuPlayerController::OnMenuCreateMatchGetParams()
 {
 	//TODO: Get last user's settings from save
 	FCreateWidgetData WidgetData;
-	WidgetData.LastMatchName = "Test party";
+	WidgetData.LastMatchName = "Multiplayer party";
 	WidgetData.MatchModesList.Add("Death match");
-	WidgetData.MatchModesList.Add("Teams");
 	MainMenuWidget->SetCreateParams(WidgetData);
 }
 
