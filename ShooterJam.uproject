@@ -269,6 +269,19 @@
 		{
 			"Name": "SteamSockets",
 			"Enabled": true
+		},
+		{
+			"Name": "NNEDenoiser",
+			"Enabled": false,
+			"SupportedTargetPlatforms": [
+				"Win64",
+				"Linux",
+				"Mac"
+			]
+		},
+		{
+			"Name": "MetaHumanSDK",
+			"Enabled": false
 		}
 	]
 }
