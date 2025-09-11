@@ -292,6 +292,9 @@ void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCha
 
 void AShooterCharacterController::HandleWaitingToStart()
 {
+	if (WarmupDuration <= 0.f)
+		return;
+
 	auto UpdateGui = [this]()
 		{
 			if (!CheckInitHud())

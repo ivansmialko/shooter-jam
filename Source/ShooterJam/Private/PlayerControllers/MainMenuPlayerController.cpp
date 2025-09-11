@@ -41,6 +41,11 @@ void AMainMenuPlayerController::InitializeMenu()
 
 	SetInputMode(InputModeData);
 	SetShowMouseCursor(true);
+
+	if (!MultiplayerSubsystem || MultiplayerSubsystem->GetIsLanMatch())
+	{
+		MainMenuWidget->DisableMatchmakingButtons();
+	}
 }
 
 void AMainMenuPlayerController::InitializeListeners()
@@ -77,9 +82,10 @@ void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
 
 void AMainMenuPlayerController::CreateMenu()
 {
+	InitializeMultiplayerSubsystem();
+
 	InitializeMenu();
 	InitializeListeners();
-	InitializeMultiplayerSubsystem();
 }
 
 void AMainMenuPlayerController::OnMenuCreateMatch(FCreateWidgetUserData InUserData)
