@@ -12,6 +12,7 @@
 class UBackgroundBlur;
 class UMainMenuCreateMatchWidget;
 class UMainMenuFindMatchWidget;
+class UTextBlock;
 
 UCLASS()
 class SHOOTERJAM_API UMainMenuWidget : public UUserWidget
@@ -41,6 +42,15 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	UBackgroundBlur* BackgroundBlur;
 
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget* ButtonCreateMatch;
+
+	UPROPERTY(meta = (BindWidget))
+	UUserWidget* ButtonFindMatch;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* TextSteamRestartGame;
+
 	UPROPERTY(meta = (BindWidgetAnim), Transient)
 	UWidgetAnimation* AnimShowBackgroundBlur;
 
@@ -64,6 +74,8 @@ public:
 	void ShowFindWidget();
 	void HideCreateWidget();
 	void HideFindWidget();
+
+	void DisableMatchmakingButtons();
 
 //private methods
 private:

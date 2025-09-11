@@ -8,6 +8,7 @@
 
 #include "Components/BackgroundBlur.h"
 #include "Components/Widget.h"
+#include "Components/TextBlock.h"
 #include "Animation/WidgetAnimation.h"
 
 void UMainMenuWidget::NativeConstruct()
@@ -122,6 +123,23 @@ void UMainMenuWidget::HideFindWidget()
 	BindToAnimationFinished(AnimShowFindWidget, OnAnimationFindWidgetFinished);
 }
 
+void UMainMenuWidget::DisableMatchmakingButtons()
+{
+	if (ButtonCreateMatch)
+	{
+		ButtonCreateMatch->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (ButtonFindMatch)
+	{
+		ButtonFindMatch->SetVisibility(ESlateVisibility::Collapsed);
+	}
+
+	if (TextSteamRestartGame)
+	{
+		TextSteamRestartGame->SetVisibility(ESlateVisibility::Visible);
+	}
+}
 
 void UMainMenuWidget::OnCreateMatchCreate()
 {
