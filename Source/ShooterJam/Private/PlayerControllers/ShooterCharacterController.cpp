@@ -292,9 +292,6 @@ void AShooterCharacterController::DefaultInitHud(AShooterCharacter* InShooterCha
 
 void AShooterCharacterController::HandleWaitingToStart()
 {
-	if (!CheckInitHud())
-		return;
-
 	auto UpdateGui = [this]()
 		{
 			if (!CheckInitHud())
@@ -312,11 +309,11 @@ void AShooterCharacterController::HandleWaitingToStart()
 
 void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= false*/)
 {
-	if (!CheckInitHud())
-		return;
-
 	auto UpdateGui = [this, bInIsTeamsMatch]()
 		{
+			if (!CheckInitHud())
+				return;
+
 			ShooterHud->HideAnnouncementWidget();
 			ShooterHud->AddCharacterOverlay();
 			UpdateCountdowns();
@@ -334,6 +331,7 @@ void AShooterCharacterController::HandleInProgress(bool bInIsTeamsMatch /*= fals
 			}
 
 			bShowTeamsBattleWidget = bInIsTeamsMatch;
+			GetWorldTimerManager().ClearTimer(HandleInProgressTimerHandle);
 		};
 
 	GetWorldTimerManager().SetTimer(HandleInProgressTimerHandle, UpdateGui, 0.1f, true);
