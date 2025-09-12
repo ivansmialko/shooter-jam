@@ -7,10 +7,12 @@
 #include "Interfaces/OnlineSessionInterface.h"
 
 #include "HUD/MainMenuCreateMatchWidget.h"
+#include "HUD/MainMenuPreloaderWidget.h"
 
 #include "MainMenuPlayerController.generated.h"
 
 class UMainMenuWidget;
+class UMainMenuPreloaderWidget;
 class UMultiplayerSessionsSubsystem;
 
 UCLASS()
@@ -22,20 +24,40 @@ private:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<UUserWidget> MainMenuBlueprint;
 
-	UMainMenuWidget* MainMenuWidget{ nullptr };
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> MainMenuPreloaderBlueprint;
 
-	UMultiplayerSessionsSubsystem* MultiplayerSubsystem{ nullptr };
+	UPROPERTY()
+	UMainMenuWidget* MainMenuWidget;
+
+	UPROPERTY()
+	UMainMenuPreloaderWidget* MainMenuPreloaderWidget;
+
+	UPROPERTY()
+	UMultiplayerSessionsSubsystem* MultiplayerSubsystem;
+
+	UPROPERTY()
+	uint32 MinimalPreloaderTime{ 3u };
 
 //public methods
 public:
 	virtual void OnPossess(APawn* InPawn) override;
 
+	void ShowMenu() const;
+	void HidePreloader() const;
+
+	virtual void Tick(float InDeltaSeconds) override;
+
 //protected methods
 protected:
+	void CreateMenu();
+
 	void InitializeMenu();
 	void InitializeListeners();
 	void InitializeMultiplayerSubsystem();
-	void CreateMenu();
+	void InitializePreloader();
+
+	void CheckHidePreloader();
 
 	//Handlers for MainMenu
 	UFUNCTION()

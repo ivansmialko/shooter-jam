@@ -19,6 +19,29 @@ void AMainMenuPlayerController::OnPossess(APawn* InPawn)
 	CreateMenu();
 }
 
+void AMainMenuPlayerController::ShowMenu() const
+{
+	if (!MainMenuWidget)
+		return;
+
+	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+}
+
+void AMainMenuPlayerController::HidePreloader() const
+{
+	if (!MainMenuPreloaderWidget)
+		return;
+
+	MainMenuPreloaderWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void AMainMenuPlayerController::Tick(float InDeltaSeconds)
+{
+	Super::Tick(InDeltaSeconds);
+
+	CheckHidePreloader();
+}
+
 void AMainMenuPlayerController::InitializeMenu()
 {
 	if (!MainMenuBlueprint)
@@ -29,7 +52,7 @@ void AMainMenuPlayerController::InitializeMenu()
 		return;
 
 	MainMenuWidget->SetIsFocusable(true);
-	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	MainMenuWidget->SetVisibility(ESlateVisibility::Hidden);
 	MainMenuWidget->AddToViewport();
 
 	if (!MainMenuWidget)
@@ -41,11 +64,6 @@ void AMainMenuPlayerController::InitializeMenu()
 
 	SetInputMode(InputModeData);
 	SetShowMouseCursor(true);
-
-	if (!MultiplayerSubsystem || MultiplayerSubsystem->GetIsLanMatch())
-	{
-		MainMenuWidget->DisableMatchmakingButtons();
-	}
 }
 
 void AMainMenuPlayerController::InitializeListeners()
@@ -80,12 +98,40 @@ void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
 	MultiplayerSubsystem->MultiplayerOnStartSessionComplete.AddDynamic(this, &AMainMenuPlayerController::OnMpStartSession);
 }
 
+void AMainMenuPlayerController::InitializePreloader()
+{
+	if (!MainMenuPreloaderWidget)
+		return;
+
+	MainMenuPreloaderWidget = CreateWidget<UMainMenuPreloaderWidget>(this, MainMenuPreloaderBlueprint);
+	if (!MainMenuPreloaderWidget)
+		return;
+
+	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+	MainMenuWidget->AddToViewport();
+}
+
+void AMainMenuPlayerController::CheckHidePreloader()
+{
+	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
+		return;
+
+	if (!MultiplayerSubsystem)
+		return;
+
+	if (!MultiplayerSubsystem->GetOnlineSubsystemAvailable())
+		return;
+
+	HidePreloader();
+	ShowMenu();
+}
+
 void AMainMenuPlayerController::CreateMenu()
 {
-	InitializeMultiplayerSubsystem();
-
+	InitializePreloader();
 	InitializeMenu();
 	InitializeListeners();
+	InitializeMultiplayerSubsystem();
 }
 
 void AMainMenuPlayerController::OnMenuCreateMatch(FCreateWidgetUserData InUserData)
