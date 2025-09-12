@@ -100,19 +100,26 @@ void AMainMenuPlayerController::InitializeMultiplayerSubsystem()
 
 void AMainMenuPlayerController::InitializePreloader()
 {
-	if (!MainMenuPreloaderWidget)
+	if (!MainMenuPreloaderBlueprint)
 		return;
 
 	MainMenuPreloaderWidget = CreateWidget<UMainMenuPreloaderWidget>(this, MainMenuPreloaderBlueprint);
 	if (!MainMenuPreloaderWidget)
 		return;
 
-	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
-	MainMenuWidget->AddToViewport();
+	MainMenuPreloaderWidget->SetVisibility(ESlateVisibility::Visible);
+	MainMenuPreloaderWidget->AddToViewport();
 }
 
 void AMainMenuPlayerController::CheckHidePreloader()
 {
+	if (MinimalPreloaderTime == 0)
+	{
+		HidePreloader();
+		ShowMenu();
+		return;
+	}
+
 	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
 		return;
 
