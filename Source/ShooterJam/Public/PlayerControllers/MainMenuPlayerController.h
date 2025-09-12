@@ -36,7 +36,7 @@ private:
 	UPROPERTY()
 	UMultiplayerSessionsSubsystem* MultiplayerSubsystem;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	uint32 MinimalPreloaderTime{ 3u };
 
 //public methods
