@@ -57,7 +57,7 @@ protected:
 	void InitializeMultiplayerSubsystem();
 	void InitializePreloader();
 
-	void CheckHidePreloader();
+	void CheckHidePreloader() const;
 
 	//Handlers for MainMenu
 	UFUNCTION()

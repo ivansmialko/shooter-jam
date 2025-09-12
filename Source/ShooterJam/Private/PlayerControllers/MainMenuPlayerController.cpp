@@ -25,6 +25,11 @@ void AMainMenuPlayerController::ShowMenu() const
 		return;
 
 	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
+
+	if (MultiplayerSubsystem && MultiplayerSubsystem->GetOnlineSubsystemAvailable() && !MultiplayerSubsystem->GetIsLanMatch())
+	{
+		MainMenuWidget->DisableMatchmakingButtons();
+	}
 }
 
 void AMainMenuPlayerController::HidePreloader() const
@@ -111,26 +116,23 @@ void AMainMenuPlayerController::InitializePreloader()
 	MainMenuPreloaderWidget->AddToViewport();
 }
 
-void AMainMenuPlayerController::CheckHidePreloader()
+void AMainMenuPlayerController::CheckHidePreloader() const
 {
-	if (MinimalPreloaderTime == 0)
+	bool bPreloaderActive = true;
+	bPreloaderActive = bPreloaderActive && (MinimalPreloaderTime != 0);
+	bPreloaderActive = bPreloaderActive && (!MainMenuWidget || MainMenuWidget->GetVisibility() == ESlateVisibility::Visible);
+	bPreloaderActive = bPreloaderActive && (!MultiplayerSubsystem || MultiplayerSubsystem->GetOnlineSubsystemAvailable());
+
+#if WITH_EDITOR
+	bNeedHidePreloader = false;
+#endif
+
+	if (!bPreloaderActive)
 	{
 		HidePreloader();
 		ShowMenu();
-		return;
 	}
 
-	if (MainMenuWidget->GetVisibility() == ESlateVisibility::Visible)
-		return;
-
-	if (!MultiplayerSubsystem)
-		return;
-
-	if (!MultiplayerSubsystem->GetOnlineSubsystemAvailable())
-		return;
-
-	HidePreloader();
-	ShowMenu();
 }
 
 void AMainMenuPlayerController::CreateMenu()
