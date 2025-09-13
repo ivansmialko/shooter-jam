@@ -37,7 +37,9 @@ private:
 	UMultiplayerSessionsSubsystem* MultiplayerSubsystem;
 
 	UPROPERTY(EditAnywhere)
-	uint32 MinimalPreloaderTime{ 3u };
+	float MinimalPreloaderTime{ 3.f };
+
+	float PreloaderTimer{ -1.f };
 
 //public methods
 public:
