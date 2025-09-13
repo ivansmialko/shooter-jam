@@ -26,7 +26,7 @@ void AMainMenuPlayerController::ShowMenu() const
 
 	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 
-	if (MultiplayerSubsystem && MultiplayerSubsystem->GetOnlineSubsystemAvailable() && !MultiplayerSubsystem->GetIsLanMatch())
+	if (!MultiplayerSubsystem || !MultiplayerSubsystem->GetOnlineSubsystemAvailable() || MultiplayerSubsystem->GetIsLanMatch())
 	{
 		MainMenuWidget->DisableMatchmakingButtons();
 	}
@@ -44,7 +44,11 @@ void AMainMenuPlayerController::Tick(float InDeltaSeconds)
 {
 	Super::Tick(InDeltaSeconds);
 
-	CheckHidePreloader();
+	if (PreloaderTimer >= 0.f)
+	{
+		PreloaderTimer -= InDeltaSeconds;
+		CheckHidePreloader();
+	}
 }
 
 void AMainMenuPlayerController::InitializeMenu()
@@ -114,17 +118,20 @@ void AMainMenuPlayerController::InitializePreloader()
 
 	MainMenuPreloaderWidget->SetVisibility(ESlateVisibility::Visible);
 	MainMenuPreloaderWidget->AddToViewport();
+
+	PreloaderTimer = MinimalPreloaderTime;
 }
 
 void AMainMenuPlayerController::CheckHidePreloader() const
 {
+	if (PreloaderTimer >= 0.f)
+		return;
+
 	bool bPreloaderActive = true;
-	bPreloaderActive = bPreloaderActive && (MinimalPreloaderTime != 0);
-	bPreloaderActive = bPreloaderActive && (!MainMenuWidget || MainMenuWidget->GetVisibility() == ESlateVisibility::Visible);
-	bPreloaderActive = bPreloaderActive && (!MultiplayerSubsystem || MultiplayerSubsystem->GetOnlineSubsystemAvailable());
+	bPreloaderActive = bPreloaderActive && (!MultiplayerSubsystem || !MultiplayerSubsystem->GetOnlineSubsystemAvailable());
 
 #if WITH_EDITOR
-	bNeedHidePreloader = false;
+	bPreloaderActive = false;
 #endif
 
 	if (!bPreloaderActive)
