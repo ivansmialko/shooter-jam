@@ -26,10 +26,12 @@ void AMainMenuPlayerController::ShowMenu() const
 
 	MainMenuWidget->SetVisibility(ESlateVisibility::Visible);
 
+#if !WITH_EDITOR
 	if (!MultiplayerSubsystem || !MultiplayerSubsystem->GetOnlineSubsystemAvailable() || MultiplayerSubsystem->GetIsLanMatch())
 	{
 		MainMenuWidget->DisableMatchmakingButtons();
 	}
+#endif
 }
 
 void AMainMenuPlayerController::HidePreloader() const
