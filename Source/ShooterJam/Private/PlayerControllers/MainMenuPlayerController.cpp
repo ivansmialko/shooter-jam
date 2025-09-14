@@ -124,8 +124,10 @@ void AMainMenuPlayerController::InitializePreloader()
 
 void AMainMenuPlayerController::CheckHidePreloader() const
 {
+#if !WITH_EDITOR
 	if (PreloaderTimer >= 0.f)
 		return;
+#endif
 
 	bool bPreloaderActive = true;
 	bPreloaderActive = bPreloaderActive && (!MultiplayerSubsystem || !MultiplayerSubsystem->GetOnlineSubsystemAvailable());
